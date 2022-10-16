@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="tgpr-2223-xyy" target="17" />
+      <module name="tgpr-2223-xyy" target="16" />
     </bytecodeTargetLevel>
   </component>
 </project>

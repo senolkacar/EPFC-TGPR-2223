@@ -1,28 +1,28 @@
 package tgpr.bank.model;
 
-import java.sql.ResultSet;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.List;
-
-import org.springframework.cglib.core.Local;
-import org.springframework.util.Assert;
 import tgpr.framework.Model;
 import tgpr.framework.Params;
-import tgpr.framework.SortOrder;
-import tgpr.framework.Tools;
+
+import java.sql.ResultSet;
+import java.util.List;
+
 
 public class User extends Model {
+
+    protected static Connection db;
+
+
     private Integer id;
     private String type;
     private String email;
     private String password;
     private LocalDate birthdate;
-    private String lastname;
-    private String firstname;
+    private String last_name;
+    private String first_name;
     private Integer agency;
-
-    private List<User> listUser;
 
     public Integer getId() {
         return id;
@@ -64,20 +64,20 @@ public class User extends Model {
         this.birthdate = birthdate;
     }
 
-    public String getLastname() {
-        return lastname;
+    public String getLast_name() {
+        return last_name;
     }
 
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
+    public void setLast_name(String last_name) {
+        this.last_name = last_name;
     }
 
-    public String getFirstname() {
-        return firstname;
+    public String getFirst_name() {
+        return first_name;
     }
 
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
+    public void setFirst_name(String first_name) {
+        this.first_name = first_name;
     }
 
     public Integer getAgency() {
@@ -88,6 +88,14 @@ public class User extends Model {
         this.agency = agency;
     }
 
+    public User(){
+
+    }
+
+    public User(String email) {
+        this.email = email;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -96,69 +104,58 @@ public class User extends Model {
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", birthdate=" + birthdate +
-                ", lastname='" + lastname + '\'' +
-                ", firstname='" + firstname + '\'' +
+                ", lastname='" + last_name + '\'' +
+                ", firstname='" + first_name + '\'' +
                 ", agency=" + agency +
-                ", listUser=" + listUser +
                 '}';
     }
 
-    //Constructor client
-    public User(Integer id, String type, String email, String password, LocalDate birthdate, String lastname, String firstname, Integer agency) {
-        this.id = id;
-        this.type = type;
-        this.email = email;
-        this.password = password;
-        this.birthdate = birthdate;
-        this.lastname = lastname;
-        this.firstname = firstname;
-        this.agency = agency;
+    protected  void mapper(ResultSet rs) throws SQLException {
+        email = rs.getString("email");
+        id = rs.getInt("id");
+        agency = rs.getInt("agency");
+        birthdate = rs.getObject("birth_date", LocalDate.class);
+        last_name = rs.getString("last_name");
+        first_name = rs.getString("first_name");
+        type = rs.getString("type");
+        password = rs.getString("password");
     }
-
-    //Constructor Admin
-    public User(Integer id, String type, String email, String password, String lastname) {
-        this.id = id;
-        this.type = type;
-        this.email = email;
-        this.password = password;
-        this.lastname = lastname;
-    }
-
-
-    //Constructor Manager
-    public User(Integer id, String type, String email, String password, String lastname, String firstname) {
-        this.id = id;
-        this.type = type;
-        this.email = email;
-        this.password = password;
-        this.lastname = lastname;
-        this.firstname = firstname;
-    }
-
-    public static List<User> getAll() {
-        return queryList(User.class,"select * from user");
-    }
-
-    public static User getByMail(String email){
-        return queryOne(User.class,"select * from user where email= :email", new Params("email", email));
-    }
-
-    @Override
-    protected void mapper(ResultSet rs) throws SQLException {
-        this.id = rs.getInt("id");
-        this.agency = rs.getInt("agency");
-        this.birthdate = rs.getObject("birth_date", LocalDate.class);
-        this.email = rs.getString("email");
-        this.lastname = rs.getString("last_name");
-        this.firstname = rs.getString("first_name");
-        this.type = rs.getString("type");
-        this.password = rs.getString("password");
-    }
-
     @Override
     public void reload() {
-        reload("Select * from user where email = :email",new Params("email", email));
+        reload("select * from user where email=:email", new Params("email", email));
     }
+
+
+    public static List<User> getAll() {
+        return queryList(User.class, "select * from user order by email");
+    }
+
+    public static User getByEmail(String email) {
+        return queryOne(User.class, "select * from user where email=:email", new Params("email", email));
+    }
+    public boolean save() {
+        int c;
+        User u = getByEmail(email);
+        String sql;
+        if (u == null)
+            sql = "insert into user (id, email, password, last_name,first_name, birthdate,type,agency) " +
+                    "values (:id, :email, :password, :last_name,:first_name, :birthdate,:type,:agency)";
+        else
+            sql = "update user set password=:password, last_name=:last_name,first_name-:first_name " +
+                    "birthdate=:birthdate where email=:email";
+        c = execute(sql, new Params()
+                .add("email", email)
+                .add("password", password)
+                .add("last_name",last_name)
+                .add("first_name", first_name)
+                .add("birthdate", birthdate));
+        return c == 1;
+    }
+    public boolean delete() {
+        int c = execute("delete from user where email=:email", new Params("email", email));
+        return c == 1;
+    }
+    
 
 
 

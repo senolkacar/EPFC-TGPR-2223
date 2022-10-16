@@ -124,7 +124,8 @@ create table global
 
 
 
-SET FOREIGN_KEY_CHECKS=0;
+
+
 
 INSERT INTO `global` (system_date)
 VALUES ('2022-01-17 23:59:59');
@@ -206,3 +207,4 @@ INSERT INTO `favourite` (`user`, `account`)
 VALUES (4, 5);
 
 SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
