@@ -1,6 +1,7 @@
 package tgpr.bank;
 
 import tgpr.bank.controller.TestController;
+import tgpr.bank.model.User;
 import tgpr.framework.Controller;
 import tgpr.framework.Model;
 
@@ -12,5 +13,9 @@ public class BankApp {
             Controller.abort("Database is not available!");
         else
             Controller.navigateTo(new TestController());
+
+        var test = User.getByMail("admin@test.com");
+        System.out.println(test);
+
     }
 }

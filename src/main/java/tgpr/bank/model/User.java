@@ -88,6 +88,20 @@ public class User extends Model {
         this.agency = agency;
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", type='" + type + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", birthdate=" + birthdate +
+                ", lastname='" + lastname + '\'' +
+                ", firstname='" + firstname + '\'' +
+                ", agency=" + agency +
+                ", listUser=" + listUser +
+                '}';
+    }
 
     //Constructor client
     public User(Integer id, String type, String email, String password, LocalDate birthdate, String lastname, String firstname, Integer agency) {
@@ -122,7 +136,11 @@ public class User extends Model {
     }
 
     public static List<User> getAll() {
-        return queryList(User::newInstance, "select * from members order by pseudo");
+        return queryList(User.class,"select * from user");
+    }
+
+    public static User getByMail(String email){
+        return queryOne(User.class,"select * from user where email= :email", new Params("email", email));
     }
 
     @Override
@@ -139,6 +157,10 @@ public class User extends Model {
 
     @Override
     public void reload() {
-        reload("Select * from user",new Params());
+        reload("Select * from user where email = :email",new Params("email", email));
     }
+
+
+
+
 }
