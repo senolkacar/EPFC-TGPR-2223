@@ -5,14 +5,13 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import tgpr.framework.Model;
 import tgpr.framework.Params;
+import tgpr.framework.Tools;
 
 import java.sql.ResultSet;
 import java.util.List;
 
 
 public class User extends Model {
-
-    protected static Connection db;
 
 
     private Integer id;
@@ -23,6 +22,10 @@ public class User extends Model {
     private String last_name;
     private String first_name;
     private Integer agency;
+
+    public enum Fields {
+        email, Password, BirthDate
+    }
 
     public Integer getId() {
         return id;
@@ -96,6 +99,14 @@ public class User extends Model {
         this.email = email;
     }
 
+    public boolean isAdmin() {
+        return "admin".equals(type);
+    }
+
+    public boolean isManager() {
+        return "manager".equals(type);
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -107,7 +118,14 @@ public class User extends Model {
                 ", lastname='" + last_name + '\'' +
                 ", firstname='" + first_name + '\'' +
                 ", agency=" + agency +
-                '}';
+                '}'+"\n";
+    }
+
+    public static User checkCredentials(String email, String password) {
+        var user = User.getByEmail(email);
+        if (user != null && user.password.equals(Tools.hash(password)))
+            return user;
+        return null;
     }
 
     protected  void mapper(ResultSet rs) throws SQLException {
@@ -155,8 +173,6 @@ public class User extends Model {
         int c = execute("delete from user where email=:email", new Params("email", email));
         return c == 1;
     }
-    
-
 
 
 
