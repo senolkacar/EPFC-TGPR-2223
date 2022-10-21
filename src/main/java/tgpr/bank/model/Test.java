@@ -35,13 +35,7 @@ public class Test extends Model {
         throw new NotImplementedException();
     }
 
-    public static List<Test> getAll() {
-        return List.of(
-                new Test("test1"),
-                new Test("test2"),
-                new Test("test3"),
-                new Test("test4"),
-                new Test("test5")
-        );
+    public static List<User> getAll() {
+        return User.getAll();
     }
 }
