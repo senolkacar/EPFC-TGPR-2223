@@ -14,6 +14,7 @@ import tgpr.framework.ColumnSpec;
 import tgpr.framework.ViewManager;
 
 import java.util.List;
+import java.util.function.Function;
 
 public class ViewCategoryList extends BasicWindow {
     private final CategoryController controller;

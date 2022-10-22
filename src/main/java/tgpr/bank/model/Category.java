@@ -10,7 +10,7 @@ import tgpr.bank.model.Category;
 
 
 public class Category extends Model {
-
+    private int cmp;
     private int id;
     private String name;
      private boolean account;
@@ -84,6 +84,9 @@ public class Category extends Model {
         name = rs.getString("name");
         account = rs.getBoolean("account");
 
+
+
+
     }
 
     public static List<Category> getAll() {
@@ -98,9 +101,14 @@ public class Category extends Model {
     public static Category getByAccount(int account) {
         return queryOne(Category.class, "select * from category where account is null ||  account=:account", new Params("account", account));
     }
-    public  static Category getUses(String name,Integer account){
-        return queryOne(Category.class,"SELECT COUNT(*) from category WHERE name =:name and account=:account", new Params("account", account) );
+
+
+    public static Object getUses(String name, int account) {
+        return queryOne(Category.class,"SELECT COUNT(*) from category WHERE name =:name and account=:account" , new Params("account", account));
     }
 
 
+    public static Object getUses(Category category) {
+        return queryOne(Category.class,"SELECT COUNT(*) from category WHERE name =:name and account=:account" , new Params("account", getUses("gift",2)));
+    }
 }
