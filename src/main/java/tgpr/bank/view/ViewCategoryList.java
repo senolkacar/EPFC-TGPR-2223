@@ -1,15 +1,15 @@
 package tgpr.bank.view;
 
 import com.googlecode.lanterna.TerminalSize;
-import com.googlecode.lanterna.gui2.BasicWindow;
+import com.googlecode.lanterna.TextColor;
+import com.googlecode.lanterna.gui2.*;
 
 import tgpr.bank.controller.CategoryController;
 import tgpr.bank.model.Category;
 
+import tgpr.framework.Layouts;
 import tgpr.framework.ObjectTable;
 
-import com.googlecode.lanterna.gui2.EmptySpace;
-import com.googlecode.lanterna.gui2.Panel;
 import tgpr.framework.ColumnSpec;
 import tgpr.framework.ViewManager;
 
@@ -60,7 +60,28 @@ public class ViewCategoryList extends BasicWindow {
         // charge les données dans la table
         // charge les données dans la table
         reloadData();
+        new Label("").addTo(root);
+        Object txtProfile = new TextBox(new TerminalSize(21, 1)).addTo(root)
+                .setTextChangeListener((txt, byUser) -> validate());
+        new EmptySpace().addTo(root);
+        Label errProfile = new Label("").addTo(root).setForegroundColor(TextColor.ANSI.RED);
+        Panel buttons = new Panel().setLayoutManager(new LinearLayout(Direction.HORIZONTAL))
+                .setLayoutData(Layouts.LINEAR_CENTER).addTo(root);
+        Button btnLAdd = new Button("add", this::add).addTo(buttons);
+        Button btnRest = new Button("Exit", this::Reset).addTo(buttons);
     }
+
+    private void Reset() {
+    }
+
+    private void add() {
+    }
+
+    
+    
+    private void validate() {
+    }
+
     public void reloadData() {
         // vide le tableau
         table.clear();
