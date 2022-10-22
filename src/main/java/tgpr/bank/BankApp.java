@@ -17,7 +17,5 @@ public class BankApp {
         else
             Controller.navigateTo(new LoginController());
 
-        var ben  = User.getAll();
-        System.out.println(ben);
     }
 }

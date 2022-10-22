@@ -61,6 +61,12 @@ public class ViewAccountList extends BasicWindow {
         Button btnNewTransfer = new Button("New Transfer").addTo(root);
         // spécifie que le tableau doit avoir la même largeur quee le terminal et une hauteur de 15 lignes
         table.setPreferredSize(new TerminalSize(ViewManager.getTerminalColumns(), 15));
+
+        table.setSelectAction(() ->{
+         var account = table.getSelected();
+         table.setSelected(account);
+         controller.showAccountDetails(account);
+        });
         // charge les données dans la table
         reloadData();
     }

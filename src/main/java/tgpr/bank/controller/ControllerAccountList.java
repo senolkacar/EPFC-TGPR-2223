@@ -28,6 +28,10 @@ public class ControllerAccountList extends Controller {
         System.exit(0);
     }
 
+    public void showAccountDetails(Account account) {
+        navigateTo(new AccountDetailsController(account));
+    }
+
 
 }
 
