@@ -42,7 +42,7 @@ public class Category extends Model {
     public boolean isAccount() {
         return  account;
     }
-
+    
     public void setAccount(boolean account) {
         this.account = account;
     }
@@ -111,4 +111,6 @@ public class Category extends Model {
     public static Object getUses(Category category) {
         return queryOne(Category.class,"SELECT COUNT(*) from category WHERE name =:name and account=:account" , new Params("account", getUses("gift",2)));
     }
+
+
 }
