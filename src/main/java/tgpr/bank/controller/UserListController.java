@@ -1,6 +1,7 @@
 package tgpr.bank.controller;
 
 import com.googlecode.lanterna.gui2.Window;
+import tgpr.bank.model.Category;
 import tgpr.bank.model.User;
 import tgpr.bank.view.UserListView;
 import tgpr.framework.Controller;
@@ -15,6 +16,12 @@ public class UserListController extends Controller {
     @Override
     public Window getView() {
         return new UserListView(this);
+    }
+
+    @Override
+    public List<Category> getCategory() {
+
+        return null;
     }
 
     public List<User> getUsers() {

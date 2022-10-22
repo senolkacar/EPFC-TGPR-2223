@@ -3,6 +3,7 @@ package tgpr.framework;
 import com.googlecode.lanterna.gui2.Window;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
 import com.googlecode.lanterna.gui2.dialogs.MessageDialogButton;
+import tgpr.bank.model.Category;
 
 import java.util.List;
 
@@ -121,5 +122,11 @@ public abstract class Controller {
     public static void abort(String error) {
         showError(new Error(error), "Abort");
         System.exit(1);
+    }
+
+
+    public List<Category> getCategory() {
+
+        return null;
     }
 }

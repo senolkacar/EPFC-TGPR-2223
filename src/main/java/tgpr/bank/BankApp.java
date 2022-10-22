@@ -1,7 +1,9 @@
 package tgpr.bank;
 
 
+import tgpr.bank.controller.CategoryController;
 import tgpr.bank.controller.LoginController;
+import tgpr.bank.model.Category;
 import tgpr.bank.model.User;
 import tgpr.framework.Controller;
 import tgpr.framework.Model;
@@ -15,9 +17,9 @@ public class BankApp {
        if (!Model.checkDb(DATABASE_SCRIPT_FILE))
             Controller.abort("Database is not available!");
         else
-            Controller.navigateTo(new LoginController());
+            Controller.navigateTo(new CategoryController());
 
-        var ben  = User.getAll();
+        var ben  = Category.getAll();
         System.out.println(ben);
     }
 }

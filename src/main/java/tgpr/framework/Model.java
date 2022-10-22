@@ -419,4 +419,6 @@ public abstract class Model {
             stmt.setObject(i + 1, caseInsensitiveParams.get(fields.get(i)));
         return stmt;
     }
+
+
 }

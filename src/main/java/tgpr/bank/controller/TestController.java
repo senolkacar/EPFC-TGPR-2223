@@ -2,6 +2,7 @@ package tgpr.bank.controller;
 
 import com.googlecode.lanterna.gui2.Window;
 import com.googlecode.lanterna.gui2.dialogs.MessageDialogButton;
+import tgpr.bank.model.Category;
 import tgpr.bank.model.Test;
 import tgpr.bank.view.TestView;
 import tgpr.framework.Controller;
@@ -14,6 +15,12 @@ public class TestController extends Controller {
     @Override
     public Window getView() {
         return view;
+    }
+
+    @Override
+    public List<Category> getCategory() {
+
+        return null;
     }
 
     public List<Test> getData() {

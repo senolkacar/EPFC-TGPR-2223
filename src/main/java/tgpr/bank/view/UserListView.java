@@ -26,8 +26,8 @@ public class UserListView extends BasicWindow {
     private final UserListController controller;
     private final ObjectTable<User> table;
 
-    private final Menu menuFile;
 
+    private final Menu menuFile;
 
     public UserListView(UserListController controller) {
         this.controller = controller;
@@ -39,6 +39,7 @@ public class UserListView extends BasicWindow {
         Panel root = new Panel();
         setComponent(root);
 
+
         MenuBar menuBar = new MenuBar().addTo(root);
         menuFile = new Menu("File");
         menuBar.add(menuFile);
@@ -46,6 +47,8 @@ public class UserListView extends BasicWindow {
         menuFile.add(menuLogout);
         MenuItem menuExit = new MenuItem("Exit", controller::exit);
         menuFile.add(menuExit);
+
+
 
         // ajoute une ligne vide
         new EmptySpace().addTo(root);

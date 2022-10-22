@@ -2,6 +2,7 @@ package tgpr.bank.controller;
 
 import com.googlecode.lanterna.gui2.Window;
 import tgpr.bank.BankApp;
+import tgpr.bank.model.Category;
 import tgpr.bank.model.User;
 import tgpr.bank.model.UserValidator;
 import tgpr.bank.model.Security;
@@ -43,5 +44,11 @@ public class LoginController extends Controller {
     @Override
     public Window getView() {
         return new LoginView(this);
+    }
+
+    @Override
+    public List<Category> getCategory() {
+
+        return null;
     }
 }
