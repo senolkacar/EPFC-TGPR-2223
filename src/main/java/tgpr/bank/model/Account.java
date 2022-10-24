@@ -97,8 +97,8 @@ public class Account extends Model{
     }
 
     public static List<Account> getAll() {
-
-        return queryList(Account.class, "select* from account order by id");
+        return queryList(Account.class,"SELECT * FROM account where id in(Select account from access,user where user.id=access.user and user.email=:loggedUser)",
+                new Params("loggedUser",Security.getLoggedUser().getEmail()));
     }
 
     public boolean delete() {
