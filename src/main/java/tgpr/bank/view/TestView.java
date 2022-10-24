@@ -40,6 +40,6 @@ public class TestView extends DialogWindow {
     }
 
     private void refresh() {
-        tbl.add(controller.getData());
+        tbl.add((Test) controller.getData());
     }
 }

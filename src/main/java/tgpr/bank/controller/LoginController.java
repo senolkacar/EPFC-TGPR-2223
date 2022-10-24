@@ -27,7 +27,7 @@ public class LoginController extends Controller {
             var user = User.checkCredentials(email, password);
             if (user != null) {
                 Security.login(user);
-                navigateTo(new UserListController());
+                navigateTo(new ControllerAccountList());
             } else
                 showError(new Error("invalid credentials"));
         } else
