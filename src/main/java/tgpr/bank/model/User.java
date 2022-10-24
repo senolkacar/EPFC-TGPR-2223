@@ -24,7 +24,7 @@ public class User extends Model {
     private Integer agency;
 
     public enum Fields {
-        email, Password, BirthDate
+        email, Password
     }
 
     public Integer getId() {

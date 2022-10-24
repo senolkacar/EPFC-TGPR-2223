@@ -1,24 +1,22 @@
 package tgpr.bank.controller;
 
 import com.googlecode.lanterna.gui2.Window;
+import tgpr.bank.model.Account;
 import tgpr.bank.model.User;
-import tgpr.bank.view.UserListView;
+import tgpr.bank.view.ViewAccountList;
 import tgpr.framework.Controller;
 import tgpr.bank.model.Security;
 
 import java.util.List;
 
-public class UserListController extends Controller {
-
-    private List<User> users;
-
+public class ControllerAccountList extends Controller {
     @Override
     public Window getView() {
-        return new UserListView(this);
+        return new ViewAccountList(this);
     }
 
-    public List<User> getUsers() {
-        return User.getAll();
+    public List<Account> getAccounts() {
+        return Account.getAll();
     }
 
     public void logout() {
