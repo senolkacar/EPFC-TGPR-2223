@@ -85,4 +85,8 @@ public class Account extends Model {
         //il faudra peut être changer cette partie
         reload("select * from account",new Params());
     }
+
+    public String toString() {
+        return this.iban+" - "+this.title;
+    }
 }

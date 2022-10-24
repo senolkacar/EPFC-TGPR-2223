@@ -6,21 +6,27 @@ import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
 import tgpr.bank.controller.AccountDetailsController;
 import tgpr.bank.model.Account;
+import tgpr.bank.model.Transfer;
 import tgpr.framework.ColumnSpec;
 import tgpr.framework.ObjectTable;
 import tgpr.framework.Tools;
 import tgpr.framework.ViewManager;
 
+import javax.sound.sampled.Line;
 import java.util.List;
 
 public class AccountDetailsView extends DialogWindow {
     private final AccountDetailsController controller;
     private final Account account;
 
+    private ObjectTable<Transfer> historyTable;
+
     private final Label lblIban = new Label("");
     private final Label lblTitle = new Label("");
     private final Label lblType = new Label("");
     private final Label lblSaldo = new Label("");
+
+    private final TextBox txtFilter = new TextBox();
 
     public AccountDetailsView(AccountDetailsController controller, Account account) {
         super("Account Details");
@@ -42,9 +48,10 @@ public class AccountDetailsView extends DialogWindow {
         refresh();
 
     }
+    
 
     private Panel accountDetailPanel(){
-        Panel panel = new Panel().setLayoutManager(new GridLayout(4).setHorizontalSpacing(2));
+        Panel panel = new Panel().setLayoutManager(new GridLayout(4).setHorizontalSpacing(1));
         panel.addComponent(new Label("IBAN:"));
         lblIban.addTo(panel).addStyle(SGR.BOLD);
 
@@ -63,9 +70,33 @@ public class AccountDetailsView extends DialogWindow {
     }
 
     private Border historyPanel() {
+        int accountID = account.getId();
         var panel = new Panel().setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Fill));
-        Border border = panel.withBorder(Borders.doubleLine("History"));
+        new Label("Filter:").addTo(panel);
+        txtFilter.addTo(panel).takeFocus().setTextChangeListener((txt,client)->reloadData());
+        Border border = panel.withBorder(Borders.singleLine("History"));
+        historyTable = new ObjectTable<>(
+                        new ColumnSpec<>("Effect_Date", m-> Tools.ifNull(m.getEffectiveAt(),m.getCreatedAt())),
+                        new ColumnSpec<>("Description", Transfer::getDescription),
+                        new ColumnSpec<>("From/To", m -> m.getSourceAccountID() == accountID ? m.getTargetAccount() : m.getSourceAccount()),
+                        new ColumnSpec<>("Category", m -> Tools.ifNull(m.getCategory(accountID,m.getId()), "")),
+                        new ColumnSpec<>("Amount", Transfer::getAmount),
+                        new ColumnSpec<>("Saldo", Transfer::getSourceSaldo),
+                        new ColumnSpec<>("State", Transfer::getState)
+                );
+        historyTable.addTo(panel);
+        reloadData();
+
         return border;
+    }
+
+    public void reloadData() {
+        // vide le tableau
+        historyTable.clear();
+        // demande au contrôleur la liste des membres
+        var transfer = controller.getTransfer();
+        // ajoute l'ensemble des membres au tableau
+        historyTable.add(transfer);
     }
 
 
@@ -79,14 +110,14 @@ public class AccountDetailsView extends DialogWindow {
 
     private Border categoryPanel(){
         var panel = new Panel().setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Fill));
-        Border border = panel.withBorder(Borders.doubleLine("Category"));
+        Border border = panel.withBorder(Borders.singleLine("Category"));
 
         return  border;
     }
 
     private Border favoritePanel() {
         var panel = new Panel().setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Fill));
-        Border border = panel.withBorder(Borders.doubleLine("Favorite"));
+        Border border = panel.withBorder(Borders.singleLine("Favorite"));
 
         return border;
     }
@@ -94,7 +125,7 @@ public class AccountDetailsView extends DialogWindow {
     private Panel buttonPanel() {
         Panel panel = new Panel().setLayoutManager(new LinearLayout(Direction.HORIZONTAL).setSpacing(1));
         Button btnNewTransfer = new Button("New Transfer").addTo(panel);
-        Button btnExit = new Button("Exit").addTo(panel);
+        Button btnExit = new Button("Exit",this::close).addTo(panel);
         return panel;
     }
 
@@ -104,5 +135,7 @@ public class AccountDetailsView extends DialogWindow {
         lblType.setText(account.getType());
         lblSaldo.setText(Tools.toString(account.getSaldo()));
     }
+
+
 
 }

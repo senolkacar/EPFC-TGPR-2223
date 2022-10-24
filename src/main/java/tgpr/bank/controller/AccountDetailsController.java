@@ -2,10 +2,13 @@ package tgpr.bank.controller;
 
 
 import tgpr.bank.model.Account;
+import tgpr.bank.model.Transfer;
 import tgpr.bank.model.User;
 import tgpr.bank.view.AccountDetailsView;
 import tgpr.framework.Controller;
 import com.googlecode.lanterna.gui2.Window;
+
+import java.util.List;
 
 
 public class AccountDetailsController extends Controller {
@@ -29,6 +32,10 @@ public class AccountDetailsController extends Controller {
 
     public Account getAccount() {
         return account;
+    }
+
+    public List<Transfer> getTransfer() {
+        return Transfer.getTransfers(getAccount().getId());
     }
 }
 
