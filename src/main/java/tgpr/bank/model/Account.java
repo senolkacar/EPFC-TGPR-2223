@@ -15,7 +15,6 @@ public class Account extends Model{
     private double saldo;
 
     public Account(){
-
     }
 
     public Account(int id , String iban , String title , double floor , String type , double saldo){
@@ -74,6 +73,8 @@ public class Account extends Model{
     public void setSaldo(double saldo) {
         this.saldo = saldo;
     }
+
+
 
     @Override
     public void reload() {
@@ -135,7 +136,9 @@ public class Account extends Model{
                 ", saldo=" + saldo +
                 '}';
     }
-
+    public String toStringfavouritaccount() {
+        return iban+" " + title+ " " + type;
+    }
 
 
 
