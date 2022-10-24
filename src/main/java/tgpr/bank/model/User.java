@@ -92,7 +92,6 @@ public class User extends Model {
     }
 
     public User(){
-
     }
 
     public User(String email) {

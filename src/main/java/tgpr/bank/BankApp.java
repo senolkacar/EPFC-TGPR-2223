@@ -2,6 +2,7 @@ package tgpr.bank;
 
 
 import tgpr.bank.controller.LoginController;
+import tgpr.bank.model.Account;
 import tgpr.bank.model.User;
 import tgpr.framework.Controller;
 import tgpr.framework.Model;
@@ -19,5 +20,8 @@ public class BankApp {
 
         var ben  = User.getAll();
         System.out.println(ben);
+
+
     }
+
 }
