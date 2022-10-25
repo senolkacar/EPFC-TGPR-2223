@@ -12,7 +12,7 @@ public class Category extends Model {
     private int id;
     private String name;
     private  Integer  account;
-    private  final  Integer idAccount = getById(Security.getLoggedUser().getId());
+    private static final Integer idAccount = Account.getById(Security.getLoggedUser().getId()).getId();
 
     @Override
     public String toString() {
@@ -47,7 +47,7 @@ public class Category extends Model {
         this.account = account;
     }
     public static List<Category> getAll(){
-        return queryList(Category.class,"select * from Category where account is null or account=:idAccount",new Params("idAccount",idAccount)));
+        return queryList(Category.class,"select * from Category where account is null or account=:idAccount",new Params("idAccount",idAccount));
     }
 
 
