@@ -16,8 +16,6 @@ public class Account extends Model{
     private String type;
     private double saldo;
 
-
-
     public Account(int id , String iban , String title , double floor , String type , double saldo){
         this.id=id;
         this.iban=iban;
