@@ -37,5 +37,11 @@ public class AccountDetailsController extends Controller {
     public List<Transfer> getTransfer() {
         return Transfer.getTransfers(getAccount().getId());
     }
+
+    public Transfer displayTransfer(Transfer transfer) {
+        var controller = new DisplayTransferController(transfer);
+        navigateTo(controller);
+        return controller.getTransfer();
+    }
 }
 
