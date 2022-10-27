@@ -29,6 +29,9 @@ public class Transfer extends Model {
     public double getAmount() {
         return amount;
     }
+    public String getAmountWithEuroSign(){
+        return amount+" €";
+    }
 
     public String getDescription() {
         return description;
