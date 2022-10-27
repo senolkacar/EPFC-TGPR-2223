@@ -6,21 +6,25 @@ import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
 import tgpr.bank.controller.AccountDetailsController;
 import tgpr.bank.model.Account;
-import tgpr.framework.ColumnSpec;
 import tgpr.framework.ObjectTable;
 import tgpr.framework.Tools;
-import tgpr.framework.ViewManager;
+
+
+import tgpr.bank.model.Category;
 
 import java.util.List;
 
 public class AccountDetailsView extends DialogWindow {
     private final AccountDetailsController controller;
+    private  ObjectTable<Category> categoryTable;
+
     private final Account account;
 
     private final Label lblIban = new Label("");
     private final Label lblTitle = new Label("");
     private final Label lblType = new Label("");
     private final Label lblSaldo = new Label("");
+    private final TextBox txtFilter = new TextBox();
 
     public AccountDetailsView(AccountDetailsController controller, Account account) {
         super("Account Details");
@@ -76,13 +80,14 @@ public class AccountDetailsView extends DialogWindow {
         return panel;
     }
 
-
     private Border categoryPanel(){
+        int accountID = account.getId();
         var panel = new Panel().setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Fill));
-        Border border = panel.withBorder(Borders.doubleLine("Category"));
+        Border border = panel.withBorder(Borders.singleLine("Category"));
 
         return  border;
     }
+
 
     private Border favoritePanel() {
         var panel = new Panel().setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Fill));
