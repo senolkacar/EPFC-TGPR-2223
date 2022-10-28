@@ -28,6 +28,7 @@ public class ControllerAccountList extends Controller {
         System.exit(0);
     }
 
-
+    public void newTransfer(){
+        navigateTo(new NewTransferController());
+    }
 }
-
