@@ -1,5 +1,6 @@
 package tgpr.bank.model;
 
+import jdk.dynalink.beans.StaticClass;
 import tgpr.framework.Model;
 import tgpr.framework.Params;
 
@@ -7,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 
 public class Transfer extends Model {
@@ -29,6 +31,7 @@ public class Transfer extends Model {
     public double getAmount() {
         return amount;
     }
+
 
     public String getDescription() {
         return description;
@@ -86,7 +89,7 @@ public class Transfer extends Model {
 
     @Override
     public void reload() {
-        String sql = "select * from transfer where source_account=:source_account or target_account=:target_account ORDER BY effective_at DESC, created_at DESC";
+        String sql = "select * from transfer where source_account=:source_account or target_account=:target_account ORDER by GREATEST( COALESCE(effective_at, 0), COALESCE(created_at, 0) )DESC";
         reload(sql,new Params()
                 .add("source_account",1)
                 .add("target_account",1));
@@ -94,6 +97,12 @@ public class Transfer extends Model {
 
     public static int getAccountId(Account account) {
         return account.getId();
+    }
+    public static int getSourceAccountId(Transfer transfer) {
+        return transfer.getSourceAccountID();
+    }
+    public static int getTargetAccountId(Transfer transfer) {
+        return transfer.getTargetAccountID();
     }
 
     public static Account getAccountInfo(int accountID){
@@ -123,10 +132,27 @@ public class Transfer extends Model {
     }
 
 
-    public static List<Transfer> getTransfers(int accountID){
-        return queryList(Transfer.class, "select * from transfer where source_account=:source_account or target_account=:target_account ORDER BY effective_at DESC, created_at DESC", new Params()
-                .add("source_account",accountID)
-                .add("target_account",accountID));
+    public static List<Transfer> getTransfers(Account account) {
+        return queryList(Transfer.class, "select * from transfer where (source_account=:source_account or target_account=:target_account) ORDER by GREATEST( COALESCE(effective_at, 0), COALESCE(created_at, 0) )DESC", new Params()
+                .add("source_account",account.getId())
+                .add("target_account",account.getId()));
     }
+
+
+    public static List<Transfer> getTransfersFilter(Account account, String filter) {
+        String sql = "select * from transfer where (source_account=:source_account or target_account=:target_account) and (transfer.amount like :filter or transfer.description like :filter or transfer.source_saldo like :filter or transfer.created_at like :filter or transfer.effective_at like :filter or transfer.state like :filter) ORDER by GREATEST( COALESCE(effective_at, 0), COALESCE(created_at, 0) )DESC";
+        return queryList(Transfer.class,sql, new Params()
+                    .add("source_account",account.getId())
+                    .add("target_account",account.getId())
+                    .add("filter","%"+filter+"%"));
+
+    }
+
+
+
+
+
+
+
 
 }

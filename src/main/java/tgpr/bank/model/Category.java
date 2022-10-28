@@ -8,6 +8,9 @@ import java.sql.SQLException;
 
 public class Category extends Model {
 
+    public enum Fields {
+        name, id
+    }
     private int id;
 
     public int getId() {

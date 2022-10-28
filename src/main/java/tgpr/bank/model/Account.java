@@ -86,7 +86,15 @@ public class Account extends Model {
         reload("select * from account",new Params());
     }
 
+    @Override
     public String toString() {
-        return this.iban+" - "+this.title;
+        return "Account{" +
+                "id=" + id +
+                ", iban='" + iban + '\'' +
+                ", title='" + title + '\'' +
+                ", floor=" + floor +
+                ", type='" + type + '\'' +
+                ", saldo=" + saldo +
+                '}';
     }
 }

@@ -78,10 +78,10 @@ public class AccountDetailsView extends DialogWindow {
         historyTable = new ObjectTable<>(
                         new ColumnSpec<>("Effect_Date", m-> Tools.ifNull(m.getEffectiveAt(),m.getCreatedAt())),
                         new ColumnSpec<>("Description", Transfer::getDescription),
-                        new ColumnSpec<>("From/To", m -> m.getSourceAccountID() == accountID ? m.getTargetAccount() : m.getSourceAccount()),
+                        new ColumnSpec<>("From/To", m -> m.getSourceAccountID() == accountID ? m.getTargetAccount().getIban()+" - "+m.getTargetAccount().getTitle() : m.getSourceAccount().getIban()+" - "+m.getSourceAccount().getTitle()),
                         new ColumnSpec<>("Category", m -> Tools.ifNull(m.getCategory(accountID,m.getId()), "")),
-                        new ColumnSpec<>("Amount", Transfer::getAmount),
-                        new ColumnSpec<>("Saldo", Transfer::getSourceSaldo),
+                        new ColumnSpec<>("Amount", m ->accountID == m.getSourceAccountID() ? "-"+m.getAmount()+" €" : "+"+m.getAmount()+" €"),
+                        new ColumnSpec<>("Saldo", m->m.getSourceSaldo() == 0 ? "" : m.getSourceSaldo()+" €"),
                         new ColumnSpec<>("State", Transfer::getState)
                 );
         historyTable.addTo(panel);
@@ -91,12 +91,10 @@ public class AccountDetailsView extends DialogWindow {
     }
 
     public void reloadData() {
-        // vide le tableau
-        historyTable.clear();
-        // demande au contrôleur la liste des membres
-        var transfer = controller.getTransfer();
-        // ajoute l'ensemble des membres au tableau
-        historyTable.add(transfer);
+       historyTable.clear();
+       var transfers = controller.getFilteredTransfer(txtFilter.getText());
+       historyTable.add(transfers);
+       historyTable.invalidate();
     }
 
 
