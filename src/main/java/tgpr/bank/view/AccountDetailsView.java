@@ -61,7 +61,6 @@ public class AccountDetailsView extends DialogWindow {
         panel.addComponent(new Label("Title:"));
         lblTitle.addTo(panel).addStyle(SGR.BOLD);
 
-
         panel.addComponent(new Label("Saldo:"));
         lblSaldo.addTo(panel).addStyle(SGR.BOLD);
 

@@ -19,13 +19,21 @@ public class DisplayTransferController extends Controller {
 //    public Transfer displayTransfer(Transfer transfer) {
 //        var controller = new DisplayTransferController(transfer);
 //        navigateTo(controller);
-//        return controller.();
+//        return controller.();++-++-
     @Override
     public Window getView() {
         return view;
     }
     public Transfer getTransfer() {
         return transfer;
+    }
+
+    public void delete() {
+        if (askConfirmation("You are about to delete this transfer. Please confirm.", "Delete Transfer")) {
+            transfer.delete();
+            view.close();
+            transfer = null;
+        }
     }
 
 }

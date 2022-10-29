@@ -5,6 +5,7 @@ import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
 import tgpr.bank.controller.DisplayTransferController;
 import tgpr.bank.model.Transfer;
+import tgpr.bank.model.User;
 import tgpr.framework.Controller;
 import tgpr.framework.Tools;
 
@@ -24,7 +25,10 @@ public class DisplayTransferView extends DialogWindow {
     private final Label lblSaldoAfterTransfer = new Label("");
     private final Label lblDescription = new Label("");
     private final Label lblState = new Label("");
+
     private final Label lblCategory = new Label("");
+
+    private ComboBox<String> cboCategory;
 
     public DisplayTransferView(DisplayTransferController controller, Transfer transfer) {
         super("View Transfer");
@@ -39,8 +43,7 @@ public class DisplayTransferView extends DialogWindow {
         setComponent(root);
 
         createFieldsPanel().addTo(root);
- //       A FAIRE PLUS TARD
- //       createButtonsPanel().addTo(root);
+        createButtonsPanel().addTo(root);
 
         refresh();
     }
@@ -58,10 +61,10 @@ public class DisplayTransferView extends DialogWindow {
         lblCreatedBy.addTo(panel).addStyle(SGR.BOLD);
 
         panel.addComponent(new Label("Source Account"));
-        lblSourceAccount.addTo(panel).addStyle(SGR.BOLD).setLabelWidth(50);
+        lblSourceAccount.addTo(panel).addStyle(SGR.BOLD).setLabelWidth(65);
 
         panel.addComponent(new Label("Target Account:"));
-        lblTargetAccount.addTo(panel).addStyle(SGR.BOLD);
+        lblTargetAccount.addTo(panel).addStyle(SGR.BOLD).setLabelWidth(65);
 
         panel.addComponent(new Label("Amount:"));
         lblAmount.addTo(panel).addStyle(SGR.BOLD);
@@ -75,8 +78,11 @@ public class DisplayTransferView extends DialogWindow {
         panel.addComponent(new Label("State:"));
         lblState.addTo(panel).addStyle(SGR.BOLD);
 
-        panel.addComponent(new Label("Category:"));
-        lblCategory.addTo(panel).addStyle(SGR.BOLD).setLabelWidth(30);
+//        new Label("Category:").addTo(panel);
+//        var relationshipTypes = Member.RelationshipType.getSortedStrings();
+//        relationshipTypes.add(0, "All");
+//        cboRelationship = new ComboBox<>(relationshipTypes).addTo(panel)
+//                .addListener((newIndex, oldIndex, byUser) -> reloadData());
 
         return panel;
     }
@@ -85,10 +91,10 @@ public class DisplayTransferView extends DialogWindow {
         if (transfer != null) {
             lblCreatedAt.setText(String.valueOf(transfer.getCreatedAt()));
             lblEffectiveAt.setText(String.valueOf(transfer.getEffectiveAt()));
-            lblCreatedBy.setText(String.valueOf(transfer.getCreatedBy()));
-            lblSourceAccount.setText(String.valueOf(transfer.getAccountInfo(transfer.getSourceAccountID())));
-            lblTargetAccount.setText(String.valueOf(transfer.getAccountInfo(transfer.getTargetAccountID())));
-            lblAmount.setText(transfer.getAmountWithEuroSign());
+            lblCreatedBy.setText((User.getById(transfer.getCreatedBy())));
+            lblSourceAccount.setText(transfer.getSourceAccountInfoForTransfer(transfer.getSourceAccountID()));
+            lblTargetAccount.setText(transfer.getTargetAccountInfoForTransfer(transfer.getTargetAccountID()));
+            lblAmount.setText(transfer.transformInEuro(transfer.getAmount()));
 //            lblSaldoAfterTransfer -> Rien n'est afficher sur l'enoncé du projet.
             lblDescription.setText(transfer.getDescription());
             lblState.setText(transfer.getState());
@@ -99,17 +105,23 @@ public class DisplayTransferView extends DialogWindow {
     }
 
 
-    // A FAIRE PLUS TARD (DELETE & SAVE)
-//    private Panel createButtonsPanel() {
-//        var panel = new Panel()
-//                .setLayoutManager(new LinearLayout(Direction.HORIZONTAL))
-//                .setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
-//
-//        new Button("Delete", this::delete).addTo(panel)
-//                .setVisible(transfer.canDelete(Security.getLoggedUser()));
-//        new Button("Close", this::close).addTo(panel);
-//
-//        return panel;
-//    }
+    // A FAIRE PLUS TARD (SAVE)
+    private Panel createButtonsPanel() {
+        var panel = new Panel()
+                .setLayoutManager(new LinearLayout(Direction.HORIZONTAL))
+                .setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
+
+        String result = "future";
+        new Button("Delete", this::delete).addTo(panel)
+                .setVisible((result.equals(transfer.getState())));
+        // RESTE ENCORE A FAIRE LES BONNE REQUETES SQL CAR ERREUR LORSQU'ON DELETE
+        new Button("Close", this::close ).addTo(panel);
+
+        return panel;
+    }
+
+    private void delete() {
+        controller.delete();
+    }
 
 }

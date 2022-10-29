@@ -151,6 +151,11 @@ public class User extends Model {
     public static User getByEmail(String email) {
         return queryOne(User.class, "select * from user where email=:email", new Params("email", email));
     }
+
+    public static String getById(int id){
+        User s = queryOne(User.class, "select * from user where id=:id", new Params("id", id));
+        return s.last_name + " " + Tools.ifNull(s.first_name, " ");
+    }
     public boolean save() {
         int c;
         User u = getByEmail(email);

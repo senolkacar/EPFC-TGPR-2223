@@ -1,10 +1,13 @@
 package tgpr.bank.model;
 
+import org.springframework.util.Assert;
 import tgpr.framework.Model;
 import tgpr.framework.Params;
+import tgpr.framework.Tools;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -29,8 +32,11 @@ public class Transfer extends Model {
     public double getAmount() {
         return amount;
     }
-    public String getAmountWithEuroSign(){
-        return amount+" €";
+
+    public String transformInEuro(double montant){
+        NumberFormat formatter = NumberFormat.getCurrencyInstance();
+        String moneyString = formatter.format(montant);
+        return (moneyString);
     }
 
     public String getDescription() {
@@ -75,7 +81,9 @@ public class Transfer extends Model {
     @Override
     protected void mapper(ResultSet rs) throws SQLException {
         this.id = rs.getInt("id");
-        this.amount = rs.getDouble("amount");
+        this.amount = rs.getInt("amount");
+        // changement du type de amount de Int par Double pour pouvoir l'afficher avec ,00€
+
         this.description = rs.getString("description");
         this.sourceAccountID = rs.getInt("source_account");
         this.targetAccountID = rs.getInt("target_account");
@@ -107,6 +115,16 @@ public class Transfer extends Model {
         return account;
     }
 
+    public static String getSourceAccountInfoForTransfer(int id){
+        Account a = queryOne(Account.class, "select * from account where id=:id", new Params("id", id));
+        return a.getIban() + " | " + a.getTitle() + " | " + a.getType() + " | "+ a.getSaldoWithEuroSign() + " (your account)";
+    }
+
+    public static String getTargetAccountInfoForTransfer(int id){
+        Account a = queryOne(Account.class, "select * from account where id=:id", new Params("id", id));
+        return a.getIban() + " | " + a.getTitle() + " | " + a.getType() + " | "+ a.getSaldoWithEuroSign();
+    }
+
     public Account getSourceAccount() {
         return getAccount(sourceAccountID);
     }
@@ -130,6 +148,15 @@ public class Transfer extends Model {
         return queryList(Transfer.class, "select * from transfer where source_account=:source_account or target_account=:target_account ORDER BY effective_at DESC, created_at DESC", new Params()
                 .add("source_account",accountID)
                 .add("target_account",accountID));
+    }
+
+    public void delete() {
+        execute("delete from transfer where id=:id", new Params("id", id));
+        execute("delete from transfer_category where transfer=:id", new Params("id", id));
+    }
+
+    public boolean canDelete() {
+        return this.state=="'future'";
     }
 
 }
