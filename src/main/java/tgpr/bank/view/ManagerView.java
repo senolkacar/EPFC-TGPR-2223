@@ -3,29 +3,35 @@ package tgpr.bank.view;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.gui2.BasicWindow;
 import com.googlecode.lanterna.gui2.Button;
-import tgpr.bank.controller.ControllerAccountList;
 import com.googlecode.lanterna.gui2.EmptySpace;
 import com.googlecode.lanterna.gui2.Panel;
+import com.googlecode.lanterna.gui2.menu.Menu;
+import com.googlecode.lanterna.gui2.menu.MenuBar;
+import com.googlecode.lanterna.gui2.menu.MenuItem;
+import tgpr.bank.controller.ControllerAccountList;
+import tgpr.bank.controller.EditClientController;
+import tgpr.bank.controller.LoginController;
+import tgpr.bank.controller.ManagerController;
 import tgpr.bank.model.Account;
-import tgpr.bank.model.User;
+import tgpr.bank.model.Agency;
+import tgpr.bank.model.Security;
 import tgpr.framework.ColumnSpec;
 import tgpr.framework.ObjectTable;
 import tgpr.framework.Tools;
 import tgpr.framework.ViewManager;
-import com.googlecode.lanterna.gui2.menu.Menu;
-import com.googlecode.lanterna.gui2.menu.MenuBar;
-import com.googlecode.lanterna.gui2.menu.MenuItem;
-import tgpr.bank.model.Security;
-
 
 import java.util.List;
 
-public class ViewAccountList extends BasicWindow {
-    private final ControllerAccountList controller;
-    private final ObjectTable<Account> table;
+import static tgpr.framework.Controller.navigateTo;
+
+public class ManagerView extends BasicWindow {
+    private final ManagerController controller;
+    private ObjectTable<Agency> table;
+
     private final Menu menuFile;
 
-    public ViewAccountList(ControllerAccountList controller) {
+
+    public ManagerView(ManagerController controller) {
         this.controller = controller;
 
         setTitle(getTitleWithUser());
@@ -43,32 +49,27 @@ public class ViewAccountList extends BasicWindow {
         MenuItem menuExit = new MenuItem("Exit", controller::exit);
         menuFile.add(menuExit);
 
-        // ajoute une ligne vide
         new EmptySpace().addTo(root);
 
-        // crée un tableau de données pour l'affichage des comptes
         table = new ObjectTable<>(
-                new ColumnSpec<>("IBAN", Account::getIban),
-                new ColumnSpec<>("Title", Account::getTitle),
-                new ColumnSpec<Account>("Floor", m -> Tools.ifNull(m.getFloor(), "")),
-                new ColumnSpec<>("Type", Account::getType),
-                new ColumnSpec<Account>("Saldo", m -> Tools.ifNull(m.getSaldo(), ""))
-
-        );
+                new ColumnSpec<>("Name", Agency::getName));
         root.addComponent(table);
         new EmptySpace().addTo(root);
-        Button btnNewTransfer = new Button("New Transfer").addTo(root);
+        Button btnNewClient = new Button("New Client",this::createClient).addTo(root);
         table.setPreferredSize(new TerminalSize(ViewManager.getTerminalColumns(), 15));
+        table.setSelectAction(() ->{
+            var agency = table.getSelected();
+            table.setSelected(agency);
+            controller.showAgencyDetails(agency);
+        });
+
         reloadData();
     }
 
     public void reloadData() {
-        // vide le tableau
         table.clear();
-        // demande au contrôleur la liste des membres
-        var accounts = controller.getAccounts();
-        // ajoute l'ensemble des membres au tableau
-        table.add(accounts);
+        var agencies = controller.getAgency();
+        table.add(agencies);
     }
 
     private String getTitleWithUser() {
@@ -78,6 +79,7 @@ public class ViewAccountList extends BasicWindow {
         return "Welcome to MyBank (" + Security.getLoggedUser().getEmail() + " - " + (Security.getLoggedUser().getType()) + ")";
     }
 
-
-
+    private void createClient() {
+        navigateTo(new EditClientController());
+    }
 }

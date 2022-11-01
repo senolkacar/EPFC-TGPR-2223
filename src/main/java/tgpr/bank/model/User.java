@@ -3,6 +3,8 @@ package tgpr.bank.model;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
+
+import org.springframework.cglib.core.Local;
 import tgpr.framework.Model;
 import tgpr.framework.Params;
 import tgpr.framework.Tools;
@@ -23,8 +25,29 @@ public class User extends Model {
     private String first_name;
     private Integer agency;
 
+    public User(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
+
+    public User(String email, String password, String last_name, String first_name) {
+        this.email = email;
+        this.password = password;
+        this.last_name = last_name;
+        this.first_name = first_name;
+    }
+
+    public User(String email, String password, LocalDate birthdate, String last_name, String first_name, Integer agency) {
+        this.email = email;
+        this.password = password;
+        this.birthdate = birthdate;
+        this.last_name = last_name;
+        this.first_name = first_name;
+        this.agency = agency;
+    }
+
     public enum Fields {
-        email, Password
+        email, Password, birthdate, last_name, first_name
     }
 
     public Integer getId() {
@@ -127,7 +150,13 @@ public class User extends Model {
         return null;
     }
 
-    protected  void mapper(ResultSet rs) throws SQLException {
+    public static User createClient(String email, String password, String last_name, String first_name, LocalDate birthdate, Integer agency) {
+        var user = new User(email, password, birthdate, last_name, first_name, agency);
+        user.type = "client";
+        return user;
+    }
+
+    protected void mapper(ResultSet rs) throws SQLException {
         email = rs.getString("email");
         id = rs.getInt("id");
         agency = rs.getInt("agency");
@@ -150,23 +179,24 @@ public class User extends Model {
     public static User getByEmail(String email) {
         return queryOne(User.class, "select * from user where email=:email", new Params("email", email));
     }
-    public boolean save() {
+    public User save() {
         int c;
         User u = getByEmail(email);
         String sql;
         if (u == null)
-            sql = "insert into user (id, email, password, last_name,first_name, birthdate,type,agency) " +
-                    "values (:id, :email, :password, :last_name,:first_name, :birthdate,:type,:agency)";
+            sql = "insert into user (email, password, birth_date, last_name, first_name, agency, type) values (:email, :password, :birthdate, :last_name, :first_name, :agency, :type)";
         else
-            sql = "update user set password=:password, last_name=:last_name,first_name-:first_name " +
-                    "birthdate=:birthdate where email=:email";
+            sql = "update user set password=:password, last_name=:last_name,first_name=:first_name, birth_date=:birthdate,type=:type,agency=:agency where email=:email";
+
         c = execute(sql, new Params()
                 .add("email", email)
+                .add("birth_date", birthdate)
                 .add("password", password)
-                .add("last_name",last_name)
+                .add("last_name", last_name)
                 .add("first_name", first_name)
-                .add("birthdate", birthdate));
-        return c == 1;
+                .add("type", type)
+                .add("agency", agency));
+        return this;
     }
     public boolean delete() {
         int c = execute("delete from user where email=:email", new Params("email", email));
