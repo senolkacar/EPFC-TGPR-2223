@@ -4,20 +4,24 @@ import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
 import tgpr.bank.controller.DisplayTransferController;
-import tgpr.bank.model.Transfer;
-import tgpr.bank.model.User;
+import tgpr.bank.model.*;
 import tgpr.framework.Controller;
+import tgpr.framework.Params;
 import tgpr.framework.Tools;
 
 import java.util.List;
+
+import static tgpr.framework.Model.queryList;
 
 public class DisplayTransferView extends DialogWindow {
 
     private final DisplayTransferController controller;
     private final Transfer transfer;
 
+    private final Account account;
+
     private final Label lblCreatedAt = new Label("");
-    private final Label lblEffectiveAt= new Label("");
+    private final Label lblEffectiveAt = new Label("");
     private final Label lblCreatedBy = new Label("");
     private final Label lblSourceAccount = new Label("");
     private final Label lblTargetAccount = new Label("");
@@ -30,11 +34,12 @@ public class DisplayTransferView extends DialogWindow {
 
     private ComboBox<String> cboCategory;
 
-    public DisplayTransferView(DisplayTransferController controller, Transfer transfer) {
+    public DisplayTransferView(DisplayTransferController controller, Transfer transfer, Account account) {
         super("View Transfer");
 
         this.controller = controller;
         this.transfer = transfer;
+        this.account = account;
 
         setHints(List.of(Window.Hint.CENTERED));
         setCloseWindowWithEscape(true);
@@ -78,12 +83,15 @@ public class DisplayTransferView extends DialogWindow {
         panel.addComponent(new Label("State:"));
         lblState.addTo(panel).addStyle(SGR.BOLD);
 
-//        new Label("Category:").addTo(panel);
-//        var relationshipTypes = Member.RelationshipType.getSortedStrings();
-//        relationshipTypes.add(0, "All");
-//        cboRelationship = new ComboBox<>(relationshipTypes).addTo(panel)
-//                .addListener((newIndex, oldIndex, byUser) -> reloadData());
+        new Label("Category:").addTo(panel);
+        var categoryTypes = transfer.getCategoriesById(account.getId());
+        cboCategory = new ComboBox<>("NO CATEGORY").addTo(panel);
+        for (Category cat : categoryTypes
+        ) {
+            cboCategory.addItem(cat.getName());
 
+        }
+        cboCategory.setSelectedItem(Tools.ifNull(String.valueOf(Transfer.getCategory(account.getId(),transfer.getId())),"NO CATEGORY"));
         return panel;
     }
 
@@ -95,17 +103,11 @@ public class DisplayTransferView extends DialogWindow {
             lblSourceAccount.setText(transfer.getSourceAccountInfoForTransfer(transfer.getSourceAccountID()));
             lblTargetAccount.setText(transfer.getTargetAccountInfoForTransfer(transfer.getTargetAccountID()));
             lblAmount.setText(transfer.transformInEuro(transfer.getAmount()));
-//            lblSaldoAfterTransfer -> Rien n'est afficher sur l'enoncé du projet.
+            lblSaldoAfterTransfer.setText(String.valueOf(account.transformInEuro(account.getSaldo())));
             lblDescription.setText(transfer.getDescription());
             lblState.setText(transfer.getState());
-//            lblCategory; -> liste déroulante à faire
-
-
         }
     }
-
-
-    // A FAIRE PLUS TARD (SAVE)
     private Panel createButtonsPanel() {
         var panel = new Panel()
                 .setLayoutManager(new LinearLayout(Direction.HORIZONTAL))
@@ -114,8 +116,8 @@ public class DisplayTransferView extends DialogWindow {
         String result = "future";
         new Button("Delete", this::delete).addTo(panel)
                 .setVisible((result.equals(transfer.getState())));
-        // RESTE ENCORE A FAIRE LES BONNE REQUETES SQL CAR ERREUR LORSQU'ON DELETE
-        new Button("Close", this::close ).addTo(panel);
+        new Button("Save", this::saveInfos).addTo(panel);
+        new Button("Close", this::close).addTo(panel);
 
         return panel;
     }
@@ -124,4 +126,17 @@ public class DisplayTransferView extends DialogWindow {
         controller.delete();
     }
 
+    private void saveInfos() {
+        if (cboCategory.getSelectedIndex() != 0) {
+            Category cat = transfer.getIdCategoryWithName((String.valueOf(cboCategory.getSelectedItem())));
+            controller.save(account.getId(), transfer.getId(), cat.getId());
+        }
+        else if(Transfer.getCategory(account.getId(),transfer.getId())==null && cboCategory.getSelectedIndex() != 0){
+            Category cat = transfer.getIdCategoryWithName((String.valueOf(cboCategory.getSelectedItem())));
+            controller.update(account.getId(), transfer.getId(), cat.getId());
+        }
+        else{
+            controller.deleteTransferCategory(account.getId(),transfer.getId());
+        }
+    }
 }

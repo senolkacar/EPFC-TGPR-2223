@@ -38,8 +38,8 @@ public class AccountDetailsController extends Controller {
         return Transfer.getTransfers(getAccount().getId());
     }
 
-    public Transfer displayTransfer(Transfer transfer) {
-        var controller = new DisplayTransferController(transfer);
+    public Transfer displayTransfer(Transfer transfer, Account account) {
+        var controller = new DisplayTransferController(transfer, account);
         navigateTo(controller);
         return controller.getTransfer();
     }

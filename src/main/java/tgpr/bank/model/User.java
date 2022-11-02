@@ -178,7 +178,4 @@ public class User extends Model {
         int c = execute("delete from user where email=:email", new Params("email", email));
         return c == 1;
     }
-
-
-
 }

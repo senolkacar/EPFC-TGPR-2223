@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Transfer extends Model {
@@ -155,8 +156,39 @@ public class Transfer extends Model {
         execute("delete from transfer_category where transfer=:id", new Params("id", id));
     }
 
-    public boolean canDelete() {
-        return this.state=="'future'";
+    public void deleteTransferCategory(int accountID,int transferID) {
+        execute("delete from transfer_category where transfer=:transferID AND account=:accountID", new Params()
+                .add("transfer",transferID)
+                .add("account",accountID));
+    }
+    public List<Category> getCategoriesById(int id){
+        return queryList(Category.class,
+                "SELECT * FROM category where account=:account or account is null",
+                new Params("account",id));
     }
 
+    public Category getIdCategoryWithName(String name){
+        return queryOne(Category.class,
+                "SELECT * FROM category where name=:name",
+                new Params("name",name));
+    }
+
+    public Transfer save(int accountID, int transferID, int categoryID){
+        execute("INSERT INTO transfer_category (transfer,account,category) VALUES (transfer=:transfer, account=:account, category=:category)", new Params()
+                .add("transfer",transferID)
+                .add("account",accountID)
+                .add ("category",categoryID));
+        return this;
+    }
+
+    public Transfer update(int accountID, int transferID, int categoryID){
+        execute("UPDATE transfer_category SET category=:category WHERE account=:account AND transfer=:transfer", new Params()
+                .add("transfer",transferID)
+                .add("account",accountID)
+                .add ("category",categoryID));
+        return this;
+    }
+
+
 }
+

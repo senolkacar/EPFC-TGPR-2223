@@ -140,10 +140,7 @@ public class AccountDetailsView extends DialogWindow {
     private void displayTransfer() {
         var transfer = historyTable.getSelected();
         if (transfer == null) return;
-        if (controller.displayTransfer(transfer) == null)
+        if (controller.displayTransfer(transfer, account) == null)
             refresh();
     }
-
-
-
 }
