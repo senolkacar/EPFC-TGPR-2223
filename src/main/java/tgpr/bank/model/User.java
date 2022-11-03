@@ -1,10 +1,8 @@
 package tgpr.bank.model;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
-import org.springframework.cglib.core.Local;
 import tgpr.framework.Model;
 import tgpr.framework.Params;
 import tgpr.framework.Tools;
@@ -20,7 +18,7 @@ public class User extends Model {
     private String type;
     private String email;
     private String password;
-    private LocalDate birthdate;
+    private LocalDate birth_date;
     private String last_name;
     private String first_name;
     private Integer agency;
@@ -37,17 +35,17 @@ public class User extends Model {
         this.first_name = first_name;
     }
 
-    public User(String email, String password, LocalDate birthdate, String last_name, String first_name, Integer agency) {
+    public User(String email, String password, LocalDate birth_date, String last_name, String first_name, Integer agency) {
         this.email = email;
         this.password = password;
-        this.birthdate = birthdate;
+        this.birth_date = birth_date;
         this.last_name = last_name;
         this.first_name = first_name;
         this.agency = agency;
     }
 
     public enum Fields {
-        email, Password, birthdate, last_name, first_name
+        email, Password, birth_date, last_name, first_name
     }
 
     public Integer getId() {
@@ -82,12 +80,12 @@ public class User extends Model {
         this.password = password;
     }
 
-    public LocalDate getBirthdate() {
-        return birthdate;
+    public LocalDate getBirth_date() {
+        return birth_date;
     }
 
-    public void setBirthdate(LocalDate birthdate) {
-        this.birthdate = birthdate;
+    public void setBirth_date(LocalDate birth_date) {
+        this.birth_date = birth_date;
     }
 
     public String getLast_name() {
@@ -136,7 +134,7 @@ public class User extends Model {
                 ", type='" + type + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
-                ", birthdate=" + birthdate +
+                ", birthdate=" + birth_date +
                 ", lastname='" + last_name + '\'' +
                 ", firstname='" + first_name + '\'' +
                 ", agency=" + agency +
@@ -150,8 +148,8 @@ public class User extends Model {
         return null;
     }
 
-    public static User createClient(String email, String password, String last_name, String first_name, LocalDate birthdate, Integer agency) {
-        var user = new User(email, password, birthdate, last_name, first_name, agency);
+    public static User createClient(String email, String password, String last_name, String first_name, LocalDate birth_date, Integer agency) {
+        var user = new User(email, password, birth_date, last_name, first_name, agency);
         user.type = "client";
         return user;
     }
@@ -160,7 +158,7 @@ public class User extends Model {
         email = rs.getString("email");
         id = rs.getInt("id");
         agency = rs.getInt("agency");
-        birthdate = rs.getObject("birth_date", LocalDate.class);
+        birth_date = rs.getObject("birth_date", LocalDate.class);
         last_name = rs.getString("last_name");
         first_name = rs.getString("first_name");
         type = rs.getString("type");
@@ -184,13 +182,13 @@ public class User extends Model {
         User u = getByEmail(email);
         String sql;
         if (u == null)
-            sql = "insert into user (email, password, birth_date, last_name, first_name, agency, type) values (:email, :password, :birthdate, :last_name, :first_name, :agency, :type)";
+            sql = "insert into user (email, password, birth_date, last_name, first_name, agency, type) values (:email, :password, :birth_date, :last_name, :first_name, :agency, :type)";
         else
-            sql = "update user set password=:password, last_name=:last_name,first_name=:first_name, birth_date=:birthdate,type=:type,agency=:agency where email=:email";
+            sql = "update user set password=:password, last_name=:last_name,first_name=:first_name, birth_date=:birth_date,type=:type,agency=:agency where email=:email";
 
         c = execute(sql, new Params()
                 .add("email", email)
-                .add("birth_date", birthdate)
+                .add("birth_date", birth_date)
                 .add("password", password)
                 .add("last_name", last_name)
                 .add("first_name", first_name)

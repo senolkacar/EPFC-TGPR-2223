@@ -9,9 +9,6 @@ import tgpr.framework.Controller;
 import tgpr.framework.ErrorList;
 import tgpr.framework.Tools;
 
-import javax.tools.Tool;
-import java.time.LocalDate;
-
 public class EditClientController extends Controller {
     private final EditClientView view;
     private User client;
@@ -20,13 +17,20 @@ public class EditClientController extends Controller {
 
     private final boolean isNewClient;
 
-    public EditClientController() {
+    /*public EditClientController() {
         this(null);
+    }*/
+
+    public EditClientController(Agency agency) {
+        this.agency = agency;
+        isNewClient = true;
+        view = new EditClientView(this, null, agency);
     }
     public EditClientController(User client) {
         this.client = client;
         isNewClient = client == null;
-        view = new EditClientView(this,client);
+        agency = getAgencyByClient();
+        view = new EditClientView(this,client,agency);
     }
 
 
@@ -51,7 +55,7 @@ public class EditClientController extends Controller {
             errors.add(UserValidator.isValidPassword(password));
         }
         if(!birthdate.isBlank() && !Tools.isValidDate(birthdate)){
-            errors.add("invalid birthdate",User.Fields.birthdate);
+            errors.add("invalid birthdate",User.Fields.birth_date);
         }
         Agency agency= Agency.getAgencyIdByName(agencyName);
         int agencyId = agency.getId();
@@ -61,6 +65,10 @@ public class EditClientController extends Controller {
         return errors;
     }
 
+    public void delete(){
+        client.delete();
+        view.close();
+    }
 
     @Override
     public Window getView() {

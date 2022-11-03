@@ -34,11 +34,11 @@ public class EditClientView extends DialogWindow {
 
     private Button btnCreateUpdate;
 
-    public EditClientView(EditClientController controller, User client) {
+    public EditClientView(EditClientController controller, User client,Agency agency) {
         super(client == null ? "Create client" : "Edit client");
         this.controller = controller;
         this.client = client;
-        this.agency = client == null ? Agency.getAllAgency().get(0) : controller.getAgencyByClient();
+        this.agency = agency;
 
 
         setHints(List.of(Hint.CENTERED,Hint.FIXED_SIZE));
@@ -97,7 +97,11 @@ public class EditClientView extends DialogWindow {
     private Panel createButtonsPanel(){
         var panel = new Panel().setLayoutManager(new LinearLayout(Direction.HORIZONTAL))
                 .setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
-        btnCreateUpdate = new Button(client == null ? "Create" : "Update",this::add).addTo(panel).setEnabled(false);
+        if(client!=null){
+            var btnDelete = new Button("Delete",this::delete).addTo(panel);
+            ViewManager.addShortcut(this,btnDelete, KeyStroke.fromString("<A-u>"));
+        }
+        btnCreateUpdate = new Button(client == null ? "Create" : "Save",this::add).addTo(panel).setEnabled(false);
         new Button("Close",this::close).addTo(panel);
         ViewManager.addShortcut(this,btnCreateUpdate, KeyStroke.fromString(client==null?"<A-a>":"<A-u>"));
 
@@ -127,11 +131,15 @@ public class EditClientView extends DialogWindow {
 
         errFirstName.setText(errors.getFirstErrorMessage(User.Fields.first_name));
         errLastName.setText(errors.getFirstErrorMessage(User.Fields.last_name));
-        errBirthdate.setText(errors.getFirstErrorMessage(User.Fields.birthdate));
+        errBirthdate.setText(errors.getFirstErrorMessage(User.Fields.birth_date));
         errEmail.setText(errors.getFirstErrorMessage(User.Fields.email));
         errPassword.setText(errors.getFirstErrorMessage(User.Fields.Password));
 
         btnCreateUpdate.setEnabled(errors.isEmpty());
+    }
+
+    public void delete(){
+        controller.delete();
     }
 
     private void refresh(){
@@ -140,7 +148,7 @@ public class EditClientView extends DialogWindow {
             txtpassword.setText(client.getPassword());
             txtlastName.setText(client.getLast_name());
             txtfirstName.setText(client.getFirst_name());
-            txtbirthdate.setText(Tools.toString(client.getBirthdate()));
+            txtbirthdate.setText(Tools.toString(client.getBirth_date()));
             cboagency.setSelectedItem(controller.getAgency().getName());
         }
     }

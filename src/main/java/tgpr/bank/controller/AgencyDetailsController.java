@@ -17,8 +17,8 @@ public class AgencyDetailsController extends Controller {
         view = new AgencyDetailsView(this,agency);
     }
 
-    public User addClient() {
-        var controller = new EditClientController();
+    public User addClient(Agency agency) {
+        var controller = new EditClientController(agency);
         navigateTo(controller);
         return controller.getClient();
     }

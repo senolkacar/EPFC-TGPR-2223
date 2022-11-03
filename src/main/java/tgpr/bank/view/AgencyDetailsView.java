@@ -4,7 +4,6 @@ import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
 import com.googlecode.lanterna.input.KeyStroke;
-import org.w3c.dom.Text;
 import tgpr.bank.controller.AgencyDetailsController;
 import tgpr.bank.model.Agency;
 import tgpr.bank.model.Security;
@@ -35,15 +34,14 @@ public class AgencyDetailsView extends DialogWindow {
         new EmptySpace().addTo(root);
 
         agencyDetailPanel().addTo(root);
+        clientsPanel().addTo(root);
         buttonPanel().addTo(root);
 
 
     }
 
     private Panel agencyDetailPanel(){
-        Panel panel = new Panel().setLayoutManager(new LinearLayout(Direction.VERTICAL)).setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Fill));
-        clientsPanel().addTo(panel);
-
+        Panel panel = new Panel().setLayoutManager(new LinearLayout(Direction.VERTICAL).setSpacing(0));
         return panel;
     }
 
@@ -55,7 +53,7 @@ public class AgencyDetailsView extends DialogWindow {
         Border border = panel.withBorder(Borders.singleLine("Clients"));
         table = new ObjectTable<>(new ColumnSpec<>("Firstname", u -> u.getFirst_name()),
                 new ColumnSpec<>("Lastname", u -> u.getLast_name()),
-                new ColumnSpec<>("Birthdate", u-> u.getBirthdate()),
+                new ColumnSpec<>("Birthdate", u-> u.getBirth_date()),
                 new ColumnSpec<>("Email",u-> u.getEmail())
         );
         table.setSelectAction(()-> {
@@ -73,7 +71,7 @@ public class AgencyDetailsView extends DialogWindow {
         Panel panel = new Panel().setLayoutManager(new LinearLayout(Direction.HORIZONTAL)).setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
         if(Security.isManager()){
             var btnNewClient = new Button("New Client",()->{
-                User u = controller.addClient();
+                User u = controller.addClient(agency);
                 if(u!=null){
                     reloadClients();
                 }

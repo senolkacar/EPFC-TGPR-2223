@@ -80,6 +80,7 @@ public class ManagerView extends BasicWindow {
     }
 
     private void createClient() {
-        navigateTo(new EditClientController());
+        var agencies = controller.getAgency();
+        navigateTo(new EditClientController(agencies.get(0)));
     }
 }
