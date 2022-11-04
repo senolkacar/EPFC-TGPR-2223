@@ -35,7 +35,7 @@ public class Favourite extends Model {
 
     }
    public List <Account> favouritAccounts (){
-        return queryList(Account.class,"select iban,titre,type from favourite,account,user " +
+        return queryList(Account.class,"select favourite.account, iban,title,account.type from favourite,account,user " +
                 "where favourite.user=user.id and favourite.account=account.id and favourite.user=:loggeduser",
                 new Params("loggeduser",Security.getLoggedUser().getId()));
 

@@ -4,6 +4,7 @@ import tgpr.framework.Model;
 import tgpr.framework.Params;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.sql.*;
 
@@ -133,5 +134,29 @@ public class Account extends Model{
 
     public String toStringfavouritaccount() {
         return iban+" " + title+ " " + type;
+    }
+
+    public static List<Account> getFavouriteAccounts(){
+        return queryList(Account.class,"select * from favourite,account,user " +
+                        "where favourite.user=user.id and favourite.account=account.id and favourite.user=:loggeduser",
+                new Params("loggeduser",Security.getLoggedUser().getId()));
+    }
+
+    public static List<Account> getUserOtherAccounts(Integer selectedAccountID){
+        return queryList(Account.class,"SELECT * FROM account where id !=:selectedAccountID and id in(Select account from access,user where user.id=access.user and user.email=:loggedUser)",
+                new Params()
+                        .add("loggedUser",Security.getLoggedUser().getEmail())
+                        .add("selectedAccountID",selectedAccountID));
+    }
+
+    public static List<Account> getTargetAccounts(List<Account> listFavourites, List<Account> loggedUserAccounts){
+        List<Account> listToReturn = new ArrayList<>();
+        listToReturn.addAll(loggedUserAccounts);
+        listToReturn.addAll(listFavourites);
+        return listToReturn;
+    }
+
+    public static List<Account> getTargetAccounts(Integer selectedAccountID){
+        return getTargetAccounts(getFavouriteAccounts(),getUserOtherAccounts(selectedAccountID));
     }
 }

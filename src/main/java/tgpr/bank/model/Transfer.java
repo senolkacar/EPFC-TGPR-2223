@@ -11,6 +11,10 @@ import java.util.List;
 
 public class Transfer extends Model {
 
+    public enum Fields{
+        Id,Amount,Description,SourceAccountIban,TargetAccountIban,SourceSaldo,TargetSaldo,CreatedAT,CreatedBy,EffectiveAt
+    }
+
     private int id;
     private double amount;
     private String description;
