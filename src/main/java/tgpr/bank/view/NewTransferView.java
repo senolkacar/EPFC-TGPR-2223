@@ -17,6 +17,7 @@ import java.util.List;
 public class NewTransferView extends DialogWindow {
     private NewTransferController controller;
     private ComboBox<Account> cBoxSourceAccount;
+    private ComboBox<Account> cBoxTargetAccount;
     private final TextBox txtBoxIban;
     private final TextBox txtBoxTitle;
     private final TextBox txtBoxAmount;
@@ -26,6 +27,7 @@ public class NewTransferView extends DialogWindow {
     private final Label errTitle;
     private final Label errAmount;
     private final Label errDescription;
+    private List<Account> listTargetAccounts;
 
     public NewTransferView(NewTransferController controller){
         super("Create Transfer");
@@ -43,10 +45,13 @@ public class NewTransferView extends DialogWindow {
 
         panel.addComponent(new Label("Source Account: "));
         cBoxSourceAccount = new ComboBox<Account>(Account.getAll()).addTo(panel).takeFocus();
+        cBoxSourceAccount.addListener((selectedIndex,previousSelection, changedByUserInteraction) -> reloadData());
         new EmptySpace().addTo(panel);
         new EmptySpace().addTo(panel);
         panel.addComponent(new Label("Target Account: "));
-        ComboBox<Account> cBoxTargetAccount = new ComboBox<Account>(Account.getTargetAccounts(cBoxSourceAccount.getSelectedItem().getId())).addTo(panel).setReadOnly(true);
+        listTargetAccounts = Account.getTargetAccounts(cBoxSourceAccount.getSelectedItem().getId());
+        cBoxTargetAccount = new ComboBox<Account>(listTargetAccounts).addTo(panel).setReadOnly(true);
+        cBoxTargetAccount.addListener((selectedIndex,previousSelection, changedByUserInteraction) -> reloadInfo());
         new EmptySpace().addTo(panel);
         Panel targetAccountFields = new Panel().setLayoutManager(new GridLayout(2).setRightMarginSize(2).setTopMarginSize(1).setBottomMarginSize(1)).addTo(panel).addTo(panel);
         targetAccountFields.addComponent(new Label("IBAN: "));
@@ -81,7 +86,22 @@ public class NewTransferView extends DialogWindow {
         Panel buttons = new Panel(new GridLayout(2)).setLayoutData(Layouts.LINEAR_CENTER).addTo(root);
         Button buttonCreate = new Button("Create").addTo(buttons);
         Button buttonClose = new Button("Close").addTo(buttons);
+    }
 
+    public void reloadData(){
+        listTargetAccounts = Account.getTargetAccounts(cBoxSourceAccount.getSelectedItem().getId());
+        int size = cBoxTargetAccount.getItemCount();
+        for(int i=size ; i>0;--i){
+            cBoxTargetAccount.removeItem(i-1);
+        }
+        for(Account account : listTargetAccounts){
+            cBoxTargetAccount.addItem(account);
+        }
+    }
+
+    private void reloadInfo() {
+        txtBoxIban.setText(cBoxTargetAccount.getSelectedItem().getIban());
+        txtBoxTitle.setText(cBoxTargetAccount.getSelectedItem().getTitle());
     }
 
     public void validate(){
@@ -93,7 +113,6 @@ public class NewTransferView extends DialogWindow {
         );
 
         errIBAN.setText(errors.getFirstErrorMessage(Transfer.Fields.TargetAccountIban));
-
     }
 
     public void save(String iban, String title, String amount, String description){
