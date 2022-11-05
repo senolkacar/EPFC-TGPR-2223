@@ -49,8 +49,12 @@ public class DisplayTransferController extends Controller {
         transfer.update(accountID, transferID, categoryID);
         view.close();
     }
-    public void deleteTransferCategory (int accountID, int transferID){
-        transfer.deleteTransferCategory(accountID,transferID);
+    public void deleteTransferCategory (int accountID){
+        transfer.deleteTransferCategory(accountID);
+    }
+
+    public void close(){
+        view.close();
     }
 
 }

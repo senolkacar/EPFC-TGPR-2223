@@ -92,6 +92,7 @@ public class DisplayTransferView extends DialogWindow {
 
         }
         cboCategory.setSelectedItem(Tools.ifNull(String.valueOf(Transfer.getCategory(account.getId(),transfer.getId())),"NO CATEGORY"));
+//        cboCategory.addListener((newIndex, oldIndex, byUser) -> reloadData()).addTo(panel);
         return panel;
     }
 
@@ -106,6 +107,7 @@ public class DisplayTransferView extends DialogWindow {
             lblSaldoAfterTransfer.setText(String.valueOf(account.transformInEuro(account.getSaldo())));
             lblDescription.setText(transfer.getDescription());
             lblState.setText(transfer.getState());
+
         }
     }
     private Panel createButtonsPanel() {
@@ -116,7 +118,7 @@ public class DisplayTransferView extends DialogWindow {
         String result = "future";
         new Button("Delete", this::delete).addTo(panel)
                 .setVisible((result.equals(transfer.getState())));
-        new Button("Save", this::saveInfos).addTo(panel);
+        new Button("Save", this::saveCategory).addTo(panel);
         new Button("Close", this::close).addTo(panel);
 
         return panel;
@@ -126,17 +128,41 @@ public class DisplayTransferView extends DialogWindow {
         controller.delete();
     }
 
-    private void saveInfos() {
-        if (cboCategory.getSelectedIndex() != 0) {
-            Category cat = transfer.getIdCategoryWithName((String.valueOf(cboCategory.getSelectedItem())));
-            controller.save(account.getId(), transfer.getId(), cat.getId());
+    private void saveCategory() {
+
+        if(cboCategory.getSelectedIndex()!=0){
+            if(Transfer.getCategoryTransfer(account.getId(),transfer.getId())!=null){
+                Category cat = transfer.getIdCategoryWithName(cboCategory.getSelectedItem(), account.getId());
+                Category catBis = Transfer.getCategoryTransfer(account.getId(),transfer.getId());
+                if(catBis.getName().equals(cat.getName())){
+                    controller.close();
+                }
+                else {
+                    controller.update(account.getId(), transfer.getId(), cat.getId());
+                }
+            }
+            else {
+                Category cat = transfer.getIdCategoryWithName(cboCategory.getSelectedItem(), account.getId());
+                controller.save(account.getId(), transfer.getId(), cat.getId());
+            }
         }
-        else if(Transfer.getCategory(account.getId(),transfer.getId())==null && cboCategory.getSelectedIndex() != 0){
-            Category cat = transfer.getIdCategoryWithName((String.valueOf(cboCategory.getSelectedItem())));
-            controller.update(account.getId(), transfer.getId(), cat.getId());
+        else if(Transfer.getCategoryTransfer(account.getId(),transfer.getId())!=null){
+            controller.deleteTransferCategory(account.getId());
         }
-        else{
-            controller.deleteTransferCategory(account.getId(),transfer.getId());
-        }
+        controller.close();
     }
+
+//    public void reloadData() {
+//
+//        var categoryTypes = transfer.getCategoriesById(account.getId());
+//
+//        cboCategory = new ComboBox<>("NO CATEGORY");
+//        for (Category cat : categoryTypes
+//        ) {
+//            cboCategory.addItem(cat.getName());
+//
+//        }
+//        cboCategory.setSelectedItem(Tools.ifNull(String.valueOf(Transfer.getCategory(account.getId(),transfer.getId())),"NO CATEGORY"));
+//    }
+
 }

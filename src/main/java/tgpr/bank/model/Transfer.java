@@ -83,7 +83,6 @@ public class Transfer extends Model {
     protected void mapper(ResultSet rs) throws SQLException {
         this.id = rs.getInt("id");
         this.amount = rs.getInt("amount");
-        // changement du type de amount de Int par Double pour pouvoir l'afficher avec ,00€
 
         this.description = rs.getString("description");
         this.sourceAccountID = rs.getInt("source_account");
@@ -92,7 +91,7 @@ public class Transfer extends Model {
         this.targetSaldo = rs.getDouble("target_saldo");
         this.createdAt = rs.getTimestamp("created_at").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
         this.createdBy = rs.getInt("created_by");
-        this.effectiveAt = rs.getObject("effective_at") != null ? rs.getTimestamp("effective_at").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) : null;
+        this.effectiveAt = rs.getObject("effective_at") != null ? rs.getTimestamp("effective_at").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : null;
         this.state = rs.getString("state");
     }
 
@@ -152,14 +151,16 @@ public class Transfer extends Model {
     }
 
     public void delete() {
-        execute("delete from transfer where id=:id", new Params("id", id));
-        execute("delete from transfer_category where transfer=:id", new Params("id", id));
-    }
 
-    public void deleteTransferCategory(int accountID,int transferID) {
-        execute("delete from transfer_category where transfer=:transferID AND account=:accountID", new Params()
-                .add("transfer",transferID)
-                .add("account",accountID));
+        execute("delete from transfer_category where transfer=:id", new Params()
+                .add("id", id));
+        execute("delete from transfer where id=:id", new Params()
+                .add("id", id));
+    }
+    public void deleteTransferCategory(int account) {
+        execute("delete from transfer_category where transfer_category.transfer = (SELECT id FROM transfer where transfer.id=:transfer) AND transfer_category.account = (SELECT id FROM account WHERE account.id=:account)", new Params()
+                .add("transfer",id)
+                .add("account",account));
     }
     public List<Category> getCategoriesById(int id){
         return queryList(Category.class,
@@ -167,28 +168,27 @@ public class Transfer extends Model {
                 new Params("account",id));
     }
 
-    public Category getIdCategoryWithName(String name){
+    public Category getIdCategoryWithName(String name, int account){
         return queryOne(Category.class,
-                "SELECT * FROM category where name=:name",
-                new Params("name",name));
+                "SELECT * FROM category where name=:name and (account=:account || account is null)" ,
+                new Params()
+                        .add("name",name)
+                        .add("account",account))
+                            ;
     }
 
-    public Transfer save(int accountID, int transferID, int categoryID){
-        execute("INSERT INTO transfer_category (transfer,account,category) VALUES (transfer=:transfer, account=:account, category=:category)", new Params()
-                .add("transfer",transferID)
-                .add("account",accountID)
-                .add ("category",categoryID));
-        return this;
+    public void save(int account, int transfer, int category){
+        execute("INSERT INTO transfer_category (transfer,account,category) VALUES ((SELECT id FROM transfer WHERE transfer.id=:transfer ), (SELECT id from account where account.id=:account) , (SELECT id from category WHERE category.id=:category))", new Params()
+                .add("transfer",transfer)
+                .add("account",account)
+                .add ("category",category));
     }
 
-    public Transfer update(int accountID, int transferID, int categoryID){
+    public void update(int account, int transfer, int category){
         execute("UPDATE transfer_category SET category=:category WHERE account=:account AND transfer=:transfer", new Params()
-                .add("transfer",transferID)
-                .add("account",accountID)
-                .add ("category",categoryID));
-        return this;
+                .add("transfer",transfer)
+                .add("account",account)
+                .add ("category",category));
     }
-
-
 }
 
