@@ -13,11 +13,12 @@ import tgpr.framework.Layouts;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class NewTransferView extends DialogWindow {
     private NewTransferController controller;
     private ComboBox<Account> cBoxSourceAccount;
-    private ComboBox<Account> cBoxTargetAccount;
+    private ComboBox<String> cBoxTargetAccount;
     private final TextBox txtBoxIban;
     private final TextBox txtBoxTitle;
     private final TextBox txtBoxAmount;
@@ -50,8 +51,9 @@ public class NewTransferView extends DialogWindow {
         new EmptySpace().addTo(panel);
         panel.addComponent(new Label("Target Account: "));
         listTargetAccounts = Account.getTargetAccounts(cBoxSourceAccount.getSelectedItem().getId());
-        cBoxTargetAccount = new ComboBox<Account>(listTargetAccounts).addTo(panel).setReadOnly(true);
-        cBoxTargetAccount.addListener((selectedIndex,previousSelection, changedByUserInteraction) -> reloadInfo());
+        var listTargetAccountsToString = listTargetAccounts.stream().map(Account::toString).collect(Collectors.toList());
+        listTargetAccountsToString.add(0,"-- insert IBAN myself --");
+        cBoxTargetAccount = new ComboBox<String>(listTargetAccountsToString).addTo(panel).addListener((SelectedIndex,previousSelection, changedByUserInteraction) -> reloadInfo());
         new EmptySpace().addTo(panel);
         Panel targetAccountFields = new Panel().setLayoutManager(new GridLayout(2).setRightMarginSize(2).setTopMarginSize(1).setBottomMarginSize(1)).addTo(panel).addTo(panel);
         targetAccountFields.addComponent(new Label("IBAN: "));
@@ -90,18 +92,26 @@ public class NewTransferView extends DialogWindow {
 
     public void reloadData(){
         listTargetAccounts = Account.getTargetAccounts(cBoxSourceAccount.getSelectedItem().getId());
+        var listTargetAccountsToString = listTargetAccounts.stream().map(Account::toString).collect(Collectors.toList());
         int size = cBoxTargetAccount.getItemCount();
         for(int i=size ; i>0;--i){
             cBoxTargetAccount.removeItem(i-1);
         }
-        for(Account account : listTargetAccounts){
+        cBoxTargetAccount.addItem("-- insert IBAN myself --");
+        for(String account : listTargetAccountsToString){
             cBoxTargetAccount.addItem(account);
         }
     }
 
     private void reloadInfo() {
-        txtBoxIban.setText(cBoxTargetAccount.getSelectedItem().getIban());
-        txtBoxTitle.setText(cBoxTargetAccount.getSelectedItem().getTitle());
+        if(cBoxTargetAccount.getSelectedItem().equals("-- insert IBAN myself --")){
+            txtBoxIban.setText("");
+            txtBoxTitle.setText("");
+        }else {
+            Account account = listTargetAccounts.get(cBoxTargetAccount.getSelectedIndex()-1);
+            txtBoxIban.setText(account.getIban());
+            txtBoxTitle.setText(account.getTitle());
+        }
     }
 
     public void validate(){
