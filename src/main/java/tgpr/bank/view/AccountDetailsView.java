@@ -6,26 +6,39 @@ import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
 import tgpr.bank.controller.AccountDetailsController;
 import tgpr.bank.model.Account;
+import tgpr.bank.model.Favourite;
+import tgpr.bank.model.Security;
+import tgpr.bank.model.User;
 import tgpr.framework.ColumnSpec;
 import tgpr.framework.ObjectTable;
 import tgpr.framework.Tools;
 import tgpr.framework.ViewManager;
 
+import javax.swing.text.Position;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AccountDetailsView extends DialogWindow {
+    private  ObjectTable <Account> table;
     private final AccountDetailsController controller;
     private final Account account;
+
+    private  Favourite favourite;
 
     private final Label lblIban = new Label("");
     private final Label lblTitle = new Label("");
     private final Label lblType = new Label("");
     private final Label lblSaldo = new Label("");
+    private ComboBox <String> cboFavorite;
+    private List<Account> favouriteList;
+
 
     public AccountDetailsView(AccountDetailsController controller, Account account) {
         super("Account Details");
         this.controller = controller;
         this.account = account;
+        User current = Security.getLoggedUser();
+        this.favourite = new Favourite(current.getId(),account.getId());
         setHints(List.of(Hint.CENTERED, Hint.FIXED_SIZE));
         setCloseWindowWithEscape(true);
         setFixedSize(new TerminalSize(115, 20));
@@ -73,6 +86,7 @@ public class AccountDetailsView extends DialogWindow {
         Panel panel = new Panel().setLayoutManager(new LinearLayout(Direction.HORIZONTAL).setSpacing(1));
         panel.addComponent(categoryPanel());
         panel.addComponent(favoritePanel());
+
         return panel;
     }
 
@@ -86,9 +100,56 @@ public class AccountDetailsView extends DialogWindow {
 
     private Border favoritePanel() {
         var panel = new Panel().setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Fill));
+        table = new ObjectTable<>(
+                new ColumnSpec<>("IBAN ",Account::getIban),
+                new ColumnSpec<>("  ", Account::getTitle),
+                new ColumnSpec<>("Type", Account::getType)
+        );
+
+        panel.addComponent(table);
+        table.setPreferredSize(new TerminalSize(ViewManager.getTerminalColumns(),15));
+        reloadData();
+
+
         Border border = panel.withBorder(Borders.doubleLine("Favorite"));
+        panel.setPreferredSize(new TerminalSize(55,10));
+        var buttons = new Panel().addTo(panel).setLayoutManager(new LinearLayout(Direction.HORIZONTAL));
+        panel.addComponent(buttons,LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
+
+        favouriteList = favourite.getPossibleFavorites();
+        var listFavouriteToString = favouriteList.stream().map(Account::toString).collect(Collectors.toList());
+        listFavouriteToString.add(0,"");
+
+        cboFavorite = new ComboBox<String>(listFavouriteToString).addTo(panel)
+                .addListener((newIndex, oldIndex, byUser) -> reloadData());
+        for(Account fava : favouriteList){
+            cboFavorite.addItem(fava.getIban());
+        }
+        Button add = new Button("Add", this::addFavourite).addTo(buttons);
+        Button btnReset = new Button("Reset", this::buttonPanel).addTo(buttons);
+
+
 
         return border;
+    }
+    public void reloadData(){
+        table.clear();
+        if (!favouriteList.isEmpty()){
+            var favorites = favouriteList.stream().map(Account::toString).collect(Collectors.toList());
+            var accounts = controller.getAccount();
+            table.add(favourite.getPossibleFavorites());
+            cboFavorite.addItem("");
+            for(String fava : favorites ){
+                cboFavorite.addItem(fava);
+            }
+        }else{
+            cboFavorite.addItem("");
+        }
+    }
+
+    public void addFavourite(){
+//        controller.addFavourite(cboFavorite.getSelectedItem());
+        reloadData();
     }
 
     private Panel buttonPanel() {

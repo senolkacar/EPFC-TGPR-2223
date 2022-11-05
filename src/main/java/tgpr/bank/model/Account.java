@@ -85,4 +85,33 @@ public class Account extends Model {
         //il faudra peut être changer cette partie
         reload("select * from account",new Params());
     }
+
+
+
+    @Override
+    public String toString() {
+        return "Account{" +
+                "iban='" + iban + '\'' +
+                ", title='" + title + '\'' +
+                ", type='" + type + '\'' +
+                '}';
+    }
+//    public boolean save(){
+//        int c;
+//        //Favourite f=getByAccount(accountid);
+//        String sql;
+//        if(f==null){
+//            sql="insert into favourite (account) "+"values(:accountid)";
+//        }else{
+//            sql="update favourite set account=:accountid where account=:accountid";
+//        }
+//        c=execute(sql, new Params().add("account",accountid));
+//        return c==1;
+//    }
+
+    public void addFavourite(int accountid) {
+        execute("insert into favourite (user, account) values ((select id from account where id=:idAccount), (select id from user where id=:loggeduser))", new Params()
+                .add("idAccount", accountid)
+                .add("loggeduser", Security.getLoggedUser().getId()));
+    }
 }

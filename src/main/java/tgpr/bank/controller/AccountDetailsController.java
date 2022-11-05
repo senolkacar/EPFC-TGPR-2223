@@ -30,5 +30,11 @@ public class AccountDetailsController extends Controller {
     public Account getAccount() {
         return account;
     }
+
+    public void addFavourite(int accountid){
+        account.addFavourite(accountid);
+    }
+
+
 }
 
