@@ -142,5 +142,6 @@ public class AccountDetailsView extends DialogWindow {
         if (transfer == null) return;
         if (controller.displayTransfer(transfer, account) == null)
             refresh();
+        reloadData();
     }
 }
