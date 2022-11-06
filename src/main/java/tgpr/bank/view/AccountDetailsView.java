@@ -73,7 +73,7 @@ public class AccountDetailsView extends DialogWindow {
         int accountID = account.getId();
         var panel = new Panel().setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Fill));
         new Label("Filter:").addTo(panel);
-        txtFilter.addTo(panel).takeFocus().setTextChangeListener((txt,client)->reloadData());
+        txtFilter.addTo(panel).takeFocus().setTextChangeListener((txt,client)->reloadFiltered());
         Border border = panel.withBorder(Borders.singleLine("History"));
         historyTable = new ObjectTable<>(
                         new ColumnSpec<>("Effect_Date", m-> Tools.ifNull(m.getEffectiveAt(),m.getCreatedAt())),
@@ -92,9 +92,35 @@ public class AccountDetailsView extends DialogWindow {
 
     public void reloadData() {
        historyTable.clear();
-       var transfers = controller.getFilteredTransfer(txtFilter.getText());
+       var transfers = controller.getTransfers();
        historyTable.add(transfers);
        historyTable.invalidate();
+    }
+
+    public void reloadFiltered(){
+        historyTable.clear();
+        var transfers = controller.getTransfers();
+        if(txtFilter.getText().isEmpty()){
+            historyTable.add(transfers);
+        }else{
+            for (Transfer transfer : transfers) {
+                if(transfer.getTargetAccount().getIban().contains(txtFilter.getText().toUpperCase())
+                        || transfer.getSourceAccount().getIban().contains(txtFilter.getText().toUpperCase())
+                        || transfer.getSourceAccount().getTitle().contains(txtFilter.getText().toUpperCase())
+                        || transfer.getTargetAccount().getTitle().contains(txtFilter.getText().toUpperCase())
+                        || transfer.toString().toLowerCase().contains(txtFilter.getText().toLowerCase())){
+                    historyTable.add(transfer);
+                }
+                if(transfer.getCategory(account.getId(),transfer.getId()) != null){
+                    if(transfer.getCategory(account.getId(),transfer.getId()).getName().toLowerCase().contains(txtFilter.getText().toLowerCase())){
+                        historyTable.add(transfer);
+                    }
+                }
+            }
+        }
+
+
+
     }
 
 

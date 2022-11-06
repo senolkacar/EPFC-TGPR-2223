@@ -138,6 +138,10 @@ public class Transfer extends Model {
                 .add("target_account",account.getId()));
     }
 
+    public static Transfer getTransfer(int id) {
+        return queryOne(Transfer.class, "select * from transfer where id=:id", new Params("id",id));
+    }
+
 
     public static List<Transfer> getTransfersFilter(Account account, String filter) {
         String sql = "select * from transfer where (source_account=:source_account or target_account=:target_account) and (transfer.amount like :filter or transfer.description like :filter or transfer.source_saldo like :filter or transfer.created_at like :filter or transfer.effective_at like :filter or transfer.state like :filter) ORDER by GREATEST( COALESCE(effective_at, 0), COALESCE(created_at, 0) )DESC";
@@ -146,6 +150,21 @@ public class Transfer extends Model {
                     .add("target_account",account.getId())
                     .add("filter","%"+filter+"%"));
 
+    }
+
+    @Override
+    public String toString() {
+        return "id=" + id +
+                ", amount=" + amount +
+                ", description='" + description + '\'' +
+                ", sourceAccountID=" + sourceAccountID +
+                ", targetAccountID=" + targetAccountID +
+                ", sourceSaldo=" + sourceSaldo +
+                ", targetSaldo=" + targetSaldo +
+                ", createdAt='" + createdAt + '\'' +
+                ", createdBy=" + createdBy +
+                ", effectiveAt='" + effectiveAt + '\'' +
+                ", state='" + state + '\'';
     }
 
 

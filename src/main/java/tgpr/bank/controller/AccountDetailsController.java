@@ -34,8 +34,12 @@ public class AccountDetailsController extends Controller {
         return account;
     }
 
-    public List<Transfer> getTransfer() {
+    public List<Transfer> getTransfers() {
         return Transfer.getTransfers(getAccount());
+    }
+
+    public Transfer getTransfer(int id) {
+        return Transfer.getTransfer(id);
     }
 
     public List<Transfer> getFilteredTransfer(String filter) {
