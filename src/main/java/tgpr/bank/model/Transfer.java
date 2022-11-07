@@ -115,16 +115,28 @@ public class Transfer extends Model {
         return account;
     }
 
-    public static String getSourceAccountInfoForTransfer(int id){
+    public static String getAccountInfoForTransfer(int id, int accountid){
         Account a = queryOne(Account.class, "select * from account where id=:id", new Params("id", id));
-        return a.getIban() + " | " + a.getTitle() + " | " + a.getType() + " | "+ a.getSaldoWithEuroSign() + " (your account)";
+        String s = a.getIban() + " | " + a.getTitle() + " | " + a.getType() + " | "+ a.getSaldoWithEuroSign();
+        if(isMyAccount(accountid)) {
+            s += " (your account)";
+        }
+        return s;
     }
 
-    public static String getTargetAccountInfoForTransfer(int id){
-        Account a = queryOne(Account.class, "select * from account where id=:id", new Params("id", id));
-        return a.getIban() + " | " + a.getTitle() + " | " + a.getType() + " | "+ a.getSaldoWithEuroSign();
-    }
+    public static boolean isMyAccount(int accountid){
+        Account a = queryOne(Account.class, "SELECT * from account where id = (SELECT id from access Where account=:accountid AND user=:user)", new Params()
+                .add("accountid",accountid)
+                .add("user",Security.getLoggedUser().getId()));
 
+        if(a==null){
+            return false;
+        }
+        else {
+            return true;
+        }
+
+    }
     public Account getSourceAccount() {
         return getAccount(sourceAccountID);
     }

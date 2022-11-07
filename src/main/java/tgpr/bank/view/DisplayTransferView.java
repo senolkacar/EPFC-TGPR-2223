@@ -101,8 +101,8 @@ public class DisplayTransferView extends DialogWindow {
             lblCreatedAt.setText(String.valueOf(transfer.getCreatedAt()));
             lblEffectiveAt.setText(String.valueOf(transfer.getEffectiveAt()));
             lblCreatedBy.setText((User.getById(transfer.getCreatedBy())));
-            lblSourceAccount.setText(transfer.getSourceAccountInfoForTransfer(transfer.getSourceAccountID()));
-            lblTargetAccount.setText(transfer.getTargetAccountInfoForTransfer(transfer.getTargetAccountID()));
+            lblSourceAccount.setText(transfer.getAccountInfoForTransfer(transfer.getSourceAccountID(),transfer.getSourceAccountID()));
+            lblTargetAccount.setText(transfer.getAccountInfoForTransfer(transfer.getTargetAccountID(),transfer.getTargetAccountID()));
             lblAmount.setText(transfer.transformInEuro(transfer.getAmount()));
             lblSaldoAfterTransfer.setText(String.valueOf(account.transformInEuro(account.getSaldo())));
             lblDescription.setText(transfer.getDescription());
