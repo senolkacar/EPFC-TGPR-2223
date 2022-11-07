@@ -2,17 +2,20 @@ package tgpr.bank.view;
 
 import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.TerminalSize;
+
+import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
 import tgpr.bank.controller.AccountDetailsController;
 import tgpr.bank.model.Account;
+import tgpr.bank.model.Category;
+import tgpr.framework.ColumnSpec;
 import tgpr.framework.ObjectTable;
 import tgpr.framework.Tools;
 
-
-import tgpr.bank.model.Category;
-
 import java.util.List;
+
+
 
 public class AccountDetailsView extends DialogWindow {
     private final AccountDetailsController controller;
@@ -24,7 +27,10 @@ public class AccountDetailsView extends DialogWindow {
     private final Label lblTitle = new Label("");
     private final Label lblType = new Label("");
     private final Label lblSaldo = new Label("");
-    private final TextBox txtFilter = new TextBox();
+    private  Button btnAddUpdate;
+    private  TextBox txtProfile;
+    private  Label errProfile;
+
 
     public AccountDetailsView(AccountDetailsController controller, Account account) {
         super("Account Details");
@@ -67,10 +73,12 @@ public class AccountDetailsView extends DialogWindow {
     }
 
     private Border historyPanel() {
-        var panel = new Panel().setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Fill));
-        Border border = panel.withBorder(Borders.doubleLine("History"));
-        return border;
+       var panel = new Panel().setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Fill));
+       Border border = panel.withBorder(Borders.doubleLine("History"));
+
+       return border;
     }
+
 
 
     private Panel favorites_categoryPanel(){
@@ -81,11 +89,50 @@ public class AccountDetailsView extends DialogWindow {
     }
 
     private Border categoryPanel(){
-        int accountID = account.getId();
         var panel = new Panel().setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Fill));
         Border border = panel.withBorder(Borders.singleLine("Category"));
+        categoryTable = new ObjectTable<>(
+
+                new ColumnSpec<>("Category", c -> Tools.ifNull(c.getName(),"" )),
+                new ColumnSpec<Category>("type", c -> c.isSystem() ? "local" : "system"),
+                new ColumnSpec<>("Uses", c-> controller.getCatgoryUses())
+
+        );
+        categoryTable.addTo(panel);
+        categoryTable.setSelectAction(() -> {
+            var category = categoryTable.getSelected();
+            controller.editCategory(category);
+            reloadData();
+            categoryTable.setSelected(category);
+        });
+        reloadData();
+        Panel root = new Panel();
+        root.setLayoutManager(new GridLayout(2).setTopMarginSize(1));
+
+        txtProfile = new TextBox().setPreferredSize(new TerminalSize(15,1)).addTo(panel);
+        Button btnAddCatrgoty = new Button("Add").addTo(panel);
+        Button btnResetCatrgoty = new Button("Reset").addTo(panel);
+
+
 
         return  border;
+    }
+    private void validate() {
+
+    }
+
+    private void update() {
+    }
+
+
+    public void reloadData() {
+
+        // vide le tableau
+        categoryTable.clear();
+        // demande au contrôleur la liste des membres
+        var Category  = controller.getCategory();
+        // ajoute l'ensemble des membres au tableau
+        categoryTable.add(Category);
     }
 
 

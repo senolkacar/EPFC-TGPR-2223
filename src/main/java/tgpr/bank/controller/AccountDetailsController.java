@@ -2,15 +2,19 @@ package tgpr.bank.controller;
 
 
 import tgpr.bank.model.Account;
-import tgpr.bank.model.User;
+import tgpr.bank.model.Category;
+
 import tgpr.bank.view.AccountDetailsView;
 import tgpr.framework.Controller;
 import com.googlecode.lanterna.gui2.Window;
+
+import java.util.List;
 
 
 public class AccountDetailsController extends Controller {
     private final AccountDetailsView view;
     private Account account;
+
 
     // peut etre non necessaire
     public AccountDetailsController() {
@@ -19,7 +23,7 @@ public class AccountDetailsController extends Controller {
 
     public AccountDetailsController(Account account) {
         this.account = account;
-        view = new AccountDetailsView(this, account);
+       view = new AccountDetailsView(this, account);
     }
 
     @Override
@@ -30,5 +34,17 @@ public class AccountDetailsController extends Controller {
     public Account getAccount() {
         return account;
     }
+    public List<Category> getCategory() {
+        return Category.getCategories(getAccount());
+    }
+   public List<Category> getCatgoryUses   () {
+       return Category.getUsesCategory(getAccount());
+   }
+    public void editCategory(Category category) {
+        navigateTo(new DisplayCategoryController(  category));
+    }
+
+
+
 }
 
