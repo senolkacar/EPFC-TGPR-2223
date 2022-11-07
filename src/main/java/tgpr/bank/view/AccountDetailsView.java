@@ -61,7 +61,6 @@ public class AccountDetailsView extends DialogWindow {
         panel.addComponent(new Label("Title:"));
         lblTitle.addTo(panel).addStyle(SGR.BOLD);
 
-
         panel.addComponent(new Label("Saldo:"));
         lblSaldo.addTo(panel).addStyle(SGR.BOLD);
 
@@ -85,6 +84,8 @@ public class AccountDetailsView extends DialogWindow {
                         new ColumnSpec<>("State", Transfer::getState)
                 );
         historyTable.addTo(panel);
+        historyTable.setSelectAction(this::displayTransfer);
+
         reloadData();
 
         return border;
@@ -160,6 +161,11 @@ public class AccountDetailsView extends DialogWindow {
         lblSaldo.setText(Tools.toString(account.getSaldo()));
     }
 
-
-
+    private void displayTransfer() {
+        var transfer = historyTable.getSelected();
+        if (transfer == null) return;
+        if (controller.displayTransfer(transfer, account) == null)
+            refresh();
+        reloadData();
+    }
 }

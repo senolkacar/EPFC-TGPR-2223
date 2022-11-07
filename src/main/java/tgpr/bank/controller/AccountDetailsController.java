@@ -45,5 +45,11 @@ public class AccountDetailsController extends Controller {
     public List<Transfer> getFilteredTransfer(String filter) {
         return Transfer.getTransfersFilter(getAccount(), filter);
     }
+
+    public Transfer displayTransfer(Transfer transfer, Account account) {
+        var controller = new DisplayTransferController(transfer, account);
+        navigateTo(controller);
+        return controller.getTransfer();
+    }
 }
 

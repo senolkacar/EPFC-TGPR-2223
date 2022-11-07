@@ -4,6 +4,7 @@ import tgpr.framework.Model;
 import tgpr.framework.Params;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.NumberFormat;
 import java.util.List;
 
 public class Account extends Model {
@@ -65,6 +66,18 @@ public class Account extends Model {
     public double getSaldo() {
         return saldo;
     }
+
+    public String transformInEuro(double montant){
+        NumberFormat formatter = NumberFormat.getCurrencyInstance();
+        String moneyString = formatter.format(montant);
+        return (moneyString);
+    }
+
+    // ajout de la fonciton pour afficher en euro
+    public String getSaldoWithEuroSign(){
+        return transformInEuro(saldo);
+    }
+
 
     public void setSaldo(double saldo) {
         this.saldo = saldo;
