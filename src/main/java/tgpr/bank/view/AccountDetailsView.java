@@ -106,12 +106,14 @@ public class AccountDetailsView extends DialogWindow {
             }else{
                 controller.editCategory(category);
                 reloadData();
+
                 categoryTable.setSelected(category);
+
             }
 
         });
 
-        reloadData();
+//        reloadData();
         Panel root = new Panel();
         root.setLayoutManager(new GridLayout(2).setTopMarginSize(1));
 
@@ -134,7 +136,13 @@ public class AccountDetailsView extends DialogWindow {
     private void add(){
         Category c = Category.getByAccount(Security.getLoggedUser().getId(),txtNewCategory.getText());
         controller.add(txtNewCategory.getText(),account.getId());
-    }
+        Category cat = Category.getByAccount(account.getId(),txtNewCategory.getText());
+
+
+
+
+        }
+    
 
 
     public void reloadData() {
@@ -144,6 +152,7 @@ public class AccountDetailsView extends DialogWindow {
         // demande au contrôleur la liste des membres
         var Category  = controller.getCategory();
         // ajoute l'ensemble des membres au tableau
+        categoryTable.add(Category);
         categoryTable.add(Category);
 
     }

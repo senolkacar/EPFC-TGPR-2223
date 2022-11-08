@@ -13,11 +13,12 @@ import java.util.List;
 
 public class DisplayCategoryView extends DialogWindow {
 
-    private final DisplayCategoryController controller;
-    private Category category;
-    private final Label lblName;
+    private DisplayCategoryController controller;
+    private  Category category;
     private  TextBox txtName;
     private Label errName;
+    private TextBox txtCategoryName;
+
 
     private final Label lblType;
 
@@ -36,8 +37,10 @@ public class DisplayCategoryView extends DialogWindow {
 
         Panel fields = new Panel().setLayoutManager(new GridLayout(2).setTopMarginSize(1)).addTo(root);
 
-        fields.addComponent(new Label("name:"));
-        lblName = new Label("").addTo(fields).addStyle(SGR.BOLD);
+        new Label("Name:").addTo(fields);
+        txtCategoryName = new TextBox().addTo(fields)
+                .setText(category.getName());
+
 
 
         fields.addComponent(new Label("type:"));
@@ -45,27 +48,47 @@ public class DisplayCategoryView extends DialogWindow {
 
         new EmptySpace().addTo(root);
 
-        var buttons = new Panel().setLayoutManager(new LinearLayout(Direction.HORIZONTAL));
-        new Button("Update", this::update).addTo(buttons);
-        new Button("Delete", this::delete).addTo(buttons);
-        new Button("Close", this::close).addTo(buttons);
+   //     var buttons = new Panel().setLayoutManager(new LinearLayout(Direction.HORIZONTAL));
+  //      new Button("Update", this::update).addTo(root);
 
-        root.addComponent(buttons, LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
+ //       new Button("Delete", this::delete).addTo(buttons);
+ //       new Button("Close", this::close).addTo(root);
 
+//        root.addComponent(buttons, LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
+        createButtonsPanel().addTo(root);
         refresh();
     }
 
+    private Panel createButtonsPanel(){
+        var root = new Panel()
+                .setLayoutManager(new LinearLayout(Direction.HORIZONTAL))
+                .setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
+
+        new Button("Update", this::update).addTo(root);
+
+        new Button("Delete", this::delete).addTo(root);
+        new Button("Close", this::close).addTo(root);
+
+        return root;
+    }
+
+    private void update() {
+        var name = txtCategoryName.getText();
+        category = controller.update(name,category);
+        txtCategoryName.setText(name);
+        controller.close();
+    }
+
+
+
     private void refresh() {
         if (category != null) {
-            lblName.setText(category.getName());
+            txtCategoryName.setText(category.getName());
             lblType.setText(category.isSystem() ? "local" : "System");
         }
     }
 
-    private void update() {
-        category = controller.update();
-        refresh();
-    }
+
 
 
     private void delete() {

@@ -131,8 +131,8 @@ public class Category extends Model {
                     "values (:name,:account )";
 
         else
-            sql = "update category set name=:name " +
-                    " where account=:account";
+          sql = "update category set name=:name " +
+                 " where account=:account";
         c = execute(sql, new Params()
                 .add("id", id)
                 .add("name", name)
@@ -145,18 +145,24 @@ public class Category extends Model {
         int c = execute("delete from category  where account is not null && account=:account && name=:name", new Params("name", name).add("account", idAccount));
         return c == 1;
     }
+    public void update(String name,Category category) {
+        String sql = "update category set name=:name where category.id=:categoryID";
+        execute(sql, new Params()
+                .add("name", name)
+                .add("categoryID", category.getId()));
+    }
 
 
 
 
-    @Override
-    public boolean equals(Object o) {
+//    @Override
+/**   public boolean equals(Object o) {
         // s'il s'agit du même objet en mémoire, retourne vrai
         if (this == o) return true;
         // si l'objet à comparer est null ou n'est pas issu de la même classe que l'objet courant, retourne faux
         if (o == null || getClass() != o.getClass()) return false;
         // transtype l'objet reçu en Member
-        Account member = (Account) o;
+        Account account1 = (Account) o;
         // retourne vrai si les deux objets ont le même pseudo
         // remarque : cela veut dire que les deux objets sont considérés comme identiques s'ils on le même pseudo
         //            ce qui a du sens car c'est la clef primaire de la table. Attention cependant car cela signifie
@@ -167,7 +173,7 @@ public class Category extends Model {
     @Override
     public int hashCode() {
          return Objects.hash(idAccount);
-    }
+    }**/
 
 
     public static List<Category> getAll() {

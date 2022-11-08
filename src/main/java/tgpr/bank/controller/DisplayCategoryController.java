@@ -16,6 +16,7 @@ public class DisplayCategoryController extends Controller {
         view = new DisplayCategoryView(this, category);
     }
 
+
     public void delete() {
         if (askConfirmation("You are about to delete this category. Please confirm.", "Delete category")) {
             category.delete();
@@ -32,6 +33,11 @@ public class DisplayCategoryController extends Controller {
                 ;
     }
 
+    public Category update(String name,Category category) {
+        category.update(name,category);
+        return category;
+    }
+
     @Override
     public Window getView() {
         return view;
@@ -41,6 +47,10 @@ public class DisplayCategoryController extends Controller {
         var errors = new ErrorList();
 
         return errors;
+    }
+
+    public void close(){
+        view.close();
     }
 
 }
