@@ -4,20 +4,44 @@ import tgpr.framework.Error;
 import tgpr.framework.ErrorList;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 public abstract class TransferValidator {
     public static Error isValidTargetAccount(String targetAccount){
-        if(targetAccount==null || targetAccount.isBlank())
+        if(targetAccount==null || targetAccount.isBlank()){
             return new Error("target iban required",Transfer.Fields.TargetAccountIban);
-        else
-            return Error.NOERROR;
+        }
+        if(!Pattern.matches("[a-zA-Z]{2}[0-9]{2}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}",targetAccount)){
+            return new Error("bad target iban format",Transfer.Fields.TargetAccountIban);
+        }
+        return Error.NOERROR;
     }
 
-    public static List<Error> validate (Transfer transfer){
-        var errors = new ErrorList();
+    public static Error isValidTitle(String title){
+        if(title==null || title.isBlank()){
+            return new Error("target account title required",Transfer.Fields.TargetAccountTitle);
+        }
+        return Error.NOERROR;
+    }
 
-        errors.add(isValidTargetAccount(transfer.getTargetAccount().getIban()));
+    public static Error isValidAmount(String amount,Double sourceSaldo,Double sourceFloor){
+        if(sourceFloor<0){
+            sourceFloor = Math.abs(sourceFloor);
+        }
+        double amountmax = sourceFloor + sourceSaldo;
+        if(amount==null || amount.isBlank()){
+            return new Error("amount required",Transfer.Fields.Amount);
+        }
+        if(Integer.parseInt(amount)>amountmax || Integer.parseInt(amount)<0){
+            return new Error("amount must be <= " + amountmax + " €",Transfer.Fields.Amount);
+        }
+        return Error.NOERROR;
+    }
 
-        return errors;
+    public static Error isValidDescription(String description){
+        if(description==null || description.isBlank()){
+            return new Error("description required",Transfer.Fields.Description);
+        }
+        return Error.NOERROR;
     }
 }

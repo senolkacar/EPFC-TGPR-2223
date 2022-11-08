@@ -142,7 +142,7 @@ public class Account extends Model{
                 new Params("loggeduser",Security.getLoggedUser().getId()));
     }
 
-    public static List<Account> getUserOtherAccounts(Integer selectedAccountID){
+    private static List<Account> getUserOtherAccounts(Integer selectedAccountID){
         return queryList(Account.class,"SELECT * FROM account where id !=:selectedAccountID and id in(Select account from access,user where user.id=access.user and user.email=:loggedUser)",
                 new Params()
                         .add("loggedUser",Security.getLoggedUser().getEmail())
@@ -158,5 +158,23 @@ public class Account extends Model{
 
     public static List<Account> getTargetAccounts(Integer selectedAccountID){
         return getTargetAccounts(getFavouriteAccounts(),getUserOtherAccounts(selectedAccountID));
+    }
+
+    public static List<String> getTargetAccountsToString(List<Account> loggedUserAccounts, List<Account> listFavourites){
+        List<String> listToReturn = new ArrayList<>();
+        for(int i = 0; i<loggedUserAccounts.size();++i){
+            listToReturn.add(loggedUserAccounts.get(i).iban + " | " +
+                            loggedUserAccounts.get(i).title + " | " +
+                            loggedUserAccounts.get(i).type + " | " +
+                            loggedUserAccounts.get(i).saldo);
+        }
+        for(int i=0; i<listFavourites.size();++i){
+            listToReturn.add(listFavourites.get(i).iban + " | " + listFavourites.get(i).title + " | favourite");
+        }
+        return listToReturn;
+    }
+
+    public static List<String> getTargetAccountsToString(Integer selectedAccountID){
+        return getTargetAccountsToString(getUserOtherAccounts(selectedAccountID),getFavouriteAccounts());
     }
 }

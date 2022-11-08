@@ -51,7 +51,7 @@ public class NewTransferView extends DialogWindow {
         new EmptySpace().addTo(panel);
         panel.addComponent(new Label("Target Account: "));
         listTargetAccounts = Account.getTargetAccounts(cBoxSourceAccount.getSelectedItem().getId());
-        var listTargetAccountsToString = listTargetAccounts.stream().map(Account::toString).collect(Collectors.toList());
+        var listTargetAccountsToString = Account.getTargetAccountsToString(cBoxSourceAccount.getSelectedItem().getId());
         listTargetAccountsToString.add(0,"-- insert IBAN myself --");
         cBoxTargetAccount = new ComboBox<String>(listTargetAccountsToString).addTo(panel).addListener((SelectedIndex,previousSelection, changedByUserInteraction) -> reloadInfo());
         new EmptySpace().addTo(panel);
@@ -92,7 +92,7 @@ public class NewTransferView extends DialogWindow {
 
     public void reloadData(){
         listTargetAccounts = Account.getTargetAccounts(cBoxSourceAccount.getSelectedItem().getId());
-        var listTargetAccountsToString = listTargetAccounts.stream().map(Account::toString).collect(Collectors.toList());
+        var listTargetAccountsToString = Account.getTargetAccountsToString(cBoxSourceAccount.getSelectedItem().getId());
         int size = cBoxTargetAccount.getItemCount();
         for(int i=size ; i>0;--i){
             cBoxTargetAccount.removeItem(i-1);
@@ -105,12 +105,12 @@ public class NewTransferView extends DialogWindow {
 
     private void reloadInfo() {
         if(cBoxTargetAccount.getSelectedItem().equals("-- insert IBAN myself --")){
-            txtBoxIban.setText("");
-            txtBoxTitle.setText("");
+            txtBoxIban.setText("").setReadOnly(false);
+            txtBoxTitle.setText("").setReadOnly(false);
         }else {
             Account account = listTargetAccounts.get(cBoxTargetAccount.getSelectedIndex()-1);
-            txtBoxIban.setText(account.getIban());
-            txtBoxTitle.setText(account.getTitle());
+            txtBoxIban.setText(account.getIban()).setReadOnly(true);
+            txtBoxTitle.setText(account.getTitle()).setReadOnly(true);
         }
     }
 
@@ -119,10 +119,15 @@ public class NewTransferView extends DialogWindow {
                 txtBoxIban.getText(),
                 txtBoxTitle.getText(),
                 txtBoxAmount.getText(),
-                txtBoxDescription.getText()
+                txtBoxDescription.getText(),
+                cBoxSourceAccount.getSelectedItem().getSaldo(),
+                cBoxSourceAccount.getSelectedItem().getFloor()
         );
 
         errIBAN.setText(errors.getFirstErrorMessage(Transfer.Fields.TargetAccountIban));
+        errTitle.setText(errors.getFirstErrorMessage(Transfer.Fields.TargetAccountTitle));
+        errAmount.setText(errors.getFirstErrorMessage(Transfer.Fields.Amount));
+        errDescription.setText(errors.getFirstErrorMessage(Transfer.Fields.Description));
     }
 
     public void save(String iban, String title, String amount, String description){

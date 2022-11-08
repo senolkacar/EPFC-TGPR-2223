@@ -12,7 +12,7 @@ import java.util.List;
 public class Transfer extends Model {
 
     public enum Fields{
-        Id,Amount,Description,SourceAccountIban,TargetAccountIban,SourceSaldo,TargetSaldo,CreatedAT,CreatedBy,EffectiveAt
+        Id,Amount,Description,SourceAccountIban,TargetAccountIban,TargetAccountTitle,SourceSaldo,TargetSaldo,CreatedAT,CreatedBy,EffectiveAt
     }
 
     private int id;
