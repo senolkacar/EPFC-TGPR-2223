@@ -110,8 +110,17 @@ public class Account extends Model {
 //    }
 
     public void addFavourite(int accountid) {
-        execute("insert into favourite (user, account) values ((select id from account where id=:idAccount), (select id from user where id=:loggeduser))", new Params()
+        execute("insert into favourite (user, account) values (:loggeduser,:idAccount)", new Params()
                 .add("idAccount", accountid)
                 .add("loggeduser", Security.getLoggedUser().getId()));
     }
+
+    public List<Account> getFavorites(){
+        return queryList(Account.class,"select * from favourite join account on favourite.account=account.id where user=:loggeduser",new Params("loggeduser",Security.getLoggedUser().getId()));
+    }
+
+    public List<Account> getFavoritesNotListed(){
+        return queryList(Account.class,"select * from account where account.id NOT IN(select favourite.account from favourite where user=:loggeduser) AND account.id NOT IN(Select account from access,user where user.id=access.user and user.email=:email) and account.id in(select transfer.target_account from transfer)",new Params("loggeduser",Security.getLoggedUser().getId()).add("email",Security.getLoggedUser().getEmail()));
+    }
+
 }

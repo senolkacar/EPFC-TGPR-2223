@@ -23,14 +23,14 @@ public class AccountDetailsView extends DialogWindow {
     private final AccountDetailsController controller;
     private final Account account;
 
-    private  Favourite favourite;
 
     private final Label lblIban = new Label("");
     private final Label lblTitle = new Label("");
     private final Label lblType = new Label("");
     private final Label lblSaldo = new Label("");
     private ComboBox <String> cboFavorite;
-    private List<Account> favouriteList;
+
+    private List<Account> favoritesList;
 
 
     public AccountDetailsView(AccountDetailsController controller, Account account) {
@@ -38,7 +38,6 @@ public class AccountDetailsView extends DialogWindow {
         this.controller = controller;
         this.account = account;
         User current = Security.getLoggedUser();
-        this.favourite = new Favourite(current.getId(),account.getId());
         setHints(List.of(Hint.CENTERED, Hint.FIXED_SIZE));
         setCloseWindowWithEscape(true);
         setFixedSize(new TerminalSize(115, 20));
@@ -101,54 +100,54 @@ public class AccountDetailsView extends DialogWindow {
     private Border favoritePanel() {
         var panel = new Panel().setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Fill));
         table = new ObjectTable<>(
-                new ColumnSpec<>("IBAN ",Account::getIban),
-                new ColumnSpec<>("  ", Account::getTitle),
+                new ColumnSpec<>("IBAN ",a -> a.getIban()+" - "+a.getTitle()),
                 new ColumnSpec<>("Type", Account::getType)
         );
-
+        reloadData();
         panel.addComponent(table);
         table.setPreferredSize(new TerminalSize(ViewManager.getTerminalColumns(),15));
-        reloadData();
-
 
         Border border = panel.withBorder(Borders.doubleLine("Favorite"));
         panel.setPreferredSize(new TerminalSize(55,10));
         var buttons = new Panel().addTo(panel).setLayoutManager(new LinearLayout(Direction.HORIZONTAL));
         panel.addComponent(buttons,LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
-
-        favouriteList = favourite.getPossibleFavorites();
-        var listFavouriteToString = favouriteList.stream().map(Account::toString).collect(Collectors.toList());
-        listFavouriteToString.add(0,"");
-
-        cboFavorite = new ComboBox<String>(listFavouriteToString).addTo(panel)
+        favoritesList = controller.getFavoritesNotListed();
+        var favoritesListToString = favoritesList.stream().map(m->m.getIban()+" - "+m.getTitle()).collect(Collectors.toList());
+        favoritesListToString.add(0,"");
+        cboFavorite = new ComboBox<String>(favoritesListToString).addTo(panel).setPreferredSize(new TerminalSize(5,1))
                 .addListener((newIndex, oldIndex, byUser) -> reloadData());
-        for(Account fava : favouriteList){
-            cboFavorite.addItem(fava.getIban());
-        }
         Button add = new Button("Add", this::addFavourite).addTo(buttons);
-        Button btnReset = new Button("Reset", this::buttonPanel).addTo(buttons);
-
+        Button btnReset = new Button("Reset", this::reset).addTo(buttons);
 
 
         return border;
     }
+    public void reset(){
+        cboFavorite.setSelectedIndex(0);
+
+    }
     public void reloadData(){
         table.clear();
-        if (!favouriteList.isEmpty()){
-            var favorites = favouriteList.stream().map(Account::toString).collect(Collectors.toList());
-            var accounts = controller.getAccount();
-            table.add(favourite.getPossibleFavorites());
-            cboFavorite.addItem("");
-            for(String fava : favorites ){
-                cboFavorite.addItem(fava);
-            }
-        }else{
-            cboFavorite.addItem("");
+        var ListFavorites = controller.getFavorites();
+        table.add(ListFavorites);
+
+    }
+    public void reloadInfo(){
+        favoritesList = controller.getFavoritesNotListed();
+        var favoritesListToString = favoritesList.stream().map(m->m.getIban()+" - "+m.getTitle()).collect(Collectors.toList());
+        int size = cboFavorite.getItemCount();
+        for (int i = size; i>0; --i) {
+            cboFavorite.removeItem(i - 1);
+        }
+        cboFavorite.addItem(0,"");
+        for (String s : favoritesListToString) {
+            cboFavorite.addItem(s);
         }
     }
 
     public void addFavourite(){
-//        controller.addFavourite(cboFavorite.getSelectedItem());
+        controller.addFavourite(favoritesList.get(cboFavorite.getSelectedIndex()-1).getId());
+        reloadInfo();
         reloadData();
     }
 
@@ -165,5 +164,4 @@ public class AccountDetailsView extends DialogWindow {
         lblType.setText(account.getType());
         lblSaldo.setText(Tools.toString(account.getSaldo()));
     }
-
 }

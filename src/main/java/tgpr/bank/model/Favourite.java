@@ -18,8 +18,10 @@ public class Favourite extends Model {
                 ", accountid=" + accountid +
                 '}';
     }
-    private int userid ;
-    private int accountid ;
+
+    private int userid;
+    private int accountid;
+
     public int getUserid() {
         return userid;
     }
@@ -35,10 +37,10 @@ public class Favourite extends Model {
     public void setAccountid(int accountid) {
         this.accountid = accountid;
     }
+
     public Favourite() {
 
     }
-
 
 
     public Favourite(int userid, int accountid) {
@@ -47,33 +49,29 @@ public class Favourite extends Model {
     }
 
 
-
-
-
     @Override
     protected void mapper(ResultSet rs) throws SQLException {
-        userid= rs.getInt("user") ;
-        accountid=rs.getInt("account");
+        userid = rs.getInt("user");
+        accountid = rs.getInt("account");
 
     }
-    public List<Account> favouritAccounts (){
-        return queryList(Account.class,"select iban,titre as ' ' ,type  from favourite,account,user " +
-                        "where favourite.user=user.id and favourite.account=account.id and favourite.user=:loggeduser",
-                new Params("loggeduser",Security.getLoggedUser().getId()));
+
+    public List<Account> favouritAccounts() {
+        return queryList(Account.class, "select iban,titre as ' ' ,type  from favourite join account favourite.account=account.id " +
+                        "  where favourite.user=:loggeduser",
+                new Params("loggeduser", Security.getLoggedUser().getId()));
 
     }
 
 
     @Override
-    public void reload() { reload( "select * from favourite where user=:userid", new Params("user",userid));}
-    public  Favourite getByAccount(int accountid){
-        return queryOne(Favourite.class,"select * from favourite where account=:accountid",new Params("account",accountid));
+    public void reload() {
+        reload("select * from favourite where user=:userid", new Params("user", userid));
     }
 
-    public  List<Account> getFavoriteAccounts(){
-        return queryList(Account.class,"select id,iban,title,floor,type,saldo from account JOIN favourite on account.id = favourite.account where favourite.user =:loggeduser;",new Params("loggeduser",userid));
+    public static Favourite getByAccount(int accountid) {
+        return queryOne(Favourite.class, "select * from favourite where account=:accountid", new Params("account", accountid));
     }
-
 
     //    public boolean save(){
 //        int c;
@@ -87,19 +85,14 @@ public class Favourite extends Model {
 //        c=execute(sql, new Params().add("account",accountid));
 //        return c==1;
 //    }
-    public List<Account> getPossibleFavorites (){
-        return queryList(Account.class,"select  *  from account join transfer  " +
+    public List<Account> getPossibleFavorites() {
+        return queryList(Account.class, "select  *  from account join transfer  " +
                         "on account.id = transfer.target_account join favourite on transfer.created_by = favourite.user " +
                         "where transfer.created_by =:loggeduser and transfer.state='executed' " +
                         "and account.id not in(select favourite.account " +
                         "from favourite) ",
-                new Params("loggeduser",Security.getLoggedUser().getId()));
+                new Params("loggeduser", Security.getLoggedUser().getId()));
 
-    }
-    public void addFavourite() {
-        execute("insert into favourite (user, account) values ((select id from account where id=:idAccount), (select id from user where id=:loggeriuser))   " +
-                "from account join transfer join favourite ", new Params()
-                .add("idAccount", accountid)
-                .add("idUser", userid));
+
     }
 }
