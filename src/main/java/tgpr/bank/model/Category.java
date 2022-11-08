@@ -14,6 +14,7 @@ import java.util.Objects;
 
 
 public class Category extends Model {
+
     private static Integer idAccount;
 
 
@@ -121,13 +122,13 @@ public class Category extends Model {
 
     }
 
-    public boolean save() {
+    public boolean save(String name ) {
         int c;
-        Category category = getByAccount(idAccount);
+        Category category = getByAccount(idAccount, name);
         String sql;
         if (category == null)
-            sql = "insert into category (id, name, account) " +
-                    "values (:id,:name,:account )";
+            sql = "insert into category ( name,account) " +
+                    "values (:name,:account )";
 
         else
             sql = "update category set name=:name " +
@@ -135,23 +136,17 @@ public class Category extends Model {
         c = execute(sql, new Params()
                 .add("id", id)
                 .add("name", name)
-                .add("account", idAccount));
+                .add("account", Security.getLoggedUser().getId()));
 
         return c == 1;
     }
 
-    public boolean delet() {
+    public boolean delete() {
         int c = execute("delete from category  where account is not null && account=:account && name=:name", new Params("name", name).add("account", idAccount));
         return c == 1;
     }
 
-    public void delete() {
-        Assert.isTrue(Security.isAdmin(), "");
-        execute("delete from gategory where name=:name && account=:account", new Params("name", name).add("account", idAccount));
 
-        int c = execute("delete from  where pseudo=:pseudo", new Params("name", name));
-        Assert.isTrue(c == 1, "System");
-    }
 
 
     @Override
@@ -171,8 +166,7 @@ public class Category extends Model {
 
     @Override
     public int hashCode() {
-        // on retourne le hash code du pseudo qui est "unique" puisqu'il correspond à la clef primaire
-        return Objects.hash(idAccount);
+         return Objects.hash(idAccount);
     }
 
 
@@ -190,20 +184,33 @@ public class Category extends Model {
     //    return queryOne(Category.class, "select * from category where account is null ||  account=:account", new Params("account", account));
     //}
 
-    public static Category getByAccount(int idAccount) {
-        return queryOne(Category.class, "select * from category where   account=:account", new Params("account", idAccount));
+    public static Category getByAccount(int idAccount, String name) {
+        return queryOne(Category.class, "select * from category where   account=:account and name=:name", new Params()
+                .add("account", idAccount)
+                .add("name", name));
     }
 
 
-    public static Category getUses(String name, int idAccount) {
-        String sql = "SELECT COUNT(category.name) from category  WHERE category.account= :account and name=:name and (category.account in (SELECT transfer_category.account FROM transfer_category ))   GROUP by category.name;";
-        return queryOne(Category.class, sql, new Params("name", name).add("account", idAccount));
-    }
+//    public int getUses(String name, int idAccount) {
+//        String sql = "SELECT * from category  WHERE category.account= :account and name=:name and (category.account in (SELECT transfer_category.account FROM transfer_category ))   GROUP by category.name;";
+//        String sql = "SELECT COUNT(*) from transfer_category,category WHERE transfer_category.account=:idAccount and transfer_category.category= category.id and category.name=:name  GROUP by transfer_category.category";
+        String sql = "select * from transfer where transfer id = (select id from transfer_category where account=:account and category=1)";
+        //int result = execute(sql, new Params("name", name).add("idAccount", idAccount));
+//        List<Transfer> list= queryList(Transfer.class, sql, new Params("name", name).add("account", idAccount));
+//        int result=4;
+//        for (Transfer transfer: list
+//             ) {
+//            ++result;
+
+//        }
+
+//        return result;
+//    }
 
 
-    public static Object getUses(Category category) {
-        return queryOne(Category.class, "SELECT COUNT(*) from category WHERE name =:name and account=:account", new Params("account", getUses("gift", 2)));
-    }
+//    public static Object getUses(Category category) {
+//        return queryOne(Category.class, "SELECT COUNT(*) from category WHERE name =:name and account=:account", new Params("account", getUses("gift", 2)));
+//    }
 
 
     public static List<Category> getCategories(Account account) {
@@ -212,23 +219,16 @@ public class Category extends Model {
         );
     }
 
-    public static List<Category> getUsesCategory(Account account) {
-        String sql = "SELECT COUNT(*) FROM transfer_category,category where category.id=transfer_category.category and transfer_category.account=:account  GROUP by transfer_category.category, category.name";
+    public static List<Category> getUsesCategory(Account account,Category category) {
+        String sql = "SELECT * FROM category join transfer_category on category.id = transfer_category.category where transfer_category.account=:accountID and transfer_category.category=:categoryID";
         return queryList(Category.class, sql, new Params()
-                .add("account", account.getId())
-
+                .add("accountID", account.getId())
+                .add("categoryID", category.getId())
         );
 
     }
 
-    public static List<Category> Uses(Account account) {
-        List<Category> Uses = getUsesCategory(account);
-        List<Integer> list = new ArrayList<>();
-        for (Category val : Uses) {
-            //list.add(val);
 
-        }
-        return Uses;
-    }
+
 }
 

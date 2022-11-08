@@ -9,6 +9,7 @@ import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
 import tgpr.bank.controller.AccountDetailsController;
 import tgpr.bank.model.Account;
 import tgpr.bank.model.Category;
+import tgpr.bank.model.Security;
 import tgpr.framework.ColumnSpec;
 import tgpr.framework.ObjectTable;
 import tgpr.framework.Tools;
@@ -28,8 +29,8 @@ public class AccountDetailsView extends DialogWindow {
     private final Label lblType = new Label("");
     private final Label lblSaldo = new Label("");
     private  Button btnAddUpdate;
-    private  TextBox txtProfile;
-    private  Label errProfile;
+    private  TextBox txtNewCategory;
+
 
 
     public AccountDetailsView(AccountDetailsController controller, Account account) {
@@ -93,25 +94,31 @@ public class AccountDetailsView extends DialogWindow {
         Border border = panel.withBorder(Borders.singleLine("Category"));
         categoryTable = new ObjectTable<>(
 
-                new ColumnSpec<>("Category", c -> Tools.ifNull(c.getName(),"" )),
+                new ColumnSpec<>("Category", c -> (c.getName())),
                 new ColumnSpec<Category>("type", c -> c.isSystem() ? "local" : "system"),
-                new ColumnSpec<>("Uses", c-> controller.getCatgoryUses())
-
+                new ColumnSpec<>("Uses", c-> controller.getCategoryUses(c).size())
         );
         categoryTable.addTo(panel);
         categoryTable.setSelectAction(() -> {
             var category = categoryTable.getSelected();
-            controller.editCategory(category);
-            reloadData();
-            categoryTable.setSelected(category);
+            if(!category.isSystem()){
+                controller.showError();
+            }else{
+                controller.editCategory(category);
+                reloadData();
+                categoryTable.setSelected(category);
+            }
+
         });
+
         reloadData();
         Panel root = new Panel();
         root.setLayoutManager(new GridLayout(2).setTopMarginSize(1));
 
-        txtProfile = new TextBox().setPreferredSize(new TerminalSize(15,1)).addTo(panel);
-        Button btnAddCatrgoty = new Button("Add").addTo(panel);
+        txtNewCategory = new TextBox().setPreferredSize(new TerminalSize(15,1)).addTo(panel);
+        Button btnAddCatrgoty = new Button("Add",this::add).addTo(panel);
         Button btnResetCatrgoty = new Button("Reset").addTo(panel);
+        reloadData();
 
 
 
@@ -124,6 +131,11 @@ public class AccountDetailsView extends DialogWindow {
     private void update() {
     }
 
+    private void add(){
+        Category c = Category.getByAccount(Security.getLoggedUser().getId(),txtNewCategory.getText());
+        controller.add(txtNewCategory.getText(),account.getId());
+    }
+
 
     public void reloadData() {
 
@@ -133,6 +145,7 @@ public class AccountDetailsView extends DialogWindow {
         var Category  = controller.getCategory();
         // ajoute l'ensemble des membres au tableau
         categoryTable.add(Category);
+
     }
 
 

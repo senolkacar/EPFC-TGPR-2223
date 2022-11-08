@@ -14,6 +14,7 @@ import java.util.List;
 public class AccountDetailsController extends Controller {
     private final AccountDetailsView view;
     private Account account;
+    private Category category;
 
 
     // peut etre non necessaire
@@ -37,13 +38,20 @@ public class AccountDetailsController extends Controller {
     public List<Category> getCategory() {
         return Category.getCategories(getAccount());
     }
-   public List<Category> getCatgoryUses   () {
-       return Category.getUsesCategory(getAccount());
-   }
+
+    public List<Category> getCategoryUses(Category category) {
+        return Category.getUsesCategory(getAccount(),category);
+    }
     public void editCategory(Category category) {
         navigateTo(new DisplayCategoryController(  category));
     }
 
+    public void showError(){
+            showError("Cant modify system category");
+    }
+    public void add(String name, int idAccount){
+        account.add(name, idAccount);
+    }
 
 
 }

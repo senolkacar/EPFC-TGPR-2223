@@ -24,12 +24,5 @@ public class BankApp {
             Controller.navigateTo(new LoginController());
 
     }
-    public static List<Category> Uses(Account account) {
-        List<Category> Uses = getUsesCategory(account);
-        for (Category val : Uses) {
-            System.out.println(val);
 
-        }
-        return Uses;
-    }
 }

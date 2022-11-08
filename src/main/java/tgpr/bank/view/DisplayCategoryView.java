@@ -40,7 +40,6 @@ public class DisplayCategoryView extends DialogWindow {
         lblName = new Label("").addTo(fields).addStyle(SGR.BOLD);
 
 
-
         fields.addComponent(new Label("type:"));
         lblType = new Label("").addTo(fields).addStyle(SGR.BOLD);
 
@@ -50,6 +49,7 @@ public class DisplayCategoryView extends DialogWindow {
         new Button("Update", this::update).addTo(buttons);
         new Button("Delete", this::delete).addTo(buttons);
         new Button("Close", this::close).addTo(buttons);
+
         root.addComponent(buttons, LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
 
         refresh();
