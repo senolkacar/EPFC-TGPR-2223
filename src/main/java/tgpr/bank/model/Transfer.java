@@ -166,7 +166,7 @@ public class Transfer extends Model {
                 .add("source_account",account.getId())
                 .add("target_account",account.getId()));
     }
-    
+
     public static Transfer getTransfer(int id) {
         return queryOne(Transfer.class, "select * from transfer where id=:id", new Params("id",id));
     }
@@ -195,14 +195,6 @@ public class Transfer extends Model {
                 ", effectiveAt='" + effectiveAt + '\'' +
                 ", state='" + state + '\'';
     }
-
-
-
-
-
-
-
-
     public void delete() {
 
         execute("delete from transfer_category where transfer=:id", new Params()

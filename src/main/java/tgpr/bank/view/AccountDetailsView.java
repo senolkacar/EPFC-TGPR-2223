@@ -79,8 +79,8 @@ public class AccountDetailsView extends DialogWindow {
                         new ColumnSpec<>("Description", Transfer::getDescription),
                         new ColumnSpec<>("From/To", m -> m.getSourceAccountID() == accountID ? m.getTargetAccount().getIban()+" - "+m.getTargetAccount().getTitle() : m.getSourceAccount().getIban()+" - "+m.getSourceAccount().getTitle()),
                         new ColumnSpec<>("Category", m -> Tools.ifNull(m.getCategory(accountID,m.getId()), "")),
-                        new ColumnSpec<>("Amount", m ->accountID == m.getSourceAccountID() ? "-"+m.getAmount()+" €" : "+"+m.getAmount()+" €"),
-                        new ColumnSpec<>("Saldo", m->m.getSourceSaldo() == 0 ? "" : m.getSourceSaldo()+" €"),
+                        new ColumnSpec<>("Amount", m ->accountID == m.getSourceAccountID() ? "-"+account.transformInEuro(m.getAmount()) : "+"+account.transformInEuro(m.getAmount())),
+                        new ColumnSpec<>("Saldo", m->m.getSourceSaldo() == 0 ? "" : account.transformInEuro(m.getSourceSaldo())),
                         new ColumnSpec<>("State", Transfer::getState)
                 );
         historyTable.addTo(panel);

@@ -18,11 +18,6 @@ public class DisplayTransferController extends Controller {
         this.transfer = transfer;
         view = new DisplayTransferView(this, transfer, account);
     }
-
-//    public Transfer displayTransfer(Transfer transfer) {
-//        var controller = new DisplayTransferController(transfer);
-//        navigateTo(controller);
-//        return controller.();++-++-
     @Override
     public Window getView() {
         return view;
