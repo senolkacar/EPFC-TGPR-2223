@@ -55,7 +55,13 @@ public class EditClientView extends DialogWindow {
 
     private Panel createFields(){
         var panel = new Panel().setLayoutManager(new GridLayout(2).setTopMarginSize(1));
-
+        new Label("Agency:").addTo(panel);
+        var agencies = Agency.getAllAgency();
+        cboagency = new ComboBox<>(agencies.stream().map(Agency::getName).toArray(String[]::new)).addTo(panel);
+        cboagency.setSelectedItem(agency.getName());
+        cboagency.addListener((selectedIndex,previousSelection,changedByUserInteraction)->validate());
+        new EmptySpace().addTo(panel);
+        new EmptySpace().addTo(panel);
         new Label("First Name:").addTo(panel);
         txtfirstName = new TextBox(new TerminalSize(20,1)).addTo(panel)
                 .setTextChangeListener((txt,client)->validate());
@@ -83,12 +89,6 @@ public class EditClientView extends DialogWindow {
                 .setTextChangeListener((txt,client)->validate());
         new EmptySpace().addTo(panel);
         errPassword.addTo(panel).setForegroundColor(TextColor.ANSI.RED);
-        new Label("Agency:").addTo(panel);
-        var agencies = Agency.getAllAgency();
-        cboagency = new ComboBox<>(agencies.stream().map(Agency::getName).toArray(String[]::new)).addTo(panel);
-        cboagency.setSelectedItem(agency.getName());
-        cboagency.addListener((selectedIndex,previousSelection,changedByUserInteraction)->validate());
-        new EmptySpace().addTo(panel);
 
         return panel;
 
