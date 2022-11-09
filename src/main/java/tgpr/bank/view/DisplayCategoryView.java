@@ -72,6 +72,12 @@ public class DisplayCategoryView extends DialogWindow {
         return root;
     }
 
+    private void delete() {
+        var name =txtCategoryName.getText();
+        category = controller.delete(category);
+        controller.close();
+    }
+
     private void update() {
         var name = txtCategoryName.getText();
         category = controller.update(name,category);
@@ -91,8 +97,8 @@ public class DisplayCategoryView extends DialogWindow {
 
 
 
-    private void delete() {
-        controller.delete();
+    private void delete(Category category) {
+        controller.delete(category);
     }
 
 }

@@ -90,21 +90,19 @@ public class Account extends Model {
         return this.iban+" - "+this.title;
     }
 
-    public boolean add(String name, int idAccount) {
-        int c;
+
+    public void addCategory(String name , int idAccount) {
         Category category = Category.getByAccount(Security.getLoggedUser().getId(),name);
-        String sql;
-        if (category == null)
-            sql = "insert into category ( name,account) " +
-                    "values (:name,:account )";
 
-        else
-            sql = "update category set name=:name " +
-                    " where account=:account";
-        c = execute(sql, new Params()
-                .add("name", name)
-                .add("account", idAccount));
+        if (category == null) {
 
-        return c == 1;
+
+            execute("insert into category ( name,account) " +
+                    "values (:name,:account )", new Params()
+
+                    .add("name", name)
+                    .add("account", idAccount));
+        }
+
     }
 }

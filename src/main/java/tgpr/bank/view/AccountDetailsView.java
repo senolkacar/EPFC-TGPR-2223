@@ -24,11 +24,12 @@ public class AccountDetailsView extends DialogWindow {
 
     private final Account account;
 
+
     private final Label lblIban = new Label("");
     private final Label lblTitle = new Label("");
     private final Label lblType = new Label("");
     private final Label lblSaldo = new Label("");
-    private  Button btnAddUpdate;
+
     private  TextBox txtNewCategory;
 
 
@@ -119,43 +120,52 @@ public class AccountDetailsView extends DialogWindow {
 
         txtNewCategory = new TextBox().setPreferredSize(new TerminalSize(15,1)).addTo(panel);
         Button btnAddCatrgoty = new Button("Add",this::add).addTo(panel);
-        Button btnResetCatrgoty = new Button("Reset").addTo(panel);
+        Button btnResetCatrgoty = new Button("Reset", this::reset).addTo(panel);
         reloadData();
 
 
 
         return  border;
     }
-    private void validate() {
+    public void reset(){
+        
+        txtNewCategory.getText();
 
     }
 
-    private void update() {
-    }
+
 
     private void add(){
         Category c = Category.getByAccount(Security.getLoggedUser().getId(),txtNewCategory.getText());
         controller.add(txtNewCategory.getText(),account.getId());
         Category cat = Category.getByAccount(account.getId(),txtNewCategory.getText());
 
+        reloadData();
+
+
+
 
 
 
         }
-    
+
+
+
+
 
 
     public void reloadData() {
 
-        // vide le tableau
+
         categoryTable.clear();
-        // demande au contrôleur la liste des membres
+
         var Category  = controller.getCategory();
-        // ajoute l'ensemble des membres au tableau
+
         categoryTable.add(Category);
-        categoryTable.add(Category);
+       // categoryTable.add(Category);
 
     }
+
 
 
     private Border favoritePanel() {

@@ -17,20 +17,11 @@ public class DisplayCategoryController extends Controller {
     }
 
 
-    public void delete() {
-        if (askConfirmation("You are about to delete this category. Please confirm.", "Delete category")) {
-            category.delete();
-            view.close();
-        }
-    }
 
-    public Category update() {
-       // var controller = new EditCategoryController(category);
-       // navigateTo(controller);
-        //
-        // return (Category) controller.getCategory();
-        return category
-                ;
+
+    public Category delete(Category category){
+        category.delete(category);
+        return  category;
     }
 
     public Category update(String name,Category category) {

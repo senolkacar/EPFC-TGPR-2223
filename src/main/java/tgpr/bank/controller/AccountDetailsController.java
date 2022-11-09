@@ -50,9 +50,11 @@ public class AccountDetailsController extends Controller {
             showError("Cant modify system category");
     }
     public void add(String name, int idAccount){
-        account.add(name, idAccount);
+        account.addCategory(name, idAccount);
     }
 
-
+    public void close(){
+        view.close();
+    }
 }
 
