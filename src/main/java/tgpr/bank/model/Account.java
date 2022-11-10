@@ -18,7 +18,7 @@ public class Account extends Model {
 
 
     public static List<Account> getAll() {
-        return queryList(Account.class,"SELECT * FROM account where id in(Select account from access,user where user.id=access.user and user.email=:loggedUser)",
+        return queryList(Account.class,"SELECT * FROM account where id in (Select account from access,user where user.id=access.user and user.email=:loggedUser)",
                 new Params("loggedUser",Security.getLoggedUser().getEmail()));
     }
 
@@ -86,10 +86,6 @@ public class Account extends Model {
         reload("select * from account",new Params());
     }
 
-    public String toString() {
-        return this.iban+" - "+this.title;
-    }
-
 
     public void addCategory(String name , int idAccount) {
         Category category = Category.getByAccount(Security.getLoggedUser().getId(),name);
@@ -106,4 +102,33 @@ public class Account extends Model {
         }
 
     }
+
+
+    @Override
+    public String toString() {
+        return "Account{" +
+                "iban='" + iban + '\'' +
+                ", title='" + title + '\'' +
+                ", type='" + type + '\'' +
+                '}';
+    }
+    public void addFavourite(int accountid) {
+        execute("insert into favourite (user, account) values (:loggeduser,:idAccount)", new Params()
+                .add("idAccount", accountid)
+                .add("loggeduser", Security.getLoggedUser().getId()));
+    }
+
+    public List<Account> getFavorites(){
+        return queryList(Account.class,"select * from favourite join account on favourite.account=account.id where user=:loggeduser",new Params("loggeduser",Security.getLoggedUser().getId()));
+    }
+
+    public List<Account> getFavoritesNotListed(){
+        return queryList(Account.class,"select * from account where account.id NOT IN(select favourite.account from favourite where user=:loggeduser) AND account.id NOT IN(Select account from access,user where user.id=access.user and user.email=:email) and account.id in(select transfer.target_account from transfer)",new Params("loggeduser",Security.getLoggedUser().getId()).add("email",Security.getLoggedUser().getEmail()));
+    }
+
+    public void delete() {
+         execute("delete from favourite where account=:id",new Params("id",id));
+
+    }
 }
+

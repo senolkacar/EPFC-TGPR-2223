@@ -3,7 +3,6 @@ package tgpr.bank.controller;
 
 import tgpr.bank.model.Account;
 import tgpr.bank.model.Category;
-
 import tgpr.bank.view.AccountDetailsView;
 import tgpr.framework.Controller;
 import com.googlecode.lanterna.gui2.Window;
@@ -55,6 +54,31 @@ public class AccountDetailsController extends Controller {
 
     public void close(){
         view.close();
+    }
+
+    public void addFavourite(int accountID){
+        account.addFavourite(accountID);
+    }
+
+    public List<Account> getFavorites(){
+
+        return account.getFavorites();
+    }
+
+    public List<Account> getFavoritesNotListed(){
+        return account.getFavoritesNotListed();
+    }
+
+    public void DeleteFavouriteAccount(Account account){
+        if(askConfirmation("Do you want to remove this account from your favorite? " + account.getIban(), "Remove favourite")){
+            account.delete();
+            account.reload();
+            view.reloadDataFav();
+            view.reloadInfo();
+
+        }
+
+
     }
 }
 
