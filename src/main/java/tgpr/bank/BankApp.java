@@ -2,9 +2,15 @@ package tgpr.bank;
 
 
 import tgpr.bank.controller.LoginController;
+import tgpr.bank.model.Account;
+import tgpr.bank.model.Category;
 import tgpr.bank.model.User;
 import tgpr.framework.Controller;
 import tgpr.framework.Model;
+
+import java.util.List;
+
+import static tgpr.bank.model.Category.getUsesCategory;
 
 
 public class BankApp {
@@ -18,4 +24,5 @@ public class BankApp {
             Controller.navigateTo(new LoginController());
 
     }
+
 }

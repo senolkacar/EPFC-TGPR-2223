@@ -85,4 +85,25 @@ public class Account extends Model {
         //il faudra peut être changer cette partie
         reload("select * from account",new Params());
     }
+
+    public String toString() {
+        return this.iban+" - "+this.title;
+    }
+
+
+    public void addCategory(String name , int idAccount) {
+        Category category = Category.getByAccount(Security.getLoggedUser().getId(),name);
+        String vide="";
+        if (category == null && name !=vide
+        ) {
+
+
+            execute("insert into category ( name,account) " +
+                    "values (:name,:account )", new Params()
+
+                    .add("name", name)
+                    .add("account", idAccount));
+        }
+
+    }
 }
