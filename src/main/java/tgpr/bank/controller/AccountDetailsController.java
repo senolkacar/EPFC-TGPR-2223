@@ -39,11 +39,24 @@ public class AccountDetailsController extends Controller {
     }
 
     public List<Account> getFavorites(){
+
         return account.getFavorites();
     }
 
     public List<Account> getFavoritesNotListed(){
         return account.getFavoritesNotListed();
+    }
+
+    public void DeleteFavouriteAccount(Account account){
+        if(askConfirmation("Do you want to remove this account from your favorite? " + account.getIban(), "Remove favourite")){
+            account.delete();
+            account.reload();
+            view.reloadData();
+            view.reloadInfo();
+
+        }
+
+
     }
 
 

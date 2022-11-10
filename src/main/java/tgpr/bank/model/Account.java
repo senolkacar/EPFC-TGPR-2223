@@ -18,7 +18,7 @@ public class Account extends Model {
 
 
     public static List<Account> getAll() {
-        return queryList(Account.class,"SELECT * FROM account where id in(Select account from access,user where user.id=access.user and user.email=:loggedUser)",
+        return queryList(Account.class,"SELECT * FROM account where id in (Select account from access,user where user.id=access.user and user.email=:loggedUser)",
                 new Params("loggedUser",Security.getLoggedUser().getEmail()));
     }
 
@@ -96,19 +96,6 @@ public class Account extends Model {
                 ", type='" + type + '\'' +
                 '}';
     }
-//    public boolean save(){
-//        int c;
-//        //Favourite f=getByAccount(accountid);
-//        String sql;
-//        if(f==null){
-//            sql="insert into favourite (account) "+"values(:accountid)";
-//        }else{
-//            sql="update favourite set account=:accountid where account=:accountid";
-//        }
-//        c=execute(sql, new Params().add("account",accountid));
-//        return c==1;
-//    }
-
     public void addFavourite(int accountid) {
         execute("insert into favourite (user, account) values (:loggeduser,:idAccount)", new Params()
                 .add("idAccount", accountid)
@@ -123,4 +110,9 @@ public class Account extends Model {
         return queryList(Account.class,"select * from account where account.id NOT IN(select favourite.account from favourite where user=:loggeduser) AND account.id NOT IN(Select account from access,user where user.id=access.user and user.email=:email) and account.id in(select transfer.target_account from transfer)",new Params("loggeduser",Security.getLoggedUser().getId()).add("email",Security.getLoggedUser().getEmail()));
     }
 
+    public void delete() {
+         execute("delete from favourite where account=:id",new Params("id",id));
+
+    }
 }
+
