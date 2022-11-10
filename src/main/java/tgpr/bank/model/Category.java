@@ -60,14 +60,7 @@ public class Category extends Model {
         return account.getId();
     }
 
-    public static Account getAccountInfo(int accountID) {
-        return queryOne(Account.class, "select * from account where id = :id", new Params("id", accountID));
-    }
 
-    public static Account getAccount(int accountID) {
-        Account account = getAccountInfo(accountID);
-        return account;
-    }
 
     public boolean isSystem() {
         return type;

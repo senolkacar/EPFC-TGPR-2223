@@ -93,8 +93,9 @@ public class Account extends Model {
 
     public void addCategory(String name , int idAccount) {
         Category category = Category.getByAccount(Security.getLoggedUser().getId(),name);
-
-        if (category == null) {
+        String vide="";
+        if (category == null && name !=vide
+        ) {
 
 
             execute("insert into category ( name,account) " +

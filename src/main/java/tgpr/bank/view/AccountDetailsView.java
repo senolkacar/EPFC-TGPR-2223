@@ -99,6 +99,7 @@ public class AccountDetailsView extends DialogWindow {
                 new ColumnSpec<Category>("type", c -> c.isSystem() ? "local" : "system"),
                 new ColumnSpec<>("Uses", c-> controller.getCategoryUses(c).size())
         );
+        categoryTable.setPreferredSize(new TerminalSize(50, 5));
         categoryTable.addTo(panel);
         categoryTable.setSelectAction(() -> {
             var category = categoryTable.getSelected();
@@ -114,57 +115,40 @@ public class AccountDetailsView extends DialogWindow {
 
         });
 
-//        reloadData();
-        Panel root = new Panel();
-        root.setLayoutManager(new GridLayout(2).setTopMarginSize(1));
 
-        txtNewCategory = new TextBox().setPreferredSize(new TerminalSize(15,1)).addTo(panel);
-        Button btnAddCatrgoty = new Button("Add",this::add).addTo(panel);
-        Button btnResetCatrgoty = new Button("Reset", this::reset).addTo(panel);
+        Panel root = new Panel();
+        root.setLayoutManager(new LinearLayout(Direction.HORIZONTAL).setSpacing(1));
+
+        txtNewCategory = new TextBox().setPreferredSize(new TerminalSize(15,1)).addTo(root);
+        Button btnAddCatrgoty = new Button("Add",this::addCategory).addTo(root);
+        Button btnResetCatrgoty = new Button("Reset", this::resetCategory).addTo(root);
+        root.addTo(panel);
         reloadData();
 
 
 
         return  border;
     }
-    public void reset(){
-        
-        txtNewCategory.getText();
+    public void resetCategory(){
+        txtNewCategory.setText("");
 
     }
 
 
 
-    private void add(){
-        Category c = Category.getByAccount(Security.getLoggedUser().getId(),txtNewCategory.getText());
-        controller.add(txtNewCategory.getText(),account.getId());
-        Category cat = Category.getByAccount(account.getId(),txtNewCategory.getText());
-
+    private void addCategory(){
+       controller.add(txtNewCategory.getText(),account.getId());
+        txtNewCategory.setText("");
         reloadData();
+        }
+    public void reloadData() {
 
-
-
-
+     categoryTable.clear();
+     var Category  = controller.getCategory();
+     categoryTable.add(Category);
 
 
         }
-
-
-
-
-
-
-    public void reloadData() {
-
-
-        categoryTable.clear();
-
-        var Category  = controller.getCategory();
-
-        categoryTable.add(Category);
-       // categoryTable.add(Category);
-
-    }
 
 
 

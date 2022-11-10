@@ -47,7 +47,7 @@ public class AccountDetailsController extends Controller {
     }
 
     public void showError(){
-            showError("Cant modify system category");
+            showError("you may not edit a system category !");
     }
     public void add(String name, int idAccount){
         account.addCategory(name, idAccount);
