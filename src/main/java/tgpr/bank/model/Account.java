@@ -4,6 +4,7 @@ import tgpr.framework.Model;
 import tgpr.framework.Params;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.NumberFormat;
 import java.util.List;
 
 public class Account extends Model {
@@ -16,10 +17,9 @@ public class Account extends Model {
     private double saldo;
 
 
-
     public static List<Account> getAll() {
-        return queryList(Account.class,"SELECT * FROM account where id in (Select account from access,user where user.id=access.user and user.email=:loggedUser)",
-                new Params("loggedUser",Security.getLoggedUser().getEmail()));
+        return queryList(Account.class, "SELECT * FROM account where id in (Select account from access,user where user.id=access.user and user.email=:loggedUser)",
+                new Params("loggedUser", Security.getLoggedUser().getEmail()));
     }
 
     public int getId() {
@@ -66,6 +66,18 @@ public class Account extends Model {
         return saldo;
     }
 
+    public String transformInEuro(double montant) {
+        NumberFormat formatter = NumberFormat.getCurrencyInstance();
+        String moneyString = formatter.format(montant);
+        return (moneyString);
+    }
+
+    // ajout de la fonciton pour afficher en euro
+    public String getSaldoWithEuroSign() {
+        return transformInEuro(saldo);
+    }
+
+
     public void setSaldo(double saldo) {
         this.saldo = saldo;
     }
@@ -83,14 +95,13 @@ public class Account extends Model {
     @Override
     public void reload() {
         //il faudra peut être changer cette partie
-        reload("select * from account",new Params());
+        reload("select * from account", new Params());
     }
 
-
-    public void addCategory(String name , int idAccount) {
-        Category category = Category.getByAccount(Security.getLoggedUser().getId(),name);
-        String vide="";
-        if (category == null && name !=vide
+    public void addCategory(String name, int idAccount) {
+        Category category = Category.getByAccount(Security.getLoggedUser().getId(), name);
+        String vide = "";
+        if (category == null && name != vide
         ) {
 
 
@@ -103,32 +114,35 @@ public class Account extends Model {
 
     }
 
-
-    @Override
-    public String toString() {
-        return "Account{" +
-                "iban='" + iban + '\'' +
-                ", title='" + title + '\'' +
-                ", type='" + type + '\'' +
-                '}';
-    }
     public void addFavourite(int accountid) {
         execute("insert into favourite (user, account) values (:loggeduser,:idAccount)", new Params()
                 .add("idAccount", accountid)
                 .add("loggeduser", Security.getLoggedUser().getId()));
     }
 
-    public List<Account> getFavorites(){
-        return queryList(Account.class,"select * from favourite join account on favourite.account=account.id where user=:loggeduser",new Params("loggeduser",Security.getLoggedUser().getId()));
+    public List<Account> getFavorites() {
+        return queryList(Account.class, "select * from favourite join account on favourite.account=account.id where user=:loggeduser", new Params("loggeduser", Security.getLoggedUser().getId()));
     }
 
-    public List<Account> getFavoritesNotListed(){
-        return queryList(Account.class,"select * from account where account.id NOT IN(select favourite.account from favourite where user=:loggeduser) AND account.id NOT IN(Select account from access,user where user.id=access.user and user.email=:email) and account.id in(select transfer.target_account from transfer)",new Params("loggeduser",Security.getLoggedUser().getId()).add("email",Security.getLoggedUser().getEmail()));
+    public List<Account> getFavoritesNotListed() {
+        return queryList(Account.class, "select * from account where account.id NOT IN(select favourite.account from favourite where user=:loggeduser) AND account.id NOT IN(Select account from access,user where user.id=access.user and user.email=:email) and account.id in(select transfer.target_account from transfer)", new Params("loggeduser", Security.getLoggedUser().getId()).add("email", Security.getLoggedUser().getEmail()));
     }
 
     public void delete() {
-         execute("delete from favourite where account=:id",new Params("id",id));
+        execute("delete from favourite where account=:id", new Params("id", id));
 
+    }
+
+    @Override
+    public String toString() {
+        return "Account{" +
+                "id=" + id +
+                ", iban='" + iban + '\'' +
+                ", title='" + title + '\'' +
+                ", floor=" + floor +
+                ", type='" + type + '\'' +
+                ", saldo=" + saldo +
+                '}';
     }
 }
 

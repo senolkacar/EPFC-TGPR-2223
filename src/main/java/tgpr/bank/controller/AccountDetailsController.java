@@ -3,6 +3,8 @@ package tgpr.bank.controller;
 
 import tgpr.bank.model.Account;
 import tgpr.bank.model.Category;
+import tgpr.bank.model.Transfer;
+import tgpr.bank.model.User;
 import tgpr.bank.view.AccountDetailsView;
 import tgpr.framework.Controller;
 import com.googlecode.lanterna.gui2.Window;
@@ -77,7 +79,25 @@ public class AccountDetailsController extends Controller {
             view.reloadInfo();
 
         }
+    }
 
+
+    public List<Transfer> getTransfers() {
+        return Transfer.getTransfers(getAccount());
+    }
+
+    public Transfer getTransfer(int id) {
+        return Transfer.getTransfer(id);
+    }
+
+    public List<Transfer> getFilteredTransfer(String filter) {
+        return Transfer.getTransfersFilter(getAccount(), filter);
+    }
+
+    public Transfer displayTransfer(Transfer transfer, Account account) {
+        var controller = new DisplayTransferController(transfer, account);
+        navigateTo(controller);
+        return controller.getTransfer();
 
     }
 }

@@ -1,38 +1,36 @@
 package tgpr.bank.model;
 
-import org.springframework.util.Assert;
 import tgpr.framework.Model;
 import tgpr.framework.Params;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-
 
 
 
 public class Category extends Model {
-
     private static Integer idAccount;
-
-
+    public enum Fields {
+        name, id
+    }
     private int id;
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getAccount() {
+        return account;
+    }
+
     private String name;
     private boolean type;
-    int account;
-
-    int cmp;
-
-    public int getCmp() {
-        return cmp;
-    }
-
-    public void setCmp(int cmp) {
-        this.cmp = cmp;
-    }
-
+    private int account;
     public Category() {
     }
 
@@ -66,10 +64,6 @@ public class Category extends Model {
         return type;
     }
 
-    public int getAccount() {
-        return account;
-    }
-
     public void setAccount(int account) {
         this.account = account;
     }
@@ -78,30 +72,14 @@ public class Category extends Model {
         this.type = account;
     }
 
-    public int getId() {
-        return id;
-    }
-
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-
-    @Override
-    public String toString() {
-        return "Category{" +
-                "name='" + name + '\'' +
-                ", type=" + type +
-                '}';
-    }
 
     @Override
     protected void mapper(ResultSet rs) throws SQLException {
@@ -129,15 +107,13 @@ public class Category extends Model {
                 .add("categoryID", category.getId()));
     }
 
-
-
-
-
-
-
     public static List<Category> getAll() {
         return queryList(Category.class, "SELECT * FROM category order by name ");
 
+    }
+
+    public String toString() {
+        return this.name;
     }
 
     @Override
@@ -168,8 +144,5 @@ public class Category extends Model {
         );
 
     }
-
-
-
 }
 

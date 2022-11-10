@@ -1,0 +1,13 @@
+.gitignore
+.gitignore.bak
+target/
+out/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+
+### IntelliJ IDEA ###
+.idea/
+.idea/uiDesigner.xml
+.idea/workspace.xml
