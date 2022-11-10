@@ -24,6 +24,7 @@ public class AccountDetailsView extends DialogWindow {
     private final Account account;
 
 
+
     private final Label lblIban = new Label("");
     private final Label lblTitle = new Label("");
     private final Label lblType = new Label("");
@@ -107,17 +108,29 @@ public class AccountDetailsView extends DialogWindow {
         panel.addComponent(table);
         table.setPreferredSize(new TerminalSize(ViewManager.getTerminalColumns(),15));
 
-        Border border = panel.withBorder(Borders.doubleLine("Favorite"));
-        panel.setPreferredSize(new TerminalSize(55,10));
+        Border border = panel.withBorder(Borders.singleLine("Favorite"));
+        panel.setPreferredSize(new TerminalSize(58,10));
         var buttons = new Panel().addTo(panel).setLayoutManager(new LinearLayout(Direction.HORIZONTAL));
-        panel.addComponent(buttons,LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
+        panel.addComponent(buttons,LinearLayout.createLayoutData(LinearLayout.Alignment.Fill));
         favoritesList = controller.getFavoritesNotListed();
         var favoritesListToString = favoritesList.stream().map(m->m.getIban()+" - "+m.getTitle()).collect(Collectors.toList());
         favoritesListToString.add(0,"");
-        cboFavorite = new ComboBox<String>(favoritesListToString).addTo(panel).setPreferredSize(new TerminalSize(5,1))
+        cboFavorite = new ComboBox<String>(favoritesListToString).addTo(buttons).setPreferredSize(new TerminalSize(28,1))
                 .addListener((newIndex, oldIndex, byUser) -> reloadData());
         Button add = new Button("Add", this::addFavourite).addTo(buttons);
         Button btnReset = new Button("Reset", this::reset).addTo(buttons);
+
+
+        table.setPreferredSize(new TerminalSize(ViewManager.getTerminalColumns(), 15));
+
+        table.setSelectAction(() ->{
+            var account = table.getSelected();
+            table.setSelected(account);
+            controller.DeleteFavouriteAccount(account);
+        });
+        // charge les données dans la table
+        reloadData();
+
 
 
         return border;
@@ -145,11 +158,17 @@ public class AccountDetailsView extends DialogWindow {
         }
     }
 
-    public void addFavourite(){
-        controller.addFavourite(favoritesList.get(cboFavorite.getSelectedIndex()-1).getId());
-        reloadInfo();
-        reloadData();
+
+        public void addFavourite(){
+            if (cboFavorite.getSelectedIndex()!=0) {
+                controller.addFavourite(favoritesList.get(cboFavorite.getSelectedIndex() - 1).getId());
+                reloadInfo();
+                reloadData();
+            }
+
     }
+
+
 
     private Panel buttonPanel() {
         Panel panel = new Panel().setLayoutManager(new LinearLayout(Direction.HORIZONTAL).setSpacing(1));
