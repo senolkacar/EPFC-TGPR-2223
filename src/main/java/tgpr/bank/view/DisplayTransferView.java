@@ -99,7 +99,7 @@ public class DisplayTransferView extends DialogWindow {
     private void refresh() {
         if (transfer != null) {
             lblCreatedAt.setText(String.valueOf(transfer.getCreatedAt()));
-            lblEffectiveAt.setText(String.valueOf(transfer.getEffectiveAt()));
+            lblEffectiveAt.setText(Tools.ifNull((transfer.getEffectiveAt())," "));
             lblCreatedBy.setText((User.getById(transfer.getCreatedBy())));
             lblSourceAccount.setText(transfer.getAccountInfoForTransfer(transfer.getSourceAccountID(),transfer.getSourceAccountID()));
             lblTargetAccount.setText(transfer.getAccountInfoForTransfer(transfer.getTargetAccountID(),transfer.getTargetAccountID()));

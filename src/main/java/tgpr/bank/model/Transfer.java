@@ -22,6 +22,8 @@ public class Transfer extends Model {
     private double sourceSaldo;
     private double targetSaldo;
     private String createdAt;
+    private String createdAtHistory;
+
     private int createdBy;
     private String effectiveAt;
 
@@ -37,6 +39,9 @@ public class Transfer extends Model {
         NumberFormat formatter = NumberFormat.getCurrencyInstance();
         String moneyString = formatter.format(montant);
         return (moneyString);
+    }
+    public String getCreatedAtHistory() {
+        return createdAtHistory;
     }
 
     public String getDescription() {
@@ -88,6 +93,7 @@ public class Transfer extends Model {
         this.sourceSaldo = rs.getDouble("source_saldo");
         this.targetSaldo = rs.getDouble("target_saldo");
         this.createdAt = rs.getTimestamp("created_at").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+        this.createdAtHistory = rs.getTimestamp("created_at").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
         this.createdBy = rs.getInt("created_by");
         this.effectiveAt = rs.getObject("effective_at") != null ? rs.getTimestamp("effective_at").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : null;
         this.state = rs.getString("state");

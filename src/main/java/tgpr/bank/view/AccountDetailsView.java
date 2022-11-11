@@ -18,6 +18,7 @@ import tgpr.framework.Tools;
 import tgpr.framework.ViewManager;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.time.format.DateTimeFormatter;
 
 
 
@@ -91,7 +92,7 @@ public class AccountDetailsView extends DialogWindow {
         txtFilter.setPreferredSize(new TerminalSize(20,1));
         Border border = panel.withBorder(Borders.singleLine("History"));
         historyTable = new ObjectTable<>(
-                        new ColumnSpec<>("Effect_Date", m-> Tools.ifNull(m.getEffectiveAt(),m.getCreatedAt())),
+                        new ColumnSpec<>("Effect_Date", m-> Tools.ifNull(m.getEffectiveAt(),m.getCreatedAtHistory())),
                         new ColumnSpec<>("Description", Transfer::getDescription),
                         new ColumnSpec<>("From/To", m -> m.getSourceAccountID() == accountID ? m.getTargetAccount().getIban()+" - "+m.getTargetAccount().getTitle() : m.getSourceAccount().getIban()+" - "+m.getSourceAccount().getTitle()),
                         new ColumnSpec<>("Category", m -> Tools.ifNull(m.getCategory(accountID,m.getId()), "")),
