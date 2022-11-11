@@ -1,5 +1,6 @@
 package tgpr.bank.model;
 
+import tgpr.bank.view.AccountDetailsView;
 import tgpr.framework.Model;
 import tgpr.framework.Params;
 import tgpr.framework.Tools;
@@ -240,5 +241,6 @@ public class Transfer extends Model {
                 .add("account",account)
                 .add ("category",category));
     }
+
 }
 

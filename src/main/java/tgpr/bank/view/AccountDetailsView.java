@@ -49,12 +49,12 @@ public class AccountDetailsView extends DialogWindow {
         super("Account Details");
         this.controller = controller;
         this.account = account;
-        User current = Security.getLoggedUser();
-        setHints(List.of(Hint.CENTERED, Hint.FIXED_SIZE));
+        setHints(List.of(Window.Hint.CENTERED, Window.Hint.FIXED_SIZE));
         setCloseWindowWithEscape(true);
-        setFixedSize(new TerminalSize(110, 23));
+        setFixedSize(new TerminalSize(113, 24));
 
-        Panel root = new Panel().setLayoutManager(new LinearLayout(Direction.VERTICAL).setSpacing(1));
+        Panel root = new Panel().setLayoutManager(new LinearLayout(Direction.VERTICAL).setSpacing(1))
+                .setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Fill));
         setComponent(root);
 
         accountDetailPanel().addTo(root);
@@ -67,7 +67,7 @@ public class AccountDetailsView extends DialogWindow {
     
 
     private Panel accountDetailPanel(){
-        Panel panel = new Panel().setLayoutManager(new GridLayout(4).setHorizontalSpacing(1));
+        Panel panel = new Panel().setLayoutManager(new GridLayout(4).setTopMarginSize(0));;
         panel.addComponent(new Label("IBAN:"));
         lblIban.addTo(panel).addStyle(SGR.BOLD);
 
@@ -87,25 +87,57 @@ public class AccountDetailsView extends DialogWindow {
     private Border historyPanel() {
         int accountID = account.getId();
         var panel = new Panel().setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Fill));
-        new Label("Filter:").addTo(panel);
-        txtFilter.addTo(panel).takeFocus().setTextChangeListener((txt,client)->reloadFiltered());
-        txtFilter.setPreferredSize(new TerminalSize(20,1));
         Border border = panel.withBorder(Borders.singleLine("History"));
+        var filterpanel = new Panel().setLayoutManager(new GridLayout(2).setHorizontalSpacing(1).setLeftMarginSize(0));
+        new Label("Filter:").addTo(filterpanel);
+        txtFilter.addTo(filterpanel).takeFocus().setTextChangeListener((txt,client)->reloadFiltered());
+        txtFilter.setPreferredSize(new TerminalSize(20,1));
+        filterpanel.addTo(panel);
+        new EmptySpace().addTo(panel);
         historyTable = new ObjectTable<>(
                         new ColumnSpec<>("Effect_Date", m-> Tools.ifNull(m.getEffectiveAt(),m.getCreatedAtHistory())),
                         new ColumnSpec<>("Description", Transfer::getDescription),
-                        new ColumnSpec<>("From/To", m -> m.getSourceAccountID() == accountID ? m.getTargetAccount().getIban()+" - "+m.getTargetAccount().getTitle() : m.getSourceAccount().getIban()+" - "+m.getSourceAccount().getTitle()),
-                        new ColumnSpec<>("Category", m -> Tools.ifNull(m.getCategory(accountID,m.getId()), "")),
-                        new ColumnSpec<>("Amount", m ->accountID == m.getSourceAccountID() ? "-"+account.transformInEuro(m.getAmount()) : "+"+account.transformInEuro(m.getAmount())),
-                        new ColumnSpec<>("Saldo", m->m.getSourceSaldo() == 0 ? "" : account.transformInEuro(m.getSourceSaldo())),
+                        new ColumnSpec<>("From/To", this::AccountToDisplay).setWidth(37).setOverflowHandling(ColumnSpec.OverflowHandling.Wrap),
+                        new ColumnSpec<>("Category", this::CategoryToDisplay).setWidth(16),
+                        new ColumnSpec<>("Amount", this::getAmount).setWidth(10),
+                        new ColumnSpec<>("Saldo", this::getSourceSaldo).setWidth(10),
                         new ColumnSpec<>("State", Transfer::getState)
                 );
+        historyTable.setPreferredSize(new TerminalSize(115, 5));
         historyTable.addTo(panel);
         historyTable.setSelectAction(this::displayTransfer);
+
 
         reloadDataHistory();
 
         return border;
+    }
+
+    private String CategoryToDisplay(Transfer m){
+        return m.getCategory(account.getId(),m.getId()) == null ? "" : m.getCategory(account.getId(),m.getId()).getName();
+    }
+    private String AccountToDisplay(Transfer m) {
+        if (m.getSourceAccountID() == account.getId()) {
+            return m.getTargetAccount().getIban() + " - " + m.getTargetAccount().getTitle();
+        } else {
+            return m.getSourceAccount().getIban() + " - " + m.getSourceAccount().getTitle();
+        }
+    }
+
+    private String getSourceSaldo(Transfer m) {
+        if (m.getSourceAccountID() == account.getId()) {
+            return m.getSourceSaldo() == 0 ? "" : account.transformInEuro(m.getSourceSaldo());
+        } else {
+            return m.getTargetSaldo() == 0 ? "" : account.transformInEuro(m.getTargetSaldo());
+        }
+    }
+
+    private String getAmount(Transfer m) {
+        if(m.getSourceAccountID() == account.getId()){
+            return "-"+account.transformInEuro(m.getAmount());
+        }else{
+            return "+"+account.transformInEuro(m.getAmount());
+        }
     }
 
     public void reloadDataHistory() {
@@ -156,8 +188,8 @@ public class AccountDetailsView extends DialogWindow {
         Border border = panel.withBorder(Borders.singleLine("Category"));
         categoryTable = new ObjectTable<>(
 
-                new ColumnSpec<>("Category", c -> (c.getName())),
-                new ColumnSpec<Category>("type", c -> c.isSystem() ? "local" : "system"),
+                new ColumnSpec<>("Name", Category::getName).setWidth(22),
+                new ColumnSpec<Category>("Type", c -> c.isSystem() ? "local" : "system"),
                 new ColumnSpec<>("Uses", c-> controller.getCategoryUses(c).size())
         );
         categoryTable.setPreferredSize(new TerminalSize(50,10));
@@ -176,11 +208,11 @@ public class AccountDetailsView extends DialogWindow {
 
         });
 
-
+        new EmptySpace().addTo(panel);
         Panel root = new Panel();
         root.setLayoutManager(new LinearLayout(Direction.HORIZONTAL).setSpacing(1));
 
-        txtNewCategory = new TextBox().setPreferredSize(new TerminalSize(15,1)).addTo(root);
+        txtNewCategory = new TextBox().setPreferredSize(new TerminalSize(22,1)).addTo(root);
         Button btnAddCatrgoty = new Button("Add",this::addCategory).addTo(root);
         Button btnResetCatrgoty = new Button("Reset", this::resetCategory).addTo(root);
         root.addTo(panel);
@@ -190,8 +222,8 @@ public class AccountDetailsView extends DialogWindow {
     }
     public void resetCategory(){
         txtNewCategory.setText("");
-
     }
+
 
 
 
@@ -212,8 +244,8 @@ public class AccountDetailsView extends DialogWindow {
     private Border favoritePanel() {
         var panel = new Panel().setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Fill));
         table = new ObjectTable<>(
-                new ColumnSpec<>("IBAN ",a -> a.getIban()+" - "+a.getTitle()),
-                new ColumnSpec<>("Type", Account::getType)
+                new ColumnSpec<>("IBAN ",this::displayFavorite).setWidth(28),
+                new ColumnSpec<>("Type", Account::getType).setWidth(10)
         );
         reloadDataFav();
         panel.addComponent(table);
@@ -239,13 +271,16 @@ public class AccountDetailsView extends DialogWindow {
             table.setSelected(account);
             controller.DeleteFavouriteAccount(account);
         });
-        // charge les données dans la table
-        reloadDataFav();
 
-        //Border border = panel.withBorder(Borders.singleLine("Favorite"));
+        reloadDataFav();
 
         return border;
     }
+
+    private String displayFavorite(Account account){
+        return account.getIban()+" - "+account.getTitle();
+    }
+
     public void reset(){
         cboFavorite.setSelectedIndex(0);
 
@@ -281,9 +316,10 @@ public class AccountDetailsView extends DialogWindow {
 
 
     private Panel buttonPanel() {
-        Panel panel = new Panel().setLayoutManager(new LinearLayout(Direction.HORIZONTAL).setSpacing(1));
-        Button btnNewTransfer = new Button("New Transfer").addTo(panel);
-        Button btnExit = new Button("Exit",this::close).addTo(panel);
+        Panel panel = new Panel().setLayoutManager(new LinearLayout(Direction.HORIZONTAL))
+                .setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
+        new Button("New Transfer").addTo(panel);
+        new Button("Close",this::close).addTo(panel);
         return panel;
     }
 
@@ -291,7 +327,7 @@ public class AccountDetailsView extends DialogWindow {
         lblIban.setText(account.getIban());
         lblTitle.setText(account.getTitle());
         lblType.setText(account.getType());
-        lblSaldo.setText(Tools.toString(account.getSaldo()));
+        lblSaldo.setText((account.transformInEuro(account.getSaldo())));
     }
 
     private void displayTransfer() {
