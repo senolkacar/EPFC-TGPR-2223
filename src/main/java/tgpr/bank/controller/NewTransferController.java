@@ -29,4 +29,8 @@ public class NewTransferController extends Controller {
         errors.add(TransferValidator.isValidDescription(description));
         return errors;
     }
+
+    public void save(String iban, String title, String amount, String description){
+        //if(validate().isEmpty())
+    }
 }

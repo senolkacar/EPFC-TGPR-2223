@@ -13,12 +13,14 @@ import tgpr.framework.Layouts;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class NewTransferView extends DialogWindow {
     private NewTransferController controller;
     private ComboBox<Account> cBoxSourceAccount;
     private ComboBox<String> cBoxTargetAccount;
+    private ComboBox<String> cbBoxCategory;
     private final TextBox txtBoxIban;
     private final TextBox txtBoxTitle;
     private final TextBox txtBoxAmount;
@@ -28,7 +30,9 @@ public class NewTransferView extends DialogWindow {
     private final Label errTitle;
     private final Label errAmount;
     private final Label errDescription;
+    private final CheckBox checkBoxAddtoFav;
     private List<Account> listTargetAccounts;
+    private List<Category> listCategory;
 
     public NewTransferView(NewTransferController controller){
         super("Create Transfer");
@@ -67,7 +71,7 @@ public class NewTransferView extends DialogWindow {
         new EmptySpace().addTo(targetAccountFields);
         errTitle = new Label("").addTo(targetAccountFields).setForegroundColor(TextColor.ANSI.RED);
         targetAccountFields.addComponent(new Label("Add to favourites "));
-        CheckBox checkBoxAddtoFav = new CheckBox().addTo(targetAccountFields);
+        checkBoxAddtoFav = new CheckBox().addTo(targetAccountFields);
         panel.addComponent(new Label("Amount: "));
         txtBoxAmount = new TextBox(new TerminalSize(10,1)).addTo(panel)
                 .setTextChangeListener((txt,byUser) -> validate());
@@ -83,7 +87,10 @@ public class NewTransferView extends DialogWindow {
         new EmptySpace().addTo(panel);
         new EmptySpace().addTo(panel);
         panel.addComponent(new Label("Category: "));
-        ComboBox<Category> cbBoxCategory = new ComboBox<Category>().addTo(panel);
+        listCategory = Category.getByAccount(cBoxSourceAccount.getSelectedItem().getId());
+        var listCategoryToString = Category.getCategoryNames(cBoxSourceAccount.getSelectedItem().getId());
+        listCategoryToString.add(0,"NO CATEGORY");
+        cbBoxCategory = new ComboBox<String>(listCategoryToString).addTo(panel);
 
         Panel buttons = new Panel(new GridLayout(2)).setLayoutData(Layouts.LINEAR_CENTER).addTo(root);
         Button buttonCreate = new Button("Create").addTo(buttons);
@@ -100,6 +107,16 @@ public class NewTransferView extends DialogWindow {
         cBoxTargetAccount.addItem("-- insert IBAN myself --");
         for(String account : listTargetAccountsToString){
             cBoxTargetAccount.addItem(account);
+        }
+        listCategory = Category.getByAccount(cBoxSourceAccount.getSelectedItem().getId());
+        var listCategoryToString = Category.getCategoryNames(cBoxSourceAccount.getSelectedItem().getId());
+        int sizeCat = cbBoxCategory.getItemCount();
+        for(int i=sizeCat;i>0;--i){
+            cbBoxCategory.removeItem(i-1);
+        }
+        listCategoryToString.add(0,"NO CATEGORY");
+        for(String category : listCategoryToString){
+            cbBoxCategory.addItem(category);
         }
     }
 
@@ -131,7 +148,9 @@ public class NewTransferView extends DialogWindow {
     }
 
     public void save(String iban, String title, String amount, String description){
-
+        if(checkBoxAddtoFav.isChecked()){
+            //fonction pour ajouter le compte
+        }
     }
 
 }
