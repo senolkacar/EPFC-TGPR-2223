@@ -3,8 +3,10 @@ package tgpr.bank.model;
 import tgpr.framework.Model;
 import tgpr.framework.Params;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -12,7 +14,7 @@ import java.util.List;
 public class Transfer extends Model {
 
     public enum Fields{
-        Id,Amount,Description,SourceAccountIban,TargetAccountIban,TargetAccountTitle,SourceSaldo,TargetSaldo,CreatedAT,CreatedBy,EffectiveAt
+        Amount,Description,SourceAccountIban,TargetAccountIban,TargetAccountTitle,SourceSaldo,TargetSaldo,CreatedAT,CreatedBy,EffectiveAt
     }
 
     private int id;
@@ -131,6 +133,22 @@ public class Transfer extends Model {
         return queryList(Transfer.class, "select * from transfer where source_account=:source_account or target_account=:target_account ORDER BY effective_at DESC, created_at DESC", new Params()
                 .add("source_account",accountID)
                 .add("target_account",accountID));
+    }
+
+    public static void addTransferToDB(Double amount, String description, Integer sourceAccountID, Integer targetAccountID, Double sourceSaldo, Double targetSaldo, LocalDateTime createdAT, Integer createdBy, Date effectiveAT, String state ){
+        execute("insert into Transfer(amount,description,source_account,target_account,source_saldo,target_saldo,created_at,created_by,effective_at,state)" +
+                "values(:amount,:description,:sourceAccountID,:targetAccountID,:sourceSaldo,:targetSaldo,:createdAT,:createdBy,:effectiveAT,:state)",
+                new Params()
+                .add("amount",amount)
+                .add("description", description)
+                .add("sourceAccountID",sourceAccountID)
+                .add("targetAccountID",targetAccountID)
+                .add("sourceSaldo",sourceSaldo)
+                .add("targetSaldo",targetSaldo)
+                .add("createdAT",createdAT)
+                .add("createdBy",createdBy)
+                .add("effectiveAT",effectiveAT)
+                .add("state",state));
     }
 
 }

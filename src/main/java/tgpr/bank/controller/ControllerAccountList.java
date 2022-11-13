@@ -2,7 +2,6 @@ package tgpr.bank.controller;
 
 import com.googlecode.lanterna.gui2.Window;
 import tgpr.bank.model.Account;
-import tgpr.bank.model.User;
 import tgpr.bank.view.ViewAccountList;
 import tgpr.framework.Controller;
 import tgpr.bank.model.Security;
@@ -10,6 +9,7 @@ import tgpr.bank.model.Security;
 import java.util.List;
 
 public class ControllerAccountList extends Controller {
+
     @Override
     public Window getView() {
         return new ViewAccountList(this);

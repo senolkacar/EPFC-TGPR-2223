@@ -94,7 +94,7 @@ public class NewTransferView extends DialogWindow {
 
         Panel buttons = new Panel(new GridLayout(2)).setLayoutData(Layouts.LINEAR_CENTER).addTo(root);
         Button buttonCreate = new Button("Create").addTo(buttons);
-        Button buttonClose = new Button("Close").addTo(buttons);
+        Button buttonClose = new Button("Close",this::close).addTo(buttons);
     }
 
     public void reloadData(){
