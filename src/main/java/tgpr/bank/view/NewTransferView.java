@@ -5,12 +5,10 @@ import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
 import tgpr.bank.controller.NewTransferController;
-import tgpr.bank.model.Account;
-import tgpr.bank.model.Category;
-import tgpr.bank.model.Favourite;
-import tgpr.bank.model.Transfer;
+import tgpr.bank.model.*;
 import tgpr.framework.Layouts;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -30,9 +28,13 @@ public class NewTransferView extends DialogWindow {
     private final Label errTitle;
     private final Label errAmount;
     private final Label errDescription;
+    private final Label errDate;
     private final CheckBox checkBoxAddtoFav;
     private List<Account> listTargetAccounts;
+    private List<String> listTargetAccountsToString;
     private List<Category> listCategory;
+    private List<String> listCategoryToString;
+
 
     public NewTransferView(NewTransferController controller){
         super("Create Transfer");
@@ -55,7 +57,7 @@ public class NewTransferView extends DialogWindow {
         new EmptySpace().addTo(panel);
         panel.addComponent(new Label("Target Account: "));
         listTargetAccounts = Account.getTargetAccounts(cBoxSourceAccount.getSelectedItem().getId());
-        var listTargetAccountsToString = Account.getTargetAccountsToString(cBoxSourceAccount.getSelectedItem().getId());
+        listTargetAccountsToString = Account.getTargetAccountsToString(cBoxSourceAccount.getSelectedItem().getId());
         listTargetAccountsToString.add(0,"-- insert IBAN myself --");
         cBoxTargetAccount = new ComboBox<String>(listTargetAccountsToString).addTo(panel).addListener((SelectedIndex,previousSelection, changedByUserInteraction) -> reloadInfo());
         new EmptySpace().addTo(panel);
@@ -83,23 +85,24 @@ public class NewTransferView extends DialogWindow {
         new EmptySpace().addTo(panel);
         errDescription = new Label("").addTo(panel).setForegroundColor(TextColor.ANSI.RED);
         panel.addComponent(new Label("Effect Date: "));
-        txtBoxDate = new TextBox(new TerminalSize(9,1)).addTo(panel);
+        txtBoxDate = new TextBox(new TerminalSize(15,1)).addTo(panel)
+                .setTextChangeListener((txt,byUser)->validate());
         new EmptySpace().addTo(panel);
-        new EmptySpace().addTo(panel);
+        errDate = new Label("").addTo(panel).setForegroundColor(TextColor.ANSI.RED);
         panel.addComponent(new Label("Category: "));
         listCategory = Category.getByAccount(cBoxSourceAccount.getSelectedItem().getId());
-        var listCategoryToString = Category.getCategoryNames(cBoxSourceAccount.getSelectedItem().getId());
+        listCategoryToString = Category.getCategoryNames(cBoxSourceAccount.getSelectedItem().getId());
         listCategoryToString.add(0,"NO CATEGORY");
         cbBoxCategory = new ComboBox<String>(listCategoryToString).addTo(panel);
 
         Panel buttons = new Panel(new GridLayout(2)).setLayoutData(Layouts.LINEAR_CENTER).addTo(root);
-        Button buttonCreate = new Button("Create").addTo(buttons);
+        Button buttonCreate = new Button("Create",() -> save(cBoxSourceAccount.getSelectedItem().getIban(),cBoxSourceAccount.getSelectedItem().getTitle(),txtBoxAmount.getText(),txtBoxDescription.getText())).addTo(buttons);
         Button buttonClose = new Button("Close",this::close).addTo(buttons);
     }
 
     public void reloadData(){
         listTargetAccounts = Account.getTargetAccounts(cBoxSourceAccount.getSelectedItem().getId());
-        var listTargetAccountsToString = Account.getTargetAccountsToString(cBoxSourceAccount.getSelectedItem().getId());
+        listTargetAccountsToString = Account.getTargetAccountsToString(cBoxSourceAccount.getSelectedItem().getId());
         int size = cBoxTargetAccount.getItemCount();
         for(int i=size ; i>0;--i){
             cBoxTargetAccount.removeItem(i-1);
@@ -109,7 +112,7 @@ public class NewTransferView extends DialogWindow {
             cBoxTargetAccount.addItem(account);
         }
         listCategory = Category.getByAccount(cBoxSourceAccount.getSelectedItem().getId());
-        var listCategoryToString = Category.getCategoryNames(cBoxSourceAccount.getSelectedItem().getId());
+        listCategoryToString = Category.getCategoryNames(cBoxSourceAccount.getSelectedItem().getId());
         int sizeCat = cbBoxCategory.getItemCount();
         for(int i=sizeCat;i>0;--i){
             cbBoxCategory.removeItem(i-1);
@@ -138,18 +141,24 @@ public class NewTransferView extends DialogWindow {
                 txtBoxAmount.getText(),
                 txtBoxDescription.getText(),
                 cBoxSourceAccount.getSelectedItem().getSaldo(),
-                cBoxSourceAccount.getSelectedItem().getFloor()
+                cBoxSourceAccount.getSelectedItem().getFloor(),
+                txtBoxDate.getText()
         );
 
         errIBAN.setText(errors.getFirstErrorMessage(Transfer.Fields.TargetAccountIban));
         errTitle.setText(errors.getFirstErrorMessage(Transfer.Fields.TargetAccountTitle));
         errAmount.setText(errors.getFirstErrorMessage(Transfer.Fields.Amount));
         errDescription.setText(errors.getFirstErrorMessage(Transfer.Fields.Description));
+        errDate.setText(errors.getFirstErrorMessage(Transfer.Fields.EffectiveAt));
     }
 
     public void save(String iban, String title, String amount, String description){
-        if(checkBoxAddtoFav.isChecked()){
-            //fonction pour ajouter le compte
+        if(TransferValidator.targetAccountIsSelected(cBoxTargetAccount.getSelectedItem())){
+            Integer targetAccountId = listTargetAccounts.get(cBoxTargetAccount.getSelectedIndex()-1).getId();
+            Double targetSaldo = listTargetAccounts.get(cBoxTargetAccount.getSelectedIndex()-1).getSaldo();
+            controller.save(iban,title,amount,description,cBoxSourceAccount.getSelectedItem().getSaldo(),cBoxSourceAccount.getSelectedItem().getFloor(),txtBoxDate.getText(),cBoxSourceAccount.getSelectedItem().getId(),targetAccountId,targetSaldo, LocalDateTime.now(),cBoxSourceAccount.getSelectedItem().getId());
+        }else{
+            //affiche une fenêtre pour dire qu'il y a des erreurs à corriger et revient à la fenêtre en cours
         }
     }
 

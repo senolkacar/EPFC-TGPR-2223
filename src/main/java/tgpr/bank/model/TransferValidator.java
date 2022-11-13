@@ -4,6 +4,7 @@ import tgpr.framework.Error;
 import tgpr.framework.ErrorList;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 public abstract class TransferValidator {
@@ -48,4 +49,20 @@ public abstract class TransferValidator {
         }
         return Error.NOERROR;
     }
+
+    public static Error isValidDateFormat(String date){
+        if(!date.isEmpty() || !date.isBlank()){
+            if(!Pattern.matches("^(0?[1-9]|[12][0-9]|3[01])[\\/\\-](0?[1-9]|1[012])[\\/\\-]\\d{4}$",date)){
+                return new Error("date format invalid, must be dd-mm-yyyy",Transfer.Fields.EffectiveAt);
+            }
+        }
+        return Error.NOERROR;
+    }
+
+    public static boolean targetAccountIsSelected(String selectedTargetAccount){
+        return(!Objects.equals(selectedTargetAccount, "-- insert IBAN myself --"));
+    }
+
+
+
 }
