@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.*;
+import java.util.Objects;
 
 public class Account extends Model{
 
@@ -176,5 +177,30 @@ public class Account extends Model{
 
     public static List<String> getTargetAccountsToString(Integer selectedAccountID){
         return getTargetAccountsToString(getUserOtherAccounts(selectedAccountID),getFavouriteAccounts());
+    }
+
+    public static void newExternalAccount(String iban, String title){
+        execute("insert into account(iban,title,type) " +
+                "values(:iban,:title,'external')",new Params().add("iban",iban).add("title",title));
+    }
+
+    public static Account getByIban(String iban){
+        return queryOne(Account.class,"select * from account where account.iban=:iban",new Params("iban",iban));
+    }
+
+    public static boolean accountAlreadyExistsInDB(String iban) {
+        return getByIban(iban)!=null;
+    }
+
+    public static Account getLastCreatedAccount(){
+        return queryOne(Account.class,"select * from account where account.id = (select MAX(id) from account)");
+    }
+
+    public static boolean isExternalAccount(String iban){
+        return Objects.equals(getByIban(iban).type, "external");
+    }
+
+    public static void updateAccountSaldo(Integer accountId, Double saldo){
+        execute("UPDATE account SET saldo =:saldo where account.id = :accountid",new Params().add("accountid",accountId).add("saldo",saldo));
     }
 }

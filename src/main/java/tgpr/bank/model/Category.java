@@ -79,5 +79,10 @@ public class Category extends Model {
         
     }
 
-
+    public static Category getCatByName(String categoryName,Integer account){
+        return queryOne(Category.class, "select * from category where (account is null ||  account=:account) and category.name=:name", new Params("account", account).add("name",categoryName));
+    }
+    public static void addTransferToTransferCat(Integer catId, Integer transferId, Integer accountId){
+        execute("insert into transfer_category(category,transfer,account) values(:cat,:transfer,:account)",new Params().add("cat",catId).add("transfer",transferId).add("account",accountId));
+    }
 }

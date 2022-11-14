@@ -1,11 +1,10 @@
 package tgpr.bank.controller;
 
 import com.googlecode.lanterna.gui2.Window;
-import tgpr.bank.model.Account;
-import tgpr.bank.model.Transfer;
-import tgpr.bank.model.TransferValidator;
+import tgpr.bank.model.*;
 import tgpr.bank.view.NewTransferView;
 import tgpr.framework.Controller;
+import tgpr.framework.Error;
 import tgpr.framework.ErrorList;
 
 import java.sql.Date;
@@ -42,18 +41,46 @@ public class NewTransferController extends Controller {
         return errors;
     }
 
-    public void save(String iban, String title, String amount, String description, Double sourceSaldo, Double sourceFloor, String effectiveAt, Integer sourceAccountId, Integer targetAccountID, Double targetSaldo, LocalDateTime createdAT,Integer createdBy){
+    public void save(String iban, String title, String amount, String description, Double sourceSaldo, Double sourceFloor, String effectiveAt, Integer sourceAccountId, Integer targetAccountID, Double targetSaldo, LocalDateTime createdAT,Integer createdBy, boolean addToFav, String category){
         String state = "executed";
         LocalDate date = null;
         var errors = validate(iban,title,amount,description, sourceSaldo, sourceFloor,effectiveAt);
         if(errors.isEmpty()){
+            if(targetAccountID==null){
+                if(Account.accountAlreadyExistsInDB(iban)){
+                    targetAccountID = Account.getByIban(iban).getId();
+                    if(!Account.isExternalAccount(iban)){
+                        targetSaldo = Account.getByIban(iban).getSaldo();
+                        targetSaldo = targetSaldo+Double.parseDouble(amount);
+                    }
+                }else{
+                    Account.newExternalAccount(iban,title);
+                    targetAccountID = Account.getLastCreatedAccount().getId();
+                }
+            }
+
             if(!Objects.equals(effectiveAt, "")){
                 state = "future";
                 date = LocalDate.parse(effectiveAt, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                sourceSaldo=null;
+                targetSaldo=null;
+            }else{
+                sourceSaldo = sourceSaldo-Double.parseDouble(amount);
+                targetSaldo = targetSaldo+Double.parseDouble(amount);
             }
             Transfer.addTransferToDB(Double.parseDouble(amount),description,sourceAccountId,targetAccountID,sourceSaldo,targetSaldo,createdAT,createdBy,date,state);
+            Account.updateAccountSaldo(sourceAccountId,sourceSaldo);
+            Account.updateAccountSaldo(targetAccountID,targetSaldo);
+            if(addToFav){
+                if(!Favourite.alreadyInFav(Security.getLoggedUser().getId(),targetAccountID)){
+                    Favourite.addToFav(Security.getLoggedUser().getId(),targetAccountID);
+                }
+            }
+            if(category!=null){
+                Category.addTransferToTransferCat(Category.getCatByName(category,sourceAccountId).getId(),Transfer.getLastCreatedTransfer().getId(),sourceAccountId);
+            }
         }else {
-            System.out.println("Save failed because of these errors: " + errors);
+            showErrors(errors);
         }
     }
 

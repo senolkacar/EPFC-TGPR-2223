@@ -1,9 +1,7 @@
 package tgpr.bank.model;
 
 import tgpr.framework.Error;
-import tgpr.framework.ErrorList;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -59,10 +57,12 @@ public abstract class TransferValidator {
         return Error.NOERROR;
     }
 
-    public static boolean targetAccountIsSelected(String selectedTargetAccount){
-        return(!Objects.equals(selectedTargetAccount, "-- insert IBAN myself --"));
+    public static boolean targetAccountIsNotSelected(String selectedTargetAccount){
+        return(Objects.equals(selectedTargetAccount, "-- insert IBAN myself --"));
     }
 
-
+    public static boolean categoryIsNotSelected(String selectedCategory){
+        return(Objects.equals(selectedCategory, "NO CATEGORY"));
+    }
 
 }

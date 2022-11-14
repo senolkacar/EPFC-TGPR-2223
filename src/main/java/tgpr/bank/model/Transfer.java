@@ -152,4 +152,7 @@ public class Transfer extends Model {
                 .add("state",state));
     }
 
+    public static Transfer getLastCreatedTransfer(){
+        return queryOne(Transfer.class,"select * from transfer where transfer.id = (select MAX(id) from transfer)");
+    }
 }

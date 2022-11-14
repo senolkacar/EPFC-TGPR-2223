@@ -1,5 +1,4 @@
 package tgpr.bank.view;
-import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
@@ -9,10 +8,7 @@ import tgpr.bank.model.*;
 import tgpr.framework.Layouts;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class NewTransferView extends DialogWindow {
     private NewTransferController controller;
@@ -96,7 +92,7 @@ public class NewTransferView extends DialogWindow {
         cbBoxCategory = new ComboBox<String>(listCategoryToString).addTo(panel);
 
         Panel buttons = new Panel(new GridLayout(2)).setLayoutData(Layouts.LINEAR_CENTER).addTo(root);
-        Button buttonCreate = new Button("Create",() -> save(cBoxSourceAccount.getSelectedItem().getIban(),cBoxSourceAccount.getSelectedItem().getTitle(),txtBoxAmount.getText(),txtBoxDescription.getText())).addTo(buttons);
+        Button buttonCreate = new Button("Create",() -> save(txtBoxIban.getText(),txtBoxTitle.getText(),txtBoxAmount.getText(),txtBoxDescription.getText())).addTo(buttons);
         Button buttonClose = new Button("Close",this::close).addTo(buttons);
     }
 
@@ -153,13 +149,17 @@ public class NewTransferView extends DialogWindow {
     }
 
     public void save(String iban, String title, String amount, String description){
-        if(TransferValidator.targetAccountIsSelected(cBoxTargetAccount.getSelectedItem())){
-            Integer targetAccountId = listTargetAccounts.get(cBoxTargetAccount.getSelectedIndex()-1).getId();
-            Double targetSaldo = listTargetAccounts.get(cBoxTargetAccount.getSelectedIndex()-1).getSaldo();
-            controller.save(iban,title,amount,description,cBoxSourceAccount.getSelectedItem().getSaldo(),cBoxSourceAccount.getSelectedItem().getFloor(),txtBoxDate.getText(),cBoxSourceAccount.getSelectedItem().getId(),targetAccountId,targetSaldo, LocalDateTime.now(),cBoxSourceAccount.getSelectedItem().getId());
-        }else{
-            //affiche une fenêtre pour dire qu'il y a des erreurs à corriger et revient à la fenêtre en cours
+        Integer targetAccountId=null;
+        Double targetSaldo=null;
+        String category=null;
+        if(!TransferValidator.targetAccountIsNotSelected(cBoxTargetAccount.getSelectedItem())){
+            targetAccountId = listTargetAccounts.get(cBoxTargetAccount.getSelectedIndex()-1).getId();
+            targetSaldo = listTargetAccounts.get(cBoxTargetAccount.getSelectedIndex()-1).getSaldo();
         }
+        if(!TransferValidator.categoryIsNotSelected(cbBoxCategory.getSelectedItem())){
+            category = listCategory.get(cbBoxCategory.getSelectedIndex()-1).getName();
+        }
+        controller.save(iban,title,amount,description,cBoxSourceAccount.getSelectedItem().getSaldo(),cBoxSourceAccount.getSelectedItem().getFloor(),txtBoxDate.getText(),cBoxSourceAccount.getSelectedItem().getId(),targetAccountId,targetSaldo, LocalDateTime.now(),cBoxSourceAccount.getSelectedItem().getId(),checkBoxAddtoFav.isChecked(),category);
     }
 
 }
