@@ -1,6 +1,7 @@
 package tgpr.bank.model;
 
 import tgpr.bank.view.AccountDetailsView;
+import tgpr.bank.view.LoginView;
 import tgpr.framework.Model;
 import tgpr.framework.Params;
 import tgpr.framework.Tools;
@@ -15,6 +16,10 @@ import java.util.List;
 
 public class Transfer extends Model {
 
+    private String date = DateInterface.getUsedDate();
+    public String getDate() {
+        return date;
+    }
     private int id;
     private double amount;
     private String description;
@@ -241,6 +246,5 @@ public class Transfer extends Model {
                 .add("account",account)
                 .add ("category",category));
     }
-
 }
 

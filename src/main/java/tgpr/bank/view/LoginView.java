@@ -1,7 +1,6 @@
 package tgpr.bank.view;
 
 
-import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
@@ -11,12 +10,6 @@ import tgpr.framework.Layouts;
 import tgpr.framework.Panels;
 import tgpr.framework.Tools;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
-import java.time.format.ResolverStyle;
-import java.util.regex.Pattern;
-
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class LoginView extends BasicWindow {
@@ -28,6 +21,9 @@ public class LoginView extends BasicWindow {
     private final CheckBox useSystemDate;
     private final TextBox date;
     private final Label errDateTime = new Label("");
+
+    private boolean isChecked;
+
 
 
 
@@ -43,15 +39,15 @@ public class LoginView extends BasicWindow {
         Panel panel = new Panel().setLayoutManager(new GridLayout(2).setTopMarginSize(1).setVerticalSpacing(1))
                 .setLayoutData(Layouts.LINEAR_CENTER).addTo(root);
         panel.addComponent(new Label("Email:"));
-        txtEmail = new TextBox().addTo(panel);
+        txtEmail = new TextBox(new TerminalSize(20,1)).addTo(panel);
         panel.addComponent(new Label("Password:"));
-        txtPassword = new TextBox().setMask('*').addTo(panel);
+        txtPassword = new TextBox(new TerminalSize(20,1)).setMask('*').addTo(panel);
         panel.addComponent(new Label("Use System Date/Time:"));
         useSystemDate = new CheckBox().addTo(panel);
         panel.addComponent(new Label("Custom System Date/Time:"));
         date = new TextBox(new TerminalSize(20, 1)).addTo(panel);
         errDateTime.setForegroundColor(TextColor.ANSI.RED).addTo(panel);
-        date.setText("05/10/2015 10:15:11");
+        date.setText("17/01/2022 23:59:59");
 
         date.setTextChangeListener((txt, byUser) -> {
             if (!Tools.isValidDateTime(date.getText())) {
@@ -74,7 +70,7 @@ public class LoginView extends BasicWindow {
                 });
             }
             else {
-                date.setText("05/10/2015 10:15:11");
+                date.setText("17/01/2022 23:59:59");
                 date.setReadOnly(true);
             }
         }).addTo(panel);
@@ -111,21 +107,21 @@ public class LoginView extends BasicWindow {
     }
 
     private void login() {
-        var errors = controller.login(txtEmail.getText(), txtPassword.getText());
+        var errors = controller.login(txtEmail.getText(), txtPassword.getText(),date.getText(), useSystemDate);
         if (!errors.isEmpty()) {
             txtEmail.takeFocus();
         }
     }
 
     private void logAsDefaultAdmin() {
-        controller.login(Configuration.get("default.admin.email"), Configuration.get("default.admin.password"));
+        controller.login(Configuration.get("default.admin.email"), Configuration.get("default.admin.password"),date.getText(), useSystemDate);
     }
 
     private void logAsDefaultClient() {
-        controller.login(Configuration.get("default.client.email"), Configuration.get("default.client.password"));
+        controller.login(Configuration.get("default.client.email"), Configuration.get("default.client.password"),date.getText(), useSystemDate);
     }
 
     private void logAsDefaultManager() {
-        controller.login(Configuration.get("default.manager.email"), Configuration.get("default.manager.password"));
+        controller.login(Configuration.get("default.manager.email"), Configuration.get("default.manager.password"),date.getText(), useSystemDate);
     }
 }
