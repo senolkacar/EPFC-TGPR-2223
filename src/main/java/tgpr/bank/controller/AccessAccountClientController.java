@@ -29,7 +29,22 @@ public class AccessAccountClientController extends Controller {
     public List<Account> getAccountNoAccess(){
         return Account.getAccountNoAccess(user.getEmail());
     }
+    public void DeleteAccess(Account account){
+        if(askConfirmation("Do you want to remove this account from your Acces? " + account.getIban(), "Remove favourite")){
+            account.deleteAccess(user.getId(),account.getId());
+            account.reload();
+            view.reloadData();
+            view.reloadInfo();
 
+        }
+
+
+    }
+
+    public void addAccess(int accountID){
+
+
+    }
     public Access isHolder(int userid,int accountid){
         return Account.isHolder(userid,accountid);
     }

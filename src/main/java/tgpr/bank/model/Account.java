@@ -96,8 +96,12 @@ public class Account extends Model{
     }
 
     public boolean delete() {
-        int c = execute("delete from account where id=:id", new Params("id", id));
+       int c = execute("delete from account where id=:id", new Params("id", id));
         return c == 1;
+    }
+    public void deleteAccess(int id ,int accountId) {
+        execute("delete from access where account=:accountId and user=:userId",new Params("id",id).add("accountId",accountId));
+
     }
     public static List<Account> getAllAccount(String email){
         return  queryList(Account.class,"SELECT * FROM account where account.id " +
@@ -128,9 +132,10 @@ public class Account extends Model{
                 .add("saldo", saldo));
         return c == 1;
     }
-    public void addacces(int accountid, String email){
+    public void addAccess(int accountid, String email,String type){
         execute("intsert into access (user,account,type) values(:iduser,:idaccount,:type",new Params()
                 .add("idaccount",accountid)
+                .add("type",type)
                 .add("user",User.getByEmail(email).getId()));
 
     }
