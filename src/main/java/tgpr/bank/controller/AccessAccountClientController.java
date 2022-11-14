@@ -1,6 +1,7 @@
 package tgpr.bank.controller;
 
 import com.googlecode.lanterna.gui2.Window;
+import tgpr.bank.model.Access;
 import tgpr.bank.model.Account;
 import tgpr.bank.model.User;
 import tgpr.bank.view.AccessAccountClientView;
@@ -23,6 +24,13 @@ public class AccessAccountClientController extends Controller {
         return view;
     }
     public List<Account> getAccount(){
-        return Account.getAllAccount("caro@test.com");
+        return Account.getAllAccount(user.getEmail());
+    }
+    public List<Account> getAccountNoAccess(){
+        return Account.getAccountNoAccess(user.getEmail());
+    }
+
+    public Access isHolder(int userid,int accountid){
+        return Account.isHolder(userid,accountid);
     }
 }

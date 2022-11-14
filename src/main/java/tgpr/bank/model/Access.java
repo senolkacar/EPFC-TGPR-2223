@@ -10,6 +10,7 @@ public class Access extends Model {
     private Integer user;
     private Integer account;
     private String type;
+    private boolean typet;
 
     public enum Fields {user,account,type};
 
@@ -33,8 +34,19 @@ public class Access extends Model {
         return type;
     }
 
+    public boolean isTypet() {
+        return typet;
+    }
+
+    public void setTypet(boolean typet) {
+        this.typet = typet;
+    }
+
     public void setType(String type) {
         this.type = type;
+    }
+    public boolean isHolder(){
+        return typet;
     }
 
 
@@ -43,10 +55,15 @@ public class Access extends Model {
         user = rs.getInt("user");
         account = rs.getInt("account");
         type = rs.getString("type");
+        typet = rs.getBoolean("type");
     }
 
     @Override
     public void reload() {
         reload("select * from access",new Params());
+    }
+
+    public String toString(){
+        return this.type;
     }
 }

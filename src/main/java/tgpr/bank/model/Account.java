@@ -80,6 +80,10 @@ public class Account extends Model{
         //il faudra peut être changer cette partie
         reload("select * from account",new Params());
     }
+    public static Access isHolder(int userid,int accountid){
+        String sql="Select * from access where user=:userid and account=:accountid";
+        return queryOne(Access.class,sql,new Params("userid",userid).add("accountid",accountid));
+    }
 
 
     public static Account getById(int id) {
@@ -100,7 +104,11 @@ public class Account extends Model{
                 "in ( select access.account from access where access.user=:iduser) "
                 ,new Params("iduser",User.getByEmail(email).getId()));
     }
-
+    public  static List<Account> getAccountNoAccess(String email){
+        return  queryList(Account.class,"SELECT * FROM account where account.id " +
+                        "not in ( select access.account from access where access.user=:iduser) "
+                ,new Params("iduser",User.getByEmail(email).getId()));
+    }
 
     public boolean save() {
         int c;
@@ -140,4 +148,5 @@ public class Account extends Model{
     public String toStringfavouritaccount() {
         return iban+" " + title+ " " + type;
     }
+
 }
