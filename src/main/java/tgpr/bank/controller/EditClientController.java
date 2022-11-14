@@ -1,13 +1,13 @@
 package tgpr.bank.controller;
 
 import com.googlecode.lanterna.gui2.Window;
-import tgpr.bank.model.Agency;
-import tgpr.bank.model.User;
-import tgpr.bank.model.UserValidator;
+import tgpr.bank.model.*;
 import tgpr.bank.view.EditClientView;
 import tgpr.framework.Controller;
 import tgpr.framework.ErrorList;
 import tgpr.framework.Tools;
+
+import java.util.List;
 
 public class EditClientController extends Controller {
     private final EditClientView view;
@@ -78,7 +78,11 @@ public class EditClientController extends Controller {
     public User getClient() {
         return client;
     }
-
+    public List<Account> showAccountAccess (User user){
+        var controller=new AccessAccountClientController(user);
+        navigateTo(controller);
+        return controller.getAccount();
+    }
     public Agency getAgencyByClient() {
         agency = Agency.getAgencyName(client.getAgency());
         return agency;
@@ -87,6 +91,7 @@ public class EditClientController extends Controller {
     public Agency getAgency() {
         return agency;
     }
+
 
 
 }

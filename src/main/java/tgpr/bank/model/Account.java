@@ -95,6 +95,11 @@ public class Account extends Model{
         int c = execute("delete from account where id=:id", new Params("id", id));
         return c == 1;
     }
+    public static List<Account> getAllAccount(String email){
+        return  queryList(Account.class,"SELECT * FROM account where account.id " +
+                "in ( select access.account from access where access.user=:iduser) "
+                ,new Params("iduser",User.getByEmail(email).getId()));
+    }
 
 
     public boolean save() {
@@ -114,6 +119,12 @@ public class Account extends Model{
                 .add("type", type)
                 .add("saldo", saldo));
         return c == 1;
+    }
+    public void addacces(int accountid, String email){
+        execute("intsert into access (user,account,type) values(:iduser,:idaccount,:type",new Params()
+                .add("idaccount",accountid)
+                .add("user",User.getByEmail(email).getId()));
+
     }
     @Override
     public String toString() {
