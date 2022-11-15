@@ -95,14 +95,20 @@ public class Account extends Model{
                 new Params("loggedUser",Security.getLoggedUser().getEmail()));
     }
 
-    public boolean delete() {
-       int c = execute("delete from account where id=:id", new Params("id", id));
-        return c == 1;
-    }
+
     public void deleteAccess(int id ,int accountId) {
+        if(numberofhorder(accountId)==1) {
+            execute("delete from access where access.type=\"proxy\" and  account=:accountId and user=:userId", new Params("userId", id).add("accountId", accountId));
+        }
+        else{
+            execute("delete from access where account=:accountId and user=:userId", new Params("userId", id).add("accountId", accountId));
 
-        execute("delete from access where access.type=\"proxy\" and  account=:accountId and user=:userId",new Params("userId",id).add("accountId",accountId));
-
+        }
+    }
+    public Integer numberofhorder(int accountid){
+        return queryScalar(Integer.class,"select count (access.user),access.account from access where access.type ='holder' and access.account=:accountid " +
+                "group by access.account " +
+                "having count (access.user >1) ",new Params("accountid",accountid));
     }
     public static List<Account> getAllAccount(String email){
         return  queryList(Account.class,"SELECT * FROM account where account.id " +
