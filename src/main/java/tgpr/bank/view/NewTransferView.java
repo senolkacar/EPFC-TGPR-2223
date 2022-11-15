@@ -121,12 +121,12 @@ public class NewTransferView extends DialogWindow {
         if(cBoxTargetAccount.getSelectedItem().equals("-- insert IBAN myself --")){
             txtBoxIban.setText("").setReadOnly(false);
             txtBoxTitle.setText("").setReadOnly(false);
-            checkBoxAddtoFav.setEnabled(false);
+            checkBoxAddtoFav.setEnabled(true);
         }else {
             Account account = listTargetAccounts.get(cBoxTargetAccount.getSelectedIndex()-1);
             txtBoxIban.setText(account.getIban()).setReadOnly(true);
             txtBoxTitle.setText(account.getTitle()).setReadOnly(true);
-            checkBoxAddtoFav.setEnabled(true);
+            checkBoxAddtoFav.setEnabled(false);
         }
     }
 
