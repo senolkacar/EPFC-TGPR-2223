@@ -39,6 +39,9 @@ public class AccessAccountClientController extends Controller {
             view.reloadInfo();
 
     }
+    public void displayaccount (Account account){
+        navigateTo(new DisplayAccountAccessController(account));
+    }
 
 
 

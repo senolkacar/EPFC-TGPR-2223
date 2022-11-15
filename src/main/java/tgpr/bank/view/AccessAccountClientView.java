@@ -68,9 +68,8 @@ public class AccessAccountClientView extends DialogWindow {
         Button btnClose = new Button("Close", this::close).addTo(buttons);
         accountTable.setSelectAction(() ->{
             var accountAccess = accountTable.getSelected();
-            accountTable.setSelected(accountAccess);
-            controller.DeleteAccess(accountAccess);
 
+            controller.displayaccount(accountAccess);
         });
         reloadData();
 

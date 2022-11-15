@@ -105,6 +105,11 @@ public class Account extends Model{
 
         }
     }
+    public void update(int accountId, String type){
+        if(numberofhorder(accountId)>1){
+            execute("update access set type=:type where access.account=:accountId",new Params(":type",type).add("accountId",accountId) );
+        }
+    }
     public Integer numberofhorder(int accountid){
         return queryScalar(Integer.class,"select count (access.user),access.account from access where access.type ='holder' and access.account=:accountid " +
                 "group by access.account " +
