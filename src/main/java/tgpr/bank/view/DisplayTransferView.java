@@ -9,6 +9,7 @@ import tgpr.framework.Controller;
 import tgpr.framework.Params;
 import tgpr.framework.Tools;
 
+import java.util.Comparator;
 import java.util.List;
 
 import static tgpr.framework.Model.queryList;
@@ -104,7 +105,37 @@ public class DisplayTransferView extends DialogWindow {
             lblSourceAccount.setText(transfer.getAccountInfoForTransfer(transfer.getSourceAccountID(),transfer.getSourceAccountID()));
             lblTargetAccount.setText(transfer.getAccountInfoForTransfer(transfer.getTargetAccountID(),transfer.getTargetAccountID()));
             lblAmount.setText(transfer.transformInEuro(transfer.getAmount()));
-            lblSaldoAfterTransfer.setText(String.valueOf(account.transformInEuro(account.getSaldo())));
+//            lblSaldoAfterTransfer.setText(String.valueOf(account.transformInEuro(account.getSaldo())));
+            List<Transfer> transfers = Transfer.getTransfersForLabel(account);
+            double somme=0;
+            boolean trouve = false;
+            while (!trouve) {
+                for (Transfer transferr : transfers) {
+                    if (transferr.getState().compareTo("rejected") != 0) {
+                        if(transferr.getSourceAccountID()==account.getId()) {
+                            somme -= transferr.getAmount();
+                        }
+                        else{
+                            somme += transferr.getAmount();
+                        }
+                    }
+                    if (transfer.getId() == transferr.getId() && transferr.getState().compareTo("future") != 0) {
+                        trouve = true;
+                        lblSaldoAfterTransfer.setText(String.valueOf(transfer.transformInEuro(somme)));
+                    }
+                    if (transfer.getId() == transferr.getId() && transferr.getState().compareTo("future") == 0) {
+                        lblSaldoAfterTransfer.setText("");
+                    }
+                }
+            }
+
+
+//            if(transfer.getEffectiveAt()!=null){
+//                lblSaldoAfterTransfer.setText(String.valueOf(account.getSaldo()-transfer.getAmount()));
+//            }
+//            else{
+//                lblSaldoAfterTransfer.setText("");
+//            }
             lblDescription.setText(transfer.getDescription());
             lblState.setText(transfer.getState());
 
