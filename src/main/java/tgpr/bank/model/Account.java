@@ -4,8 +4,10 @@ import tgpr.framework.Model;
 import tgpr.framework.Params;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.sql.*;
+import java.util.Objects;
 
 public class Account extends Model{
 
@@ -16,14 +18,14 @@ public class Account extends Model{
     private String type;
     private double saldo;
 
-    public Account(int id , String iban , String title , double floor , String type , double saldo){
+    /*public Account(int id , String iban , String title , double floor , String type , double saldo){
         this.id=id;
         this.iban=iban;
         this.title=title;
         this.floor=floor;
         this.type=type;
         this.saldo=saldo;
-    }
+    }*/
 
     public int getId() {
         return id;
@@ -125,16 +127,80 @@ public class Account extends Model{
     }
     @Override
     public String toString() {
-        return "account{" +
-                "id=" + id +
-                ", iban='" + iban + '\'' +
-                ", title='" + title + '\'' +
-                ", floor=" + floor +
-                ", type='" + type + '\'' +
-                ", saldo=" + saldo +
-                '}';
+        return getIban() + " | " +
+                getTitle() + " | " +
+                getType() + " | " +
+                getSaldo();
     }
+
     public String toStringfavouritaccount() {
         return iban+" " + title+ " " + type;
+    }
+
+    public static List<Account> getFavouriteAccounts(){
+        return queryList(Account.class,"select * from favourite,account,user " +
+                        "where favourite.user=user.id and favourite.account=account.id and favourite.user=:loggeduser",
+                new Params("loggeduser",Security.getLoggedUser().getId()));
+    }
+
+    private static List<Account> getUserOtherAccounts(Integer selectedAccountID){
+        return queryList(Account.class,"SELECT * FROM account where id !=:selectedAccountID and id in(Select account from access,user where user.id=access.user and user.email=:loggedUser)",
+                new Params()
+                        .add("loggedUser",Security.getLoggedUser().getEmail())
+                        .add("selectedAccountID",selectedAccountID));
+    }
+
+    public static List<Account> getTargetAccounts(List<Account> listFavourites, List<Account> loggedUserAccounts){
+        List<Account> listToReturn = new ArrayList<>();
+        listToReturn.addAll(loggedUserAccounts);
+        listToReturn.addAll(listFavourites);
+        return listToReturn;
+    }
+
+    public static List<Account> getTargetAccounts(Integer selectedAccountID){
+        return getTargetAccounts(getFavouriteAccounts(),getUserOtherAccounts(selectedAccountID));
+    }
+
+    public static List<String> getTargetAccountsToString(List<Account> loggedUserAccounts, List<Account> listFavourites){
+        List<String> listToReturn = new ArrayList<>();
+        for(int i = 0; i<loggedUserAccounts.size();++i){
+            listToReturn.add(loggedUserAccounts.get(i).iban + " | " +
+                            loggedUserAccounts.get(i).title + " | " +
+                            loggedUserAccounts.get(i).type + " | " +
+                            loggedUserAccounts.get(i).saldo);
+        }
+        for(int i=0; i<listFavourites.size();++i){
+            listToReturn.add(listFavourites.get(i).iban + " | " + listFavourites.get(i).title + " | favourite");
+        }
+        return listToReturn;
+    }
+
+    public static List<String> getTargetAccountsToString(Integer selectedAccountID){
+        return getTargetAccountsToString(getUserOtherAccounts(selectedAccountID),getFavouriteAccounts());
+    }
+
+    public static void newExternalAccount(String iban, String title){
+        execute("insert into account(iban,title,type) " +
+                "values(:iban,:title,'external')",new Params().add("iban",iban).add("title",title));
+    }
+
+    public static Account getByIban(String iban){
+        return queryOne(Account.class,"select * from account where account.iban=:iban",new Params("iban",iban));
+    }
+
+    public static boolean accountAlreadyExistsInDB(String iban) {
+        return getByIban(iban)!=null;
+    }
+
+    public static Account getLastCreatedAccount(){
+        return queryOne(Account.class,"select * from account where account.id = (select MAX(id) from account)");
+    }
+
+    public static boolean isExternalAccount(String iban){
+        return Objects.equals(getByIban(iban).type, "external");
+    }
+
+    public static void updateAccountSaldo(Integer accountId, Double saldo){
+        execute("UPDATE account SET saldo =:saldo where account.id = :accountid",new Params().add("accountid",accountId).add("saldo",saldo));
     }
 }

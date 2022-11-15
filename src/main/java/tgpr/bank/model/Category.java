@@ -5,6 +5,7 @@ import tgpr.framework.Params;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Category extends Model {
@@ -16,11 +17,7 @@ public class Category extends Model {
 
     @Override
     public String toString() {
-        return "Category{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", account=" + account +
-                '}';
+        return this.name;
     }
 
     public int getId() {
@@ -50,6 +47,22 @@ public class Category extends Model {
         return queryList(Category.class,"select * from Category where account is null or account=:idAccount",new Params("idAccount",idAccount));
     }
 
+    public static List<Category> getByAccount(int account) {
+        return queryList(Category.class, "select * from category where account is null ||  account=:account", new Params("account", account));
+    }
+
+    public static List<String> getCategoryNames(List<Category> listCat){
+        List<String> listToReturn = new ArrayList<>();
+        for(int i = 0; i<listCat.size();++i){
+            listToReturn.add(listCat.get(i).getName());
+        }
+        return listToReturn;
+    }
+
+    public static List<String> getCategoryNames(Integer selectedAccountID){
+        return getCategoryNames(getByAccount(selectedAccountID));
+    }
+
 
     // SELECT COUNT(category.id) FROM category,transfer_category WHERE transfer_category.account=1 AND transfer_category.category=category.id GROUP by category.id
 
@@ -64,5 +77,12 @@ public class Category extends Model {
     @Override
     public void reload() {
         
+    }
+
+    public static Category getCatByName(String categoryName,Integer account){
+        return queryOne(Category.class, "select * from category where (account is null ||  account=:account) and category.name=:name", new Params("account", account).add("name",categoryName));
+    }
+    public static void addTransferToTransferCat(Integer catId, Integer transferId, Integer accountId){
+        execute("insert into transfer_category(category,transfer,account) values(:cat,:transfer,:account)",new Params().add("cat",catId).add("transfer",transferId).add("account",accountId));
     }
 }

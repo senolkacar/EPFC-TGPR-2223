@@ -58,7 +58,7 @@ public class ViewAccountList extends BasicWindow {
         // ajoute le tableau au root panel
         root.addComponent(table);
         new EmptySpace().addTo(root);
-        Button btnNewTransfer = new Button("New Transfer").addTo(root);
+        Button btnNewTransfer = new Button("New Transfer",this::newTransfer).addTo(root);
         // spécifie que le tableau doit avoir la même largeur quee le terminal et une hauteur de 15 lignes
         table.setPreferredSize(new TerminalSize(ViewManager.getTerminalColumns(), 15));
         // charge les données dans la table
@@ -81,6 +81,7 @@ public class ViewAccountList extends BasicWindow {
         return "Welcome to MyBank (" + Security.getLoggedUser().getEmail() + " - " + (Security.getLoggedUser().getType()) + ")";
     }
 
-
-
+    private void newTransfer(){
+        controller.newTransfer();
+    }
 }

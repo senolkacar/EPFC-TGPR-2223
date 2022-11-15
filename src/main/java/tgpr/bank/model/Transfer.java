@@ -1,15 +1,22 @@
 package tgpr.bank.model;
 
+import org.springframework.cglib.core.Local;
 import tgpr.framework.Model;
 import tgpr.framework.Params;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class Transfer extends Model {
+
+    public enum Fields{
+        Amount,Description,SourceAccountIban,TargetAccountIban,TargetAccountTitle,SourceSaldo,TargetSaldo,CreatedAT,CreatedBy,EffectiveAt
+    }
 
     private int id;
     private double amount;
@@ -129,4 +136,23 @@ public class Transfer extends Model {
                 .add("target_account",accountID));
     }
 
+    public static void addTransferToDB(Double amount, String description, Integer sourceAccountID, Integer targetAccountID, Double sourceSaldo, Double targetSaldo, LocalDateTime createdAT, Integer createdBy, LocalDate effectiveAT, String state ){
+        execute("insert into Transfer(amount,description,source_account,target_account,source_saldo,target_saldo,created_at,created_by,effective_at,state)" +
+                "values(:amount,:description,:sourceAccountID,:targetAccountID,:sourceSaldo,:targetSaldo,:createdAT,:createdBy,:effectiveAT,:state)",
+                new Params()
+                .add("amount",amount)
+                .add("description", description)
+                .add("sourceAccountID",sourceAccountID)
+                .add("targetAccountID",targetAccountID)
+                .add("sourceSaldo",sourceSaldo)
+                .add("targetSaldo",targetSaldo)
+                .add("createdAT",createdAT)
+                .add("createdBy",createdBy)
+                .add("effectiveAT",effectiveAT)
+                .add("state",state));
+    }
+
+    public static Transfer getLastCreatedTransfer(){
+        return queryOne(Transfer.class,"select * from transfer where transfer.id = (select MAX(id) from transfer)");
+    }
 }
