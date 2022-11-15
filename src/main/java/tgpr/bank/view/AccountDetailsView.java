@@ -7,11 +7,7 @@ import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
 import tgpr.bank.controller.AccountDetailsController;
-import tgpr.bank.model.Account;
-import tgpr.bank.model.Category;
-import tgpr.bank.model.Security;
-import tgpr.bank.model.User;
-import tgpr.bank.model.Transfer;
+import tgpr.bank.model.*;
 import tgpr.framework.ColumnSpec;
 import tgpr.framework.ObjectTable;
 import tgpr.framework.Tools;
@@ -101,8 +97,9 @@ public class AccountDetailsView extends DialogWindow {
                         new ColumnSpec<>("Category", this::CategoryToDisplay).setWidth(16),
                         new ColumnSpec<>("Amount", this::getAmount).setWidth(10),
                         new ColumnSpec<>("Saldo", this::getSourceSaldo).setWidth(10),
-                        new ColumnSpec<>("State", Transfer::getState)
-                );
+                        new ColumnSpec<>("State", Transfer::getState));
+                        reloadDataHistory();
+        reloadDataHistory();
         historyTable.setPreferredSize(new TerminalSize(115, 5));
         historyTable.addTo(panel);
         historyTable.setSelectAction(this::displayTransfer);
@@ -140,30 +137,62 @@ public class AccountDetailsView extends DialogWindow {
         }
     }
 
-    public void reloadDataHistory() {
-       historyTable.clear();
+    public void     reloadDataHistory() {
        var transfers = controller.getTransfers();
-       historyTable.add(transfers);
-       historyTable.invalidate();
+       if(DateInterface.isHasChanged()){
+           var transferss = Transfer.updateEverything(transfers);
+           historyTable.add(transferss);
+           historyTable.invalidate();
+       }
+       else{
+           historyTable.add(transfers);
+           historyTable.invalidate();
+       }
+
     }
+
 
     public void reloadFiltered(){
         historyTable.clear();
         var transfers = controller.getTransfers();
-        if(txtFilter.getText().isEmpty()){
-            historyTable.add(transfers);
-        }else{
-            for (Transfer transfer : transfers) {
-                if(transfer.getTargetAccount().getIban().contains(txtFilter.getText().toUpperCase())
-                        || transfer.getSourceAccount().getIban().contains(txtFilter.getText().toUpperCase())
-                        || transfer.getSourceAccount().getTitle().contains(txtFilter.getText().toUpperCase())
-                        || transfer.getTargetAccount().getTitle().contains(txtFilter.getText().toUpperCase())
-                        || transfer.toString().toLowerCase().contains(txtFilter.getText().toLowerCase())){
-                    historyTable.add(transfer);
-                }
-                if(transfer.getCategory(account.getId(),transfer.getId()) != null){
-                    if(transfer.getCategory(account.getId(),transfer.getId()).getName().toLowerCase().contains(txtFilter.getText().toLowerCase())){
+        var datedTransfers = Transfer.updateEverything(transfers);
+
+        if(!DateInterface.isHasChanged()) {
+            if (txtFilter.getText().isEmpty()) {
+                historyTable.add(transfers);
+            } else {
+                for (Transfer transfer : transfers) {
+                    if (transfer.getTargetAccount().getIban().contains(txtFilter.getText().toUpperCase())
+                            || transfer.getSourceAccount().getIban().contains(txtFilter.getText().toUpperCase())
+                            || transfer.getSourceAccount().getTitle().contains(txtFilter.getText().toUpperCase())
+                            || transfer.getTargetAccount().getTitle().contains(txtFilter.getText().toUpperCase())
+                            || transfer.toString().toLowerCase().contains(txtFilter.getText().toLowerCase())) {
                         historyTable.add(transfer);
+                    }
+                    if (transfer.getCategory(account.getId(), transfer.getId()) != null) {
+                        if (transfer.getCategory(account.getId(), transfer.getId()).getName().toLowerCase().contains(txtFilter.getText().toLowerCase())) {
+                            historyTable.add(transfer);
+                        }
+                    }
+                }
+            }
+        }
+        else{
+            if(txtFilter.getText().isEmpty()){
+                historyTable.add(datedTransfers);
+            }else{
+                for (Transfer transfer : datedTransfers) {
+                    if(transfer.getTargetAccount().getIban().contains(txtFilter.getText().toUpperCase())
+                            || transfer.getSourceAccount().getIban().contains(txtFilter.getText().toUpperCase())
+                            || transfer.getSourceAccount().getTitle().contains(txtFilter.getText().toUpperCase())
+                            || transfer.getTargetAccount().getTitle().contains(txtFilter.getText().toUpperCase())
+                            || transfer.toString().toLowerCase().contains(txtFilter.getText().toLowerCase())){
+                        historyTable.add(datedTransfers);
+                    }
+                    if(transfer.getCategory(account.getId(),transfer.getId()) != null){
+                        if(transfer.getCategory(account.getId(),transfer.getId()).getName().toLowerCase().contains(txtFilter.getText().toLowerCase())){
+                            historyTable.add(datedTransfers);
+                        }
                     }
                 }
             }

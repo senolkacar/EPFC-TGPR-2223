@@ -69,6 +69,7 @@ public class ViewAccountList extends BasicWindow {
         });
         // charge les données dans la table
         reloadData();
+
     }
 
     public void reloadData() {

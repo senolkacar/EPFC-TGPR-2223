@@ -100,5 +100,9 @@ public class AccountDetailsController extends Controller {
         return controller.getTransfer();
 
     }
+
+//    public List<Transfer> updateEverything(List<Transfer> transfers){
+//        return  transfer.updateEverything(transfers);
+//    }
 }
 

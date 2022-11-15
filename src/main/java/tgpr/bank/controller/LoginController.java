@@ -10,6 +10,8 @@ import tgpr.framework.Error;
 import tgpr.framework.ErrorList;
 import tgpr.framework.Model;
 
+import javax.tools.Tool;
+import javax.xml.crypto.dsig.TransformService;
 import java.util.List;
 
 public class LoginController extends Controller {
@@ -27,12 +29,23 @@ public class LoginController extends Controller {
             if (user != null) {
                 if (checkbox.isChecked()){
                     Security.login(user);
-                    DateInterface.date(String.valueOf(Date.getSysDate()));
+                    DateInterface.date(Date.changeFormatToEn(Date.getSysDateParsed(String.valueOf(Date.getSysDate()))));
+                    List<Account> list = Account.getAll();
+                    for (Account account: list) {
+                        List<Transfer> transfers = Transfer.getTransfers(account);
+                        Transfer.updateEverything(transfers);
+                    }
                     navigateTo(new ControllerAccountList());
                 }
                 else {
                     Security.login(user);
-                    DateInterface.date(date);
+                    DateInterface.date(Date.changeFormatToEn(Date.getSysDateParsed(date)));
+                    DateInterface.hasChanged(true);
+                    List<Account> list = Account.getAll();
+                    for (Account account: list) {
+                        List<Transfer> transfers = Transfer.getTransfers(account);
+                        Transfer.updateEverything(transfers);
+                    }
                     navigateTo(new ControllerAccountList());
                 }
 
