@@ -100,7 +100,8 @@ public class Account extends Model{
         return c == 1;
     }
     public void deleteAccess(int id ,int accountId) {
-        execute("delete from access where account=:accountId and user=:userId",new Params("id",id).add("accountId",accountId));
+
+        execute("delete from access where access.type=\"proxy\" and  account=:accountId and user=:userId",new Params("userId",id).add("accountId",accountId));
 
     }
     public static List<Account> getAllAccount(String email){
@@ -132,11 +133,11 @@ public class Account extends Model{
                 .add("saldo", saldo));
         return c == 1;
     }
-    public void addAccess(int accountid, String email,String type){
-        execute("intsert into access (user,account,type) values(:iduser,:idaccount,:type",new Params()
+    public void addAccess(int accountid, String email, String type){
+        execute("insert into access (user,account,type) values(:iduser,:idaccount,:type)",new Params()
                 .add("idaccount",accountid)
                 .add("type",type)
-                .add("user",User.getByEmail(email).getId()));
+                .add("iduser",User.getByEmail(email).getId()));
 
     }
     @Override

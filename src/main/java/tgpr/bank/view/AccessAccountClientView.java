@@ -6,6 +6,7 @@ import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
 import tgpr.bank.controller.AccessAccountClientController;
 import tgpr.bank.model.Access;
 import tgpr.bank.model.Account;
+import tgpr.bank.model.Security;
 import tgpr.bank.model.User;
 import tgpr.framework.ColumnSpec;
 import tgpr.framework.ObjectTable;
@@ -16,6 +17,7 @@ import java.util.List;
 public class AccessAccountClientView extends DialogWindow {
     private final AccessAccountClientController controller;
     private final User user;
+    private Account account;
 
 
     private ObjectTable<Account> accountTable;
@@ -51,8 +53,13 @@ public class AccessAccountClientView extends DialogWindow {
         accountTable.setPreferredSize(new TerminalSize(70, 15));
         var buttons = new Panel().addTo(root).setLayoutManager(new LinearLayout(Direction.HORIZONTAL));
         root.addComponent(buttons, LinearLayout.createLayoutData(LinearLayout.Alignment.Fill));
-        cboAccess = new ComboBox<String>().addTo(buttons).setPreferredSize(new TerminalSize(28, 1))
-                .addListener((newIndex, oldIndex, byUser) -> reloadInfo());
+        accountNoAccess = controller.getAccountNoAccess();
+        cboAccess = new ComboBox<String>().addTo(buttons).setPreferredSize(new TerminalSize(28, 1));
+//                .addListener((newIndex, oldIndex, byUser) -> reloadInfo());
+        for (Account a:accountNoAccess
+             ) {
+            cboAccess.addItem(a.getIban());
+        }
         cboType = new ComboBox<String>("holder", "proxy").addTo(buttons).setPreferredSize(new TerminalSize(10, 1))
                 .addListener((newIndex, oldIndex, byUser) -> reloadData());
 //        Button add = new Button("Add", this::addFavourite).addTo(buttons);
@@ -70,7 +77,15 @@ public class AccessAccountClientView extends DialogWindow {
     }
 
     private void addAccees() {
+
+            if (cboAccess.getSelectedIndex()!=0) {
+                controller.addAccess(accountNoAccess.get(cboAccess.getSelectedIndex() - 1).getId(),cboType.getSelectedItem());
+                reloadInfo();
+                reloadData();
+            }
+
     }
+
 
 
     public void reloadData() {
@@ -92,6 +107,7 @@ public class AccessAccountClientView extends DialogWindow {
     }
 
     public void reloadInfo() {
+        accountNoAccess.clear();
         accountNoAccess = controller.getAccountNoAccess();
         int size = cboAccess.getItemCount();
         for (int i = size; i > 0; i--) {

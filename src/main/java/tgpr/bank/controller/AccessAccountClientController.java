@@ -12,6 +12,7 @@ import java.util.List;
 public class AccessAccountClientController extends Controller {
     private final AccessAccountClientView view;
     private User user;
+    private Account account;
 
     public AccessAccountClientController(User user) {
 
@@ -30,20 +31,20 @@ public class AccessAccountClientController extends Controller {
         return Account.getAccountNoAccess(user.getEmail());
     }
     public void DeleteAccess(Account account){
-        if(askConfirmation("Do you want to remove this account from your Acces? " + account.getIban(), "Remove favourite")){
+
+        askConfirmation("Do you want to remove this account from your Acces? " + account.getIban(), "Remove favourite");
             account.deleteAccess(user.getId(),account.getId());
             account.reload();
             view.reloadData();
             view.reloadInfo();
 
-        }
-
-
     }
 
-    public void addAccess(int accountID){
 
 
+    public void addAccess(int accountID,String type){
+
+        Account.getById(accountID).addAccess(accountID,user.getEmail(),type);
     }
     public Access isHolder(int userid,int accountid){
         return Account.isHolder(userid,accountid);
