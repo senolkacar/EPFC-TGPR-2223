@@ -98,8 +98,6 @@ public class AccountDetailsView extends DialogWindow {
                         new ColumnSpec<>("Amount", this::getAmount).setWidth(10),
                         new ColumnSpec<>("Saldo", this::getSourceSaldo).setWidth(10),
                         new ColumnSpec<>("State", Transfer::getState));
-                        reloadDataHistory();
-        reloadDataHistory();
         historyTable.setPreferredSize(new TerminalSize(115, 5));
         historyTable.addTo(panel);
         historyTable.setSelectAction(this::displayTransfer);
@@ -138,6 +136,7 @@ public class AccountDetailsView extends DialogWindow {
     }
 
     public void     reloadDataHistory() {
+        historyTable.clear();
        var transfers = controller.getTransfers();
        if(DateInterface.isHasChanged()){
            var transferss = Transfer.updateEverything(transfers);
