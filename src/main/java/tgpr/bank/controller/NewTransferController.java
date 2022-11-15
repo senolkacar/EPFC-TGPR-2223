@@ -27,9 +27,9 @@ public class NewTransferController extends Controller {
     }
 
 
-    public ErrorList validate(String iban, String title, String amount, String description,Double sourceSaldo,Double sourceFloor,String date) {
+    public ErrorList validate(String targetIban, String title, String amount, String description,Double sourceSaldo,Double sourceFloor,String date, String sourceIban) {
         var errors = new ErrorList();
-        errors.add(TransferValidator.isValidTargetAccount(iban));
+        errors.add(TransferValidator.isValidTargetAccount(targetIban,sourceIban));
         errors.add(TransferValidator.isValidTitle(title));
         errors.add(TransferValidator.isValidAmount(amount,sourceSaldo,sourceFloor));
         errors.add(TransferValidator.isValidDescription(description));
@@ -37,20 +37,20 @@ public class NewTransferController extends Controller {
         return errors;
     }
 
-    public void save(String iban, String title, String amount, String description, Double sourceSaldo, Double sourceFloor, String effectiveAt, Integer sourceAccountId, Integer targetAccountID, Double targetSaldo, LocalDateTime createdAT,Integer createdBy, boolean addToFav, String category){
+    public void save(String targetIban, String title, String amount, String description, Double sourceSaldo, Double sourceFloor, String effectiveAt, Integer sourceAccountId, Integer targetAccountID, Double targetSaldo, LocalDateTime createdAT,Integer createdBy, boolean addToFav, String category, String sourceIban){
         String state = "executed";
         LocalDate date = null;
-        var errors = validate(iban,title,amount,description, sourceSaldo, sourceFloor,effectiveAt);
+        var errors = validate(targetIban,title,amount,description, sourceSaldo, sourceFloor,effectiveAt, sourceIban);
         if(errors.isEmpty()){
             if(targetAccountID==null){
-                if(Account.accountAlreadyExistsInDB(iban)){
-                    targetAccountID = Account.getByIban(iban).getId();
-                    if(!Account.isExternalAccount(iban)){
-                        targetSaldo = Account.getByIban(iban).getSaldo();
+                if(Account.accountAlreadyExistsInDB(targetIban)){
+                    targetAccountID = Account.getByIban(targetIban).getId();
+                    if(!Account.isExternalAccount(targetIban)){
+                        targetSaldo = Account.getByIban(targetIban).getSaldo();
                         targetSaldo = targetSaldo+Double.parseDouble(amount);
                     }
                 }else{
-                    Account.newExternalAccount(iban,title);
+                    Account.newExternalAccount(targetIban,title);
                     targetAccountID = Account.getLastCreatedAccount().getId();
                 }
             }

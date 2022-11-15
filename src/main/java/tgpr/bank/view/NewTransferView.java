@@ -138,7 +138,8 @@ public class NewTransferView extends DialogWindow {
                 txtBoxDescription.getText(),
                 cBoxSourceAccount.getSelectedItem().getSaldo(),
                 cBoxSourceAccount.getSelectedItem().getFloor(),
-                txtBoxDate.getText()
+                txtBoxDate.getText(),
+                cBoxSourceAccount.getSelectedItem().getIban()
         );
 
         errIBAN.setText(errors.getFirstErrorMessage(Transfer.Fields.TargetAccountIban));
@@ -159,7 +160,7 @@ public class NewTransferView extends DialogWindow {
         if(!TransferValidator.categoryIsNotSelected(cbBoxCategory.getSelectedItem())){
             category = listCategory.get(cbBoxCategory.getSelectedIndex()-1).getName();
         }
-        controller.save(iban,title,amount,description,cBoxSourceAccount.getSelectedItem().getSaldo(),cBoxSourceAccount.getSelectedItem().getFloor(),txtBoxDate.getText(),cBoxSourceAccount.getSelectedItem().getId(),targetAccountId,targetSaldo, LocalDateTime.now(),cBoxSourceAccount.getSelectedItem().getId(),checkBoxAddtoFav.isChecked(),category);
+        controller.save(iban,title,amount,description,cBoxSourceAccount.getSelectedItem().getSaldo(),cBoxSourceAccount.getSelectedItem().getFloor(),txtBoxDate.getText(),cBoxSourceAccount.getSelectedItem().getId(),targetAccountId,targetSaldo, LocalDateTime.now(),cBoxSourceAccount.getSelectedItem().getId(),checkBoxAddtoFav.isChecked(),category,cBoxSourceAccount.getSelectedItem().getIban());
     }
 
 }

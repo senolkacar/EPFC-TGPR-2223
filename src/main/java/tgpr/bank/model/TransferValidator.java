@@ -6,12 +6,15 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 public abstract class TransferValidator {
-    public static Error isValidTargetAccount(String targetAccount){
+    public static Error isValidTargetAccount(String targetAccount,String sourceAccount){
         if(targetAccount==null || targetAccount.isBlank()){
             return new Error("target iban required",Transfer.Fields.TargetAccountIban);
         }
         if(!Pattern.matches("[a-zA-Z]{2}[0-9]{2}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}",targetAccount)){
             return new Error("bad target iban format",Transfer.Fields.TargetAccountIban);
+        }
+        if(targetAccount.equals(sourceAccount)){
+            return new Error("source and target iban are the same",Transfer.Fields.TargetAccountIban);
         }
         return Error.NOERROR;
     }
