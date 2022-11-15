@@ -39,7 +39,9 @@ public class AccessAccountClientController extends Controller {
             view.reloadInfo();
 
     }
-
+    public void showAccountAccess(Account account){
+       navigateTo(new DisplayAccessAccountController(account));
+    }
 
 
     public void addAccess(int accountID,String type){

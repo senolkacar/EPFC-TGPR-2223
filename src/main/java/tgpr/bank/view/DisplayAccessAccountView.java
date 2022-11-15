@@ -2,18 +2,22 @@ package tgpr.bank.view;
 
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
+import tgpr.bank.controller.AccessAccountClientController;
+import tgpr.bank.controller.DisplayAccessAccountController;
+import tgpr.bank.model.Account;
 
 import java.util.List;
 
-import static java.time.zone.ZoneRulesProvider.refresh;
-import static javax.swing.text.StyleConstants.setComponent;
+
 
 public class DisplayAccessAccountView  extends DialogWindow {
-    private final DisplayAccessAccountView controller;
+    private final DisplayAccessAccountController controller;
+    private Account account;
 
-    public DisplayAccessAccountView(DisplayAccessAccountView controller) {
+    public DisplayAccessAccountView(DisplayAccessAccountController controller, Account account) {
         super("Access Account");
        this.controller = controller;
+       this.account=account;
 
 
         setHints(List.of(Hint.CENTERED));
@@ -28,6 +32,7 @@ public class DisplayAccessAccountView  extends DialogWindow {
 
 
     }
+
 
 
 
