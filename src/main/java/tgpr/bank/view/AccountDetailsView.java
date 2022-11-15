@@ -196,9 +196,6 @@ public class AccountDetailsView extends DialogWindow {
                 }
             }
         }
-
-
-
     }
 
 
@@ -229,7 +226,6 @@ public class AccountDetailsView extends DialogWindow {
             }else{
                 controller.editCategory(category);
                 reloadData();
-
                 categoryTable.setSelected(category);
 
             }

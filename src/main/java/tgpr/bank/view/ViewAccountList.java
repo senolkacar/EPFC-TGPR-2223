@@ -6,8 +6,7 @@ import com.googlecode.lanterna.gui2.Button;
 import tgpr.bank.controller.ControllerAccountList;
 import com.googlecode.lanterna.gui2.EmptySpace;
 import com.googlecode.lanterna.gui2.Panel;
-import tgpr.bank.model.Account;
-import tgpr.bank.model.User;
+import tgpr.bank.model.*;
 import tgpr.framework.ColumnSpec;
 import tgpr.framework.ObjectTable;
 import tgpr.framework.Tools;
@@ -15,9 +14,9 @@ import tgpr.framework.ViewManager;
 import com.googlecode.lanterna.gui2.menu.Menu;
 import com.googlecode.lanterna.gui2.menu.MenuBar;
 import com.googlecode.lanterna.gui2.menu.MenuItem;
-import tgpr.bank.model.Security;
 
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class ViewAccountList extends BasicWindow {
@@ -85,7 +84,7 @@ public class ViewAccountList extends BasicWindow {
 
         // à implementer use system date/time
         // on implémentera le use system quand on va créer le back to the future
-        return "Welcome to MyBank (" + Security.getLoggedUser().getEmail() + " - " + (Security.getLoggedUser().getType()) + ")";
+        return "Welcome to MyBank (" + Security.getLoggedUser().getEmail() + " - " + (Security.getLoggedUser().getType()) + " - " + DateInterface.getUsedDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))+ ")";
     }
 
 

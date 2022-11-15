@@ -182,6 +182,12 @@ public class Transfer extends Model {
                 .add("target_account",account.getId()));
     }
 
+    public static List<Transfer> getTransfersForLabel(Account account) {
+        return queryList(Transfer.class, "select * from transfer where (source_account=:source_account or target_account=:target_account) ORDER by GREATEST( COALESCE(effective_at, 0), COALESCE(created_at, 0) )ASC", new Params()
+                .add("source_account",account.getId())
+                .add("target_account",account.getId()));
+    }
+
     public static Transfer getTransfer(int id) {
         return queryOne(Transfer.class, "select * from transfer where id=:id", new Params("id",id));
     }
