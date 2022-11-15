@@ -27,28 +27,20 @@ public class LoginController extends Controller {
         if (errors.isEmpty()) {
             var user = User.checkCredentials(email, password);
             if (user != null) {
-                if (checkbox.isChecked()){
+                if (checkbox.isChecked()) {
                     Security.login(user);
                     DateInterface.date(Date.changeFormatToEn(Date.getSysDateParsed(String.valueOf(Date.getSysDate()))));
-                    List<Account> list = Account.getAll();
-                    for (Account account: list) {
-                        List<Transfer> transfers = Transfer.getTransfers(account);
-                        Transfer.updateEverything(transfers);
-                    }
-                    navigateTo(new ControllerAccountList());
                 }
-                else {
+                else{
                     Security.login(user);
                     DateInterface.date(Date.changeFormatToEn(Date.getSysDateParsed(date)));
-                    DateInterface.hasChanged(true);
+                }
                     List<Account> list = Account.getAll();
                     for (Account account: list) {
                         List<Transfer> transfers = Transfer.getTransfers(account);
                         Transfer.updateEverything(transfers);
                     }
                     navigateTo(new ControllerAccountList());
-                }
-
             } else
                 showError(new Error("invalid credentials"));
         } else

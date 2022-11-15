@@ -274,7 +274,7 @@ public class Transfer extends Model {
 
         for (Transfer transfer:transfers) {
 
-            LocalDateTime execDate;
+           LocalDateTime execDate;
             if (transfer.effectiveAtLDT!=null){
                 execDate=transfer.effectiveAtLDT;
             }
@@ -288,13 +288,13 @@ public class Transfer extends Model {
                 Account a = getAccount(transfer.sourceAccountID);
                 Account b = getAccount(transfer.targetAccountID);
 
-                if(a.getType()!="external"){
+                if(!a.getType().equals("external")){
                     if((a.getSaldo()-transfer.amount)>= a.getFloor()){
                         double newAmountSource = a.getSaldo()-transfer.amount;
                         execute("UPDATE account SET saldo=:newAmount where id=:id", new Params()
                                 .add("newAmount", newAmountSource)
                                 .add("id",a.getId()));
-                        if(b.getType()!="external"){
+                        if(!b.getType().equals("external")){
                             double newAmountTarget = b.getSaldo()+ transfer.amount;
                             execute("UPDATE account SET saldo=:newAmount where id=:id", new Params()
                                     .add("newAmount", newAmountTarget)
@@ -306,19 +306,19 @@ public class Transfer extends Model {
                                 .add("id",transfer.id));
                     }
                 }
-                else if (b.getType()!="external"){
+                else if (!b.getType().equals("external")){
                     double newAmountTarget = b.getSaldo()+ transfer.amount;
                     execute("UPDATE account SET saldo=:newAmount where id=:id", new Params()
-                            .add("new Amount", newAmountTarget)
+                            .add("newAmount", newAmountTarget)
                             .add("id",b.getId()));
                 }
             }
-            else if (execDate.compareTo(DateInterface.getUsedDate())>0) {
+            else if(transfer.createdAtLDT.compareTo(Date.changeFormatToEn(DateInterface.getUsedDate()))<=0) {
                 execute("UPDATE transfer SET state='future' WHERE id=:id", new Params()
                         .add("id", transfer.id));
             }
             else{
-                execute("UPDATE transfer SET state= 'ignored' WHERE id=:id", new Params()
+                execute("UPDATE transfer SET state='ignored' WHERE id=:id", new Params()
                         .add("id",transfer.id));
 
             }

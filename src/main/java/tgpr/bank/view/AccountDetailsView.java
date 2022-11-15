@@ -135,67 +135,32 @@ public class AccountDetailsView extends DialogWindow {
         }
     }
 
-    public void     reloadDataHistory() {
+    public void reloadDataHistory() {
         historyTable.clear();
        var transfers = controller.getTransfers();
-       if(DateInterface.isHasChanged()){
-           var transferss = Transfer.updateEverything(transfers);
-           historyTable.add(transferss);
-           historyTable.invalidate();
+       historyTable.add(transfers);
+       historyTable.invalidate();
        }
-       else{
-           historyTable.add(transfers);
-           historyTable.invalidate();
-       }
-
-    }
 
 
     public void reloadFiltered(){
         historyTable.clear();
         var transfers = controller.getTransfers();
-        var datedTransfers = Transfer.updateEverything(transfers);
 
-        if(!DateInterface.isHasChanged()) {
             if (txtFilter.getText().isEmpty()) {
                 historyTable.add(transfers);
             } else {
                 for (Transfer transfer : transfers) {
-                    if (transfer.getTargetAccount().getIban().contains(txtFilter.getText().toUpperCase())
-                            || transfer.getSourceAccount().getIban().contains(txtFilter.getText().toUpperCase())
-                            || transfer.getSourceAccount().getTitle().contains(txtFilter.getText().toUpperCase())
-                            || transfer.getTargetAccount().getTitle().contains(txtFilter.getText().toUpperCase())
-                            || transfer.toString().toLowerCase().contains(txtFilter.getText().toLowerCase())) {
+                    Account account = transfer.getSourceAccountID() == this.account.getId() ? transfer.getTargetAccount() : transfer.getSourceAccount();
+                    if(account.getIban().contains(txtFilter.getText().toUpperCase())
+                            || account.getTitle().contains(txtFilter.getText().toUpperCase())
+                            || transfer.toString().toLowerCase().contains(txtFilter.getText().toLowerCase())
+                            || (transfer.getCategory(this.account.getId(),transfer.getId()) != null && transfer.getCategory(this.account.getId(),transfer.getId()).getName().toLowerCase().contains(txtFilter.getText().toLowerCase()))
+                    ){
                         historyTable.add(transfer);
                     }
-                    if (transfer.getCategory(account.getId(), transfer.getId()) != null) {
-                        if (transfer.getCategory(account.getId(), transfer.getId()).getName().toLowerCase().contains(txtFilter.getText().toLowerCase())) {
-                            historyTable.add(transfer);
-                        }
-                    }
                 }
             }
-        }
-        else{
-            if(txtFilter.getText().isEmpty()){
-                historyTable.add(datedTransfers);
-            }else{
-                for (Transfer transfer : datedTransfers) {
-                    if(transfer.getTargetAccount().getIban().contains(txtFilter.getText().toUpperCase())
-                            || transfer.getSourceAccount().getIban().contains(txtFilter.getText().toUpperCase())
-                            || transfer.getSourceAccount().getTitle().contains(txtFilter.getText().toUpperCase())
-                            || transfer.getTargetAccount().getTitle().contains(txtFilter.getText().toUpperCase())
-                            || transfer.toString().toLowerCase().contains(txtFilter.getText().toLowerCase())){
-                        historyTable.add(datedTransfers);
-                    }
-                    if(transfer.getCategory(account.getId(),transfer.getId()) != null){
-                        if(transfer.getCategory(account.getId(),transfer.getId()).getName().toLowerCase().contains(txtFilter.getText().toLowerCase())){
-                            historyTable.add(datedTransfers);
-                        }
-                    }
-                }
-            }
-        }
     }
 
 
@@ -356,9 +321,9 @@ public class AccountDetailsView extends DialogWindow {
 
     private void displayTransfer() {
         var transfer = historyTable.getSelected();
-        if (transfer == null) return;
-        if (controller.displayTransfer(transfer, account) == null)
-            refresh();
+        if (transfer != null){
+            controller.displayTransfer(transfer,account);
+        }
         reloadDataHistory();
         reloadData();
     }
