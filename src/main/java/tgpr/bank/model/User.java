@@ -173,6 +173,4 @@ public class User extends Model {
         return c == 1;
     }
 
-
-
 }

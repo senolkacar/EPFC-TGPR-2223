@@ -29,6 +29,7 @@ public class ControllerAccountList extends Controller {
     }
 
     public void newTransfer(){
+        NewTransferController.previousController = this;
         navigateTo(new NewTransferController());
     }
 }

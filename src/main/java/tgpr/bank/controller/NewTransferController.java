@@ -1,14 +1,11 @@
 package tgpr.bank.controller;
 
 import com.googlecode.lanterna.gui2.Window;
+import com.googlecode.lanterna.gui2.dialogs.MessageDialogButton;
 import tgpr.bank.model.*;
 import tgpr.bank.view.NewTransferView;
 import tgpr.framework.Controller;
-import tgpr.framework.Error;
 import tgpr.framework.ErrorList;
-
-import java.sql.Date;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -19,17 +16,16 @@ public class NewTransferController extends Controller {
 
     private final NewTransferView view;
 
+    public static Controller previousController;
+
     public NewTransferController(){
         view = new NewTransferView(this);
     }
     @Override
     public Window getView() {
-        return new NewTransferView(this);
+        return view;
     }
 
-    public List<Account> getAccounts() {
-        return Account.getAll();
-    }
 
     public ErrorList validate(String iban, String title, String amount, String description,Double sourceSaldo,Double sourceFloor,String date) {
         var errors = new ErrorList();
@@ -66,7 +62,9 @@ public class NewTransferController extends Controller {
                 targetSaldo=null;
             }else{
                 sourceSaldo = sourceSaldo-Double.parseDouble(amount);
-                targetSaldo = targetSaldo+Double.parseDouble(amount);
+                if(targetSaldo!=null){
+                    targetSaldo = targetSaldo+Double.parseDouble(amount);
+                }
             }
             Transfer.addTransferToDB(Double.parseDouble(amount),description,sourceAccountId,targetAccountID,sourceSaldo,targetSaldo,createdAT,createdBy,date,state);
             Account.updateAccountSaldo(sourceAccountId,sourceSaldo);
@@ -79,12 +77,11 @@ public class NewTransferController extends Controller {
             if(category!=null){
                 Category.addTransferToTransferCat(Category.getCatByName(category,sourceAccountId).getId(),Transfer.getLastCreatedTransfer().getId(),sourceAccountId);
             }
+            showMessage("Your transfer has been successfuly created", "Information", MessageDialogButton.valueOf("OK"));
+            view.close();
+            navigateTo(previousController);
         }else {
             showErrors(errors);
         }
-    }
-
-    public void close(){
-        view.close();
     }
 }

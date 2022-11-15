@@ -17,11 +17,6 @@ public class BankApp {
             Controller.abort("Database is not available!");
         else
             Controller.navigateTo(new LoginController());
-
-        var ben  = User.getAll();
-        System.out.println(ben);
-
-
     }
 
 }

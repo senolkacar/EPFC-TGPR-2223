@@ -44,8 +44,6 @@ public class NewTransferView extends DialogWindow {
         Panel panel = new Panel().setLayoutManager(new GridLayout(2).setTopMarginSize(1))
                 .setLayoutData(Layouts.LINEAR_CENTER).addTo(root);
 
-//        refresh();
-
         panel.addComponent(new Label("Source Account: "));
         cBoxSourceAccount = new ComboBox<Account>(Account.getAll()).addTo(panel).takeFocus();
         cBoxSourceAccount.addListener((selectedIndex,previousSelection, changedByUserInteraction) -> reloadData());
@@ -123,10 +121,12 @@ public class NewTransferView extends DialogWindow {
         if(cBoxTargetAccount.getSelectedItem().equals("-- insert IBAN myself --")){
             txtBoxIban.setText("").setReadOnly(false);
             txtBoxTitle.setText("").setReadOnly(false);
+            checkBoxAddtoFav.setEnabled(false);
         }else {
             Account account = listTargetAccounts.get(cBoxTargetAccount.getSelectedIndex()-1);
             txtBoxIban.setText(account.getIban()).setReadOnly(true);
             txtBoxTitle.setText(account.getTitle()).setReadOnly(true);
+            checkBoxAddtoFav.setEnabled(true);
         }
     }
 
