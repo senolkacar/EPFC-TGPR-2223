@@ -2,6 +2,8 @@ package tgpr.bank.model;
 
 import tgpr.framework.Model;
 import tgpr.framework.Params;
+
+import java.lang.constant.Constable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -138,6 +140,25 @@ public class Account extends Model{
                 .add("idaccount",accountid)
                 .add("type",type)
                 .add("iduser",User.getByEmail(email).getId()));
+
+    }
+    public void updateAccess(int accountId,int userId,String type){
+        if(numberOfHolder(accountId)>1){
+            update(accountId,userId,type);
+        }
+
+    }
+
+    public void update(int accountId,int userId,String type) {
+        String sql = "update access set type=:type where access.account=:accountId and userId";
+        execute(sql, new Params()
+                .add("accountId",accountId)
+                .add("userId", userId)
+                .add("type",type));
+    }
+
+    public  Integer numberOfHolder(int accountId){
+       return queryScalar(Integer.class,"select count(*) from access where access.type='holder' and access.account=:accountId group by access.account",new Params("accountId",accountId));
 
     }
     @Override

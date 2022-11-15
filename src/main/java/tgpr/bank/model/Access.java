@@ -55,7 +55,7 @@ public class Access extends Model {
         user = rs.getInt("user");
         account = rs.getInt("account");
         type = rs.getString("type");
-        typet = rs.getBoolean("type");
+
     }
 
     @Override

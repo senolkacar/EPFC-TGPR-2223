@@ -4,6 +4,8 @@ import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
 import tgpr.bank.controller.AccessAccountClientController;
+import tgpr.bank.controller.DisplayAccessAccountClientController;
+import tgpr.bank.controller.EditClientController;
 import tgpr.bank.model.Access;
 import tgpr.bank.model.Account;
 import tgpr.bank.model.Security;
@@ -13,6 +15,8 @@ import tgpr.framework.ObjectTable;
 import tgpr.framework.ViewManager;
 
 import java.util.List;
+
+import static tgpr.framework.Controller.navigateTo;
 
 public class AccessAccountClientView extends DialogWindow {
     private final AccessAccountClientController controller;
@@ -67,9 +71,10 @@ public class AccessAccountClientView extends DialogWindow {
         Button btnReset = new Button("Reset", this::reset).addTo(buttons);
         Button btnClose = new Button("Close", this::close).addTo(buttons);
         accountTable.setSelectAction(() ->{
-            var accountAccess = accountTable.getSelected();
-            accountTable.setSelected(accountAccess);
-            controller.DeleteAccess(accountAccess);
+            //var accountAccess = accountTable.getSelected();
+           // accountTable.setSelected(accountAccess);
+          //  controller.DeleteAccess(accountAccess);
+            navigateTo(new DisplayAccessAccountClientController(DisplayAccessAccountView,user));
 
         });
         reloadData();
