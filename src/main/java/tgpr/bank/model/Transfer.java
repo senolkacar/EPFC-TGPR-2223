@@ -64,7 +64,7 @@ public class Transfer extends Model {
         return amount;
     }
 
-    public String transformInEuro(double montant){
+    public static String transformInEuro(double montant){
         NumberFormat formatter = NumberFormat.getCurrencyInstance();
         String moneyString = formatter.format(montant);
         return (moneyString);
