@@ -7,16 +7,15 @@
   * boverhaegen@epfc.eu, password "Password1,", administrateur
   * bepenelle@epfc.eu, password "Password1,", utilisateur
   * xapigeolet@epfc.eu, password "Password1,", utilisateur
-  * A compléter...
 
 ### Liste des bugs connus
 
-  * bug 1
-  * bug 2
-  * ...
+  * Manager: Dans la page où on donne l'accès à un compte pour un client, on ne sait pas update son accès ni delete
+  * 
 
 ### Liste des fonctionnalités supplémentaires
 
+Manager: modifier l'accès d'un compte pour un user et associer un client existant à un compte existant
 ### Divers
 
 ...
