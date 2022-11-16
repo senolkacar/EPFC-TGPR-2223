@@ -1,6 +1,6 @@
-drop database if exists `tgpr-2223-xyy`;
-create database `tgpr-2223-xyy`;
-use `tgpr-2223-xyy`;
+﻿drop database if exists `tgpr-2223-a04`;
+create database `tgpr-2223-a04`;
+use `tgpr-2223-a04`;
 
 create table account
 (

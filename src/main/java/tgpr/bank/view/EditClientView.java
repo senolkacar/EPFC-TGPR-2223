@@ -6,7 +6,9 @@ import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
 import com.googlecode.lanterna.input.KeyStroke;
 import tgpr.bank.controller.EditClientController;
+import tgpr.bank.model.Account;
 import tgpr.bank.model.Agency;
+import tgpr.bank.model.Client;
 import tgpr.bank.model.User;
 import tgpr.framework.Tools;
 import tgpr.framework.ViewManager;
@@ -97,6 +99,12 @@ public class EditClientView extends DialogWindow {
     private Panel createButtonsPanel(){
         var panel = new Panel().setLayoutManager(new LinearLayout(Direction.HORIZONTAL))
                 .setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
+
+        new EmptySpace().addTo(panel);
+        var btnaccessaccount = new Button("Account Access",()->{
+            List<Account> c=controller.showAccountAccess(client);
+        }).addTo(panel);
+
         if(client!=null){
             var btnDelete = new Button("Delete",this::delete).addTo(panel);
             ViewManager.addShortcut(this,btnDelete, KeyStroke.fromString("<A-u>"));
