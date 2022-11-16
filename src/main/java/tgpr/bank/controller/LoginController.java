@@ -9,9 +9,6 @@ import tgpr.framework.Controller;
 import tgpr.framework.Error;
 import tgpr.framework.ErrorList;
 import tgpr.framework.Model;
-
-import javax.tools.Tool;
-import javax.xml.crypto.dsig.TransformService;
 import java.util.List;
 
 public class LoginController extends Controller {
