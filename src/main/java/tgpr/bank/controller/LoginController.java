@@ -43,7 +43,11 @@ public class LoginController extends Controller {
                             Transfer.updateDatabase(account,trans);
                         }
                     }
+                if(Security.getLoggedUser().getType().equals("manager")){
+                    navigateTo(new ManagerController());
+                }else{
                     navigateTo(new ControllerAccountList());
+                }
             } else
                 showError(new Error("invalid credentials"));
         } else
