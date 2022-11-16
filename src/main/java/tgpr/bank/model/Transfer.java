@@ -194,8 +194,7 @@ public class Transfer extends Model {
     }
 
     public static Category getCategory(int accountID, int transferID){
-        Category category = getCategoryTransfer(accountID, transferID);
-        return category;
+        return getCategoryTransfer(accountID, transferID);
     }
 
     public static List<Transfer> getTransfers(int accountID){
