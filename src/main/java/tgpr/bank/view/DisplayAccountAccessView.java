@@ -69,9 +69,9 @@ public class DisplayAccountAccessView extends DialogWindow {
                 .setLayoutManager(new LinearLayout(Direction.HORIZONTAL))
                 .setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
 
-        new Button("Update", this::update).addTo(root);
+        //new Button("Update", this::update).addTo(root);
 
-        new Button("Delete", this::delete).addTo(root);
+       // new Button("Delete", this::delete).addTo(root);
         Button btnClose = new Button("Close", this::close).addTo(root);
         return root;
     }
@@ -85,23 +85,23 @@ public class DisplayAccountAccessView extends DialogWindow {
     //}
 
 
-      public void delete(){
+     // public void delete(){
 
-        askConfirmation("Do you want to remove this account from your Acces? " + account.getIban(), "Remove favourite");
-        controller.delete(account.getId());
-       account.reload();
-       controller.close();
-       refresh();
-
-
-     }
-
-    private void update() {
-        controller.update(account.getId(), cboType.getSelectedItem());
-        controller.close();
+     //   askConfirmation("Do you want to remove this account from your Acces? " + account.getIban(), "Remove favourite");
+     //   controller.delete(account.getId());
+      // account.reload();
+      // controller.close();
+      // refresh();
 
 
-    }
+    // }
+
+  // private void update() {
+    //    controller.update(account.getId(), cboType.getSelectedItem());
+      //  controller.close();
+
+
+    //}
 
 }
 
