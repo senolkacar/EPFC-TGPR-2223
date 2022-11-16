@@ -114,6 +114,21 @@ public class Account extends Model {
 
     }
 
+    public static boolean isExternal(int compte){
+        List<Account> liste = Account.getAll();
+
+        boolean result= false;
+
+        for (Account a : liste
+             ) {
+            if (a.getType().equals("external") && a.getId()==compte){
+                result=true;
+            }
+
+        }
+        return result;
+    }
+
     public void addFavourite(int accountid) {
         execute("insert into favourite (user, account) values (:loggeduser,:idAccount)", new Params()
                 .add("idAccount", accountid)

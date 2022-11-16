@@ -36,9 +36,14 @@ public class LoginController extends Controller {
                     DateInterface.date(Date.changeFormatToEn(Date.getSysDateParsed(date)));
                 }
                     List<Account> list = Account.getAll();
+                    Transfer.deleteEverything();
                     for (Account account: list) {
                         List<Transfer> transfers = Transfer.getTransfers(account);
-                        Transfer.updateEverything(transfers);
+                        Transfer.updateEverything(transfers,account);
+                        for (Transfer trans:transfers
+                             ) {
+                            Transfer.updateDatabase(account,trans);
+                        }
                     }
                     navigateTo(new ControllerAccountList());
             } else
