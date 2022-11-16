@@ -203,7 +203,7 @@ public class Transfer extends Model {
                 .add("target_account",accountID));
     }
 
-    public static void addTransferToDB(Double amount, String description, Integer sourceAccountID, Integer targetAccountID, Double sourceSaldo, Double targetSaldo, LocalDateTime createdAT, Integer createdBy, LocalDate effectiveAT, String state ){
+    public static void addTransferToDB(Double amount, String description, Integer sourceAccountID, Integer targetAccountID, Double sourceSaldo, Double targetSaldo, String createdAT, Integer createdBy, LocalDate effectiveAT, String state ){
         execute("insert into Transfer(amount,description,source_account,target_account,source_saldo,target_saldo,created_at,created_by,effective_at,state)" +
                 "values(:amount,:description,:sourceAccountID,:targetAccountID,:sourceSaldo,:targetSaldo,:createdAT,:createdBy,:effectiveAT,:state)",
                 new Params()

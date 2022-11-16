@@ -9,6 +9,7 @@ import tgpr.framework.Layouts;
 import tgpr.framework.Tools;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class NewTransferView extends DialogWindow {
@@ -176,7 +177,7 @@ public class NewTransferView extends DialogWindow {
         if(!TransferValidator.categoryIsNotSelected(cbBoxCategory.getSelectedItem())){
             category = listCategory.get(cbBoxCategory.getSelectedIndex()-1).getName();
         }
-        controller.save(iban,title,amount,description,cBoxSourceAccount.getSelectedItem().getSaldo(),cBoxSourceAccount.getSelectedItem().getFloor(),txtBoxDate.getText(),cBoxSourceAccount.getSelectedItem().getId(),targetAccountId,targetSaldo, LocalDateTime.now(),Security.getLoggedUser().getId(),checkBoxAddtoFav.isChecked(),category,cBoxSourceAccount.getSelectedItem().getIban());
+        controller.save(iban,title,amount,description,cBoxSourceAccount.getSelectedItem().getSaldo(),cBoxSourceAccount.getSelectedItem().getFloor(),txtBoxDate.getText(),cBoxSourceAccount.getSelectedItem().getId(),targetAccountId,targetSaldo, DateInterface.getUsedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),Security.getLoggedUser().getId(),checkBoxAddtoFav.isChecked(),category,cBoxSourceAccount.getSelectedItem().getIban());
     }
 
 }

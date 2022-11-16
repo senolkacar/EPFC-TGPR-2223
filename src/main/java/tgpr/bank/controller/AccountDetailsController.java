@@ -104,5 +104,10 @@ public class AccountDetailsController extends Controller {
 //    public List<Transfer> updateEverything(List<Transfer> transfers){
 //        return  transfer.updateEverything(transfers);
 //    }
+
+    public void newTransfer(){
+        NewTransferController.previousController = this;
+        navigateTo(new NewTransferController());
+    }
 }
 

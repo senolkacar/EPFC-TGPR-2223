@@ -327,7 +327,7 @@ public class AccountDetailsView extends DialogWindow {
     private Panel buttonPanel() {
         Panel panel = new Panel().setLayoutManager(new LinearLayout(Direction.HORIZONTAL))
                 .setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
-        new Button("New Transfer").addTo(panel);
+        new Button("New Transfer",this::newTransfer).addTo(panel);
         new Button("Close",this::close).addTo(panel);
         return panel;
     }
@@ -346,5 +346,9 @@ public class AccountDetailsView extends DialogWindow {
         }
         reloadDataHistory();
         reloadData();
+    }
+
+    public void newTransfer(){
+        controller.newTransfer();
     }
 }
