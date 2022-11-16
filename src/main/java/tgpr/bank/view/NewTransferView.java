@@ -156,9 +156,11 @@ public class NewTransferView extends DialogWindow {
             if(acc.getIban().equals(txtBoxIban.getText().toUpperCase())){
                 txtBoxTitle.setText(acc.getTitle());
                 txtBoxTitle.setReadOnly(true);
+                checkBoxAddtoFav.setEnabled(false);
                 break;
             }
             txtBoxTitle.setText("").setReadOnly(false);
+            checkBoxAddtoFav.setEnabled(true);
 
         }
     }
