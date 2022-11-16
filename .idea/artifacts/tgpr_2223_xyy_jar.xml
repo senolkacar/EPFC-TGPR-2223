@@ -2,7 +2,7 @@
   <artifact type="jar" name="tgpr-2223-xyy:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/tgpr_2223_xyy_jar</output-path>
     <root id="archive" name="tgpr-2223-xyy.jar">
-      <element id="module-output" name="tgpr-2223-xyy" />
+      <element id="module-output" name="tgpr-2223-a04" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/springframework/spring-core/5.3.21/spring-core-5.3.21.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/net/ttddyy/datasource-proxy/1.8/datasource-proxy-1.8.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/apache/commons/commons-text/1.9/commons-text-1.9.jar" path-in-jar="/" />

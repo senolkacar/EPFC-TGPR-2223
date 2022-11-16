@@ -54,7 +54,6 @@ public class ViewAccountList extends BasicWindow {
                 new ColumnSpec<Account>("Saldo", m -> Tools.ifNull(Transfer.transformInEuro(m.getSaldo()), ""))
 
         );
-        // ajoute le tableau au root panel
         root.addComponent(table);
         new EmptySpace().addTo(root);
         Button btnNewTransfer = new Button("New Transfer",this::newTransfer).addTo(root);
