@@ -24,7 +24,6 @@ public class DisplayAccountAccessView extends DialogWindow {
     private Label lblIban;
 
 
-
     public DisplayAccountAccessView(DisplayAccountAccessController controller, Account account) {
         super("Update Access");
         this.controller = controller;
@@ -43,22 +42,20 @@ public class DisplayAccountAccessView extends DialogWindow {
 
 
         new EmptySpace().addTo(root);
-         cboType = new ComboBox<String>("holder", "proxy").addTo(root).setPreferredSize(new TerminalSize(10, 1))
+        cboType = new ComboBox<String>("holder", "proxy").addTo(root).setPreferredSize(new TerminalSize(10, 1))
                 .addListener((newIndex, oldIndex, byUser) -> reloadData());
-       
+
 
         createButtonsPanel().addTo(root);
         refresh();
 
-        }
-
-
-
+    }
 
 
     private void reloadData() {
 
     }
+
     private void refresh() {
         if (account != null) {
             lblIban.setText(account.getIban());
@@ -79,32 +76,35 @@ public class DisplayAccountAccessView extends DialogWindow {
         return root;
     }
 
-    private void delete() {
-    }
+
 
     // private void delete() {
-   //     askConfirmation("Do you want to remove this account from your Acces? " + account.getIban(), "Remove favourite");
+    //     askConfirmation("Do you want to remove this account from your Acces? " + account.getIban(), "Remove favourite");
     //         controller.delete(account.getId(),cboType);
-     //      account.reload();
+    //      account.reload();
     //}
 
 
-    //  public void delete(){
+      public void delete(){
 
-   //     askConfirmation("Do you want to remove this account from your Acces? " + account.getIban(), "Remove favourite");
-   //     controller.delete(account.getId(),);
-    //    account.reload();
+        askConfirmation("Do you want to remove this account from your Acces? " + account.getIban(), "Remove favourite");
+        controller.delete(account.getId());
+       account.reload();
+       controller.close();
+       refresh();
 
 
-
-
-   // }
+     }
 
     private void update() {
-        controller.update(account.getId(),cboType.getSelectedItem());
+        controller.update(account.getId(), cboType.getSelectedItem());
+        controller.close();
+
 
     }
 
-
-
 }
+
+
+
+

@@ -13,27 +13,46 @@ public class DisplayAccountAccessController extends Controller {
     private final DisplayAccountAccessView view;
     private Account account;
     private User user;
+    public static Controller previousController;
 
-    public DisplayAccountAccessController(Account account){
+    public DisplayAccountAccessController(Account account,User user){
         this.account=account;
+        this.user=user;
         view = new DisplayAccountAccessView(this,account);
     }
-    public void delete(int userId,int accountId){
-        account.deleteAccess(userId,accountId);
+    public void delete(int accountId){
+        account.deleteAccess(user.getId(),accountId);
+        view.close();
+        navigateTo(previousController);
     }
 
-    public void  delete(int accountID,String type){
-        Account.getById(accountID).addAccess(accountID,user.getEmail(),type);
-    }
+   // public void  delete(int accountID,String type){
+   //     Account.getById(accountID).addAccess(accountID,user.getEmail(),type);
+   // }
     public Access isHolder(int userid,int accountid){
         return Account.isHolder(userid,accountid);
     }
     public void  update(int account ,String type){
         Account.getById(account).updateAccess(account,user.getId(),type);
+        view.close();
+        navigateTo(previousController);
+
+    }
+    public void DeleteAccess(Account account,User user){
+
+        askConfirmation("Do you want to remove this account from your Acces? " + account.getIban(), "Remove favourite");
+        account.deleteAccess(user.getId(),account.getId());
+        account.reload();
+
+
 
     }
     @Override
     public Window getView() {
         return view;
+    }
+
+
+    public void close() {
     }
 }

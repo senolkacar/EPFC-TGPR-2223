@@ -43,7 +43,8 @@ public class AccessAccountClientController extends Controller {
 
 
     public void displayaccount (Account account){
-        navigateTo(new DisplayAccountAccessController(account));
+        DisplayAccountAccessController.previousController=this;
+        navigateTo(new DisplayAccountAccessController(account,user));
     }
 
 

@@ -83,7 +83,7 @@ public class AccessAccountClientView extends DialogWindow {
     private void addAccees() {
 
             if (cboAccess.getSelectedIndex()!=0) {
-                controller.addAccess(accountNoAccess.get(cboAccess.getSelectedIndex() - 1).getId(),cboType.getSelectedItem());
+                controller.addAccess(accountNoAccess.get(cboAccess.getSelectedIndex()-1  ).getId(),cboType.getSelectedItem());
                 reloadInfo();
                 reloadData();
             }

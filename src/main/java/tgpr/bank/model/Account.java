@@ -171,7 +171,7 @@ public class Account extends Model{
     }
 
     public void update(int accountId,int userId,String type) {
-        String sql = "update access set type=:type where access.account=:accountId and userId";
+        String sql = "update access set type=:type where access.account=:accountId and userId:=userId";
         execute(sql, new Params()
                 .add("accountId",accountId)
                 .add("userId", userId)
