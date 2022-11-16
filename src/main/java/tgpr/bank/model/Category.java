@@ -1,4 +1,5 @@
 package tgpr.bank.model;
+import org.mariadb.jdbc.message.client.ExecutePacket;
 import tgpr.framework.Model;
 import tgpr.framework.Params;
 import java.sql.ResultSet;
@@ -7,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Category extends Model {
+
+
     private static Integer idAccount;
     public enum Fields {
         name, id
@@ -21,6 +24,10 @@ public class Category extends Model {
 
     public int getId() {
         return id;
+    }
+
+    public Category(){
+
     }
 
     public Category(String name, boolean account) {
@@ -96,8 +103,11 @@ public class Category extends Model {
     }
 
     public void delete(Category category) {
-        String sql ="delete from category where account is not null && category.id=:categoryID";
-        execute(sql, new Params()
+        String sql = "delete from transfer_category where category=:id";
+        execute(sql,new Params()
+                .add("id",category.getId()));
+        String sql1 ="delete from category where account is not null && category.id=:categoryID";
+        execute(sql1, new Params()
                 .add("name", name)
                 .add("categoryID", category.getId()));
 
@@ -115,6 +125,7 @@ public class Category extends Model {
 
     @Override
     public void reload() {
+        reload("select * from category",new Params());
         
     }
 

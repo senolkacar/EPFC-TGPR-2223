@@ -96,7 +96,7 @@ public class AccountDetailsView extends DialogWindow {
                 new ColumnSpec<>("Effect_Date", m -> m.getStringEffectiveAtLDT()),
                 new ColumnSpec<>("Description", Transfer::getDescription),
                 new ColumnSpec<>("From/To", this::AccountToDisplay).setWidth(30).setOverflowHandling(ColumnSpec.OverflowHandling.Wrap),
-                new ColumnSpec<>("Category", this::CategoryToDisplay).setWidth(11),
+               // new ColumnSpec<>("Category", this::CategoryToDisplay).setWidth(11),
                 new ColumnSpec<>("Amount", this::getAmount).setWidth(10),
                 new ColumnSpec<>("Saldo",  this::getSourceSaldo).setWidth(10),
                 new ColumnSpec<>("State", Transfer::getState));
@@ -111,9 +111,9 @@ public class AccountDetailsView extends DialogWindow {
         return border;
     }
 
-    private String CategoryToDisplay(Transfer m) {
-        return m.getCategory(account.getId(), m.getId()) == null ? "" : m.getCategory(account.getId(), m.getId()).getName();
-    }
+    /*private String CategoryToDisplay(Transfer m) {
+        return Transfer.(account.getId(), m.getId()) == null ? "" : m.getCategory(account.getId(), m.getId()).getName();
+    }*/
 
     private String AccountToDisplay(Transfer m) {
         if (m.getSourceAccountID() == account.getId()) {
@@ -170,7 +170,7 @@ public class AccountDetailsView extends DialogWindow {
                     if(account.getIban().contains(txtFilter.getText().toUpperCase())
                             || account.getTitle().toUpperCase().contains(txtFilter.getText().toUpperCase())
                             || transfer.toString().toUpperCase().contains(txtFilter.getText().toUpperCase())
-                            || (transfer.getCategory(this.account.getId(),transfer.getId()) != null && transfer.getCategory(this.account.getId(),transfer.getId()).getName().toUpperCase().contains(txtFilter.getText().toUpperCase()))
+                            //|| (transfer.getCategory(this.account.getId(),transfer.getId()) != null && transfer.getCategory(this.account.getId(),transfer.getId()).getName().toUpperCase().contains(txtFilter.getText().toUpperCase()))
                     ){
 
                         historyTable.add(transfer);

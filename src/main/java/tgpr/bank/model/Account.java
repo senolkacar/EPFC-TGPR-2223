@@ -159,7 +159,7 @@ public class Account extends Model{
 
 
     public boolean delete() {
-        int c = execute("delete from account where id=:id", new Params("id", id));
+        int c = execute("delete from favourite where account=:id", new Params("id", id));
         return c == 1;
     }
 

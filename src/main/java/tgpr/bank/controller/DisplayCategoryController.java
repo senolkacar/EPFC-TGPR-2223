@@ -19,9 +19,8 @@ public class DisplayCategoryController extends Controller {
 
 
 
-    public Category delete(Category category){
+    public void delete(Category category){
         category.delete(category);
-        return  category;
     }
 
     public Category update(String name,Category category) {

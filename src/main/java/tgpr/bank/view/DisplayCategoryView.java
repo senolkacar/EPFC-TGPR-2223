@@ -74,7 +74,7 @@ public class DisplayCategoryView extends DialogWindow {
 
     private void delete() {
         var name =txtCategoryName.getText();
-        category = controller.delete(category);
+        controller.delete(category);
         controller.close();
     }
 
