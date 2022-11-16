@@ -72,9 +72,8 @@ public class AccessAccountClientView extends DialogWindow {
         accountTable.setSelectAction(() ->{
 
             var accountAccess = accountTable.getSelected();
-           accountTable.setSelected(accountAccess);
-           controller.showAccountAccess(accountAccess);
-
+            accountTable.setSelected(accountAccess);
+           controller.displayaccount(accountAccess);
 
         });
         reloadData();

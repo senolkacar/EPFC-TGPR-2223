@@ -9,8 +9,8 @@ import java.sql.SQLException;
 public class Access extends Model {
     private Integer user;
     private Integer account;
+
     private String type;
-    private boolean typet;
 
     public enum Fields {user,account,type};
 
@@ -34,20 +34,11 @@ public class Access extends Model {
         return type;
     }
 
-    public boolean isTypet() {
-        return typet;
-    }
-
-    public void setTypet(boolean typet) {
-        this.typet = typet;
-    }
 
     public void setType(String type) {
         this.type = type;
     }
-    public boolean isHolder(){
-        return typet;
-    }
+
 
 
     @Override
