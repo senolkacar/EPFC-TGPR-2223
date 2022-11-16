@@ -6,6 +6,7 @@ import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
 import tgpr.bank.controller.NewTransferController;
 import tgpr.bank.model.*;
 import tgpr.framework.Layouts;
+import tgpr.framework.Tools;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -58,7 +59,8 @@ public class NewTransferView extends DialogWindow {
         Panel targetAccountFields = new Panel().setLayoutManager(new GridLayout(2).setRightMarginSize(2).setTopMarginSize(1).setBottomMarginSize(1)).addTo(panel).addTo(panel);
         targetAccountFields.addComponent(new Label("IBAN: "));
         txtBoxIban = new TextBox(new TerminalSize(20,1) ).addTo(targetAccountFields)
-                .setTextChangeListener((txt,byUser) -> validate());
+                .setTextChangeListener((txt,byUser) -> validate())
+                .setTextChangeListener((txt,byUser) -> updateTitle());
         new EmptySpace().addTo(targetAccountFields);
         errIBAN = new Label("").addTo(targetAccountFields).setForegroundColor(TextColor.ANSI.RED);
         targetAccountFields.addComponent(new Label("Title: "));
@@ -141,12 +143,24 @@ public class NewTransferView extends DialogWindow {
                 txtBoxDate.getText(),
                 cBoxSourceAccount.getSelectedItem().getIban()
         );
-
         errIBAN.setText(errors.getFirstErrorMessage(Transfer.Fields.TargetAccountIban));
         errTitle.setText(errors.getFirstErrorMessage(Transfer.Fields.TargetAccountTitle));
         errAmount.setText(errors.getFirstErrorMessage(Transfer.Fields.Amount));
         errDescription.setText(errors.getFirstErrorMessage(Transfer.Fields.Description));
         errDate.setText(errors.getFirstErrorMessage(Transfer.Fields.EffectiveAt));
+    }
+
+    public void updateTitle(){
+        var listAccounts = Account.getTargetAccounts(cBoxSourceAccount.getSelectedItem().getId());
+        for (Account acc: listAccounts) {
+            if(acc.getIban().equals(txtBoxIban.getText().toUpperCase())){
+                txtBoxTitle.setText(acc.getTitle());
+                txtBoxTitle.setReadOnly(true);
+                break;
+            }
+            txtBoxTitle.setText("").setReadOnly(false);
+
+        }
     }
 
     public void save(String iban, String title, String amount, String description){
