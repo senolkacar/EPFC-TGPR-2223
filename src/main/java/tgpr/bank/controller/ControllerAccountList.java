@@ -28,8 +28,18 @@ public class ControllerAccountList extends Controller {
         System.exit(0);
     }
 
+<<<<<<< HEAD
     public void newTransfer(){
         NewTransferController.previousController = this;
         navigateTo(new NewTransferController());
     }
 }
+=======
+    public void showAccountDetails(Account account) {
+        navigateTo(new AccountDetailsController(account));
+    }
+
+
+}
+
+>>>>>>> feat_UC_DetailsAccount

@@ -1,16 +1,17 @@
 package tgpr.bank.controller;
 
+import com.googlecode.lanterna.gui2.CheckBox;
 import com.googlecode.lanterna.gui2.Window;
 import tgpr.bank.BankApp;
-import tgpr.bank.model.User;
-import tgpr.bank.model.UserValidator;
-import tgpr.bank.model.Security;
+import tgpr.bank.model.*;
 import tgpr.bank.view.LoginView;
 import tgpr.framework.Controller;
 import tgpr.framework.Error;
 import tgpr.framework.ErrorList;
 import tgpr.framework.Model;
 
+import javax.tools.Tool;
+import javax.xml.crypto.dsig.TransformService;
 import java.util.List;
 
 public class LoginController extends Controller {
@@ -19,16 +20,33 @@ public class LoginController extends Controller {
         System.exit(0);
     }
 
-    public List<Error> login(String email, String password) {
+    public List<Error> login(String email, String password, String date, CheckBox checkbox) {
         var errors = new ErrorList();
         errors.add(UserValidator.isValidEmail(email));
         errors.add(UserValidator.isValidPassword(password));
-
+        errors.add(UserValidator.isValidDate(date));
         if (errors.isEmpty()) {
             var user = User.checkCredentials(email, password);
             if (user != null) {
-                Security.login(user);
-                navigateTo(new ControllerAccountList());
+                if (checkbox.isChecked()) {
+                    Security.login(user);
+                    DateInterface.date(Date.changeFormatToEn(Date.getSysDateParsed(String.valueOf(Date.getSysDate()))));
+                }
+                else{
+                    Security.login(user);
+                    DateInterface.date(Date.changeFormatToEn(Date.getSysDateParsed(date)));
+                }
+                    List<Account> list = Account.getAll();
+                    Transfer.deleteEverything();
+                    for (Account account: list) {
+                        List<Transfer> transfers = Transfer.getTransfers(account);
+                        Transfer.updateEverything(transfers,account);
+                        for (Transfer trans:transfers
+                             ) {
+                            Transfer.updateDatabase(account,trans);
+                        }
+                    }
+                    navigateTo(new ControllerAccountList());
             } else
                 showError(new Error("invalid credentials"));
         } else
