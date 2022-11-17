@@ -20,8 +20,7 @@ public class Date extends Model{
     }
     public static  LocalDateTime getSysDateParsed(String date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-        LocalDateTime dateTime = LocalDateTime.parse(date, formatter);
-        return dateTime;
+        return LocalDateTime.parse(date, formatter);
     }
 
     public static LocalDateTime changeFormatToEn(LocalDateTime date) {

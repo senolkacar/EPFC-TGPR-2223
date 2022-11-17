@@ -1,6 +1,6 @@
-drop database if exists `tgpr-2223-xyy`;
-create database `tgpr-2223-xyy`;
-use `tgpr-2223-xyy`;
+drop database if exists `tgpr-2223-a04`;
+create database `tgpr-2223-a04`;
+use `tgpr-2223-a04`;
 
 create table account
 (
@@ -122,10 +122,10 @@ create table global
     system_date datetime not null
 );
 
------------------------------------------------------------------------------------
------------------------------------------------------------------------------------
 
-/*SET FOREIGN_KEY_CHECKS=0;¨*/
+
+SET FOREIGN_KEY_CHECKS=0;
+
 
 INSERT INTO `global` (system_date)
 VALUES ('2022-01-17 23:59:59');

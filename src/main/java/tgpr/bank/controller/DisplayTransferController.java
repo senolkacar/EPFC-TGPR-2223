@@ -12,8 +12,6 @@ public class DisplayTransferController extends Controller {
 
     private Transfer transfer;
 
-    private Account account;
-
     public DisplayTransferController(Transfer transfer, Account account) {
         this.transfer = transfer;
         view = new DisplayTransferView(this, transfer, account);

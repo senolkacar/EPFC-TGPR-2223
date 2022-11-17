@@ -108,10 +108,8 @@ public class DisplayTransferView extends DialogWindow {
 //            lblSaldoAfterTransfer.setText(String.valueOf(account.transformInEuro(account.getSaldo())));
             List<Transfer> transfers = Transfer.getTransfersForLabel(account);
             double somme=0;
-            boolean trouve = false;
-            while (!trouve) {
                 for (Transfer transferr : transfers) {
-                    if (transferr.getState().compareTo("rejected") != 0) {
+                    if (!transferr.getState().equals("rejected")) {
                         if(transferr.getSourceAccountID()==account.getId()) {
                             somme -= transferr.getAmount();
                         }
@@ -119,11 +117,10 @@ public class DisplayTransferView extends DialogWindow {
                             somme += transferr.getAmount();
                         }
                     }
-                    if (transfer.getId() == transferr.getId() && transferr.getState().compareTo("future") != 0) {
-                        trouve = true;
-                        lblSaldoAfterTransfer.setText(String.valueOf(transfer.transformInEuro(somme)));
+                    if ((transfer.getId() == (transferr.getId())) && (!transferr.getState().equals("future"))) {
+                        lblSaldoAfterTransfer.setText(String.valueOf(transferr.transformInEuro(somme)));
                     }
-                    if (transfer.getId() == transferr.getId() && transferr.getState().compareTo("future") == 0) {
+                    if (((transfer.getId() == transferr.getId())) && (transferr.getState().equals("future"))) {
                         lblSaldoAfterTransfer.setText("");
                     }
                 }
@@ -140,7 +137,7 @@ public class DisplayTransferView extends DialogWindow {
             lblState.setText(transfer.getState());
 
         }
-    }
+
     private Panel createButtonsPanel() {
         var panel = new Panel()
                 .setLayoutManager(new LinearLayout(Direction.HORIZONTAL))

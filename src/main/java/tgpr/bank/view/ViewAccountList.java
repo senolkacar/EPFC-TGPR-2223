@@ -49,15 +49,14 @@ public class ViewAccountList extends BasicWindow {
         table = new ObjectTable<>(
                 new ColumnSpec<>("IBAN", Account::getIban),
                 new ColumnSpec<>("Title", Account::getTitle),
-                new ColumnSpec<Account>("Floor", m -> Tools.ifNull(m.getFloor(), "")),
+                new ColumnSpec<Account>("Floor", m -> Tools.ifNull(Transfer.transformInEuro(m.getFloor()), "")),
                 new ColumnSpec<>("Type", Account::getType),
-                new ColumnSpec<Account>("Saldo", m -> Tools.ifNull(m.getSaldo(), ""))
+                new ColumnSpec<Account>("Saldo", m -> Tools.ifNull(Transfer.transformInEuro(m.getSaldo()), ""))
 
         );
-        // ajoute le tableau au root panel
         root.addComponent(table);
         new EmptySpace().addTo(root);
-        Button btnNewTransfer = new Button("New Transfer").addTo(root);
+        Button btnNewTransfer = new Button("New Transfer",this::newTransfer).addTo(root);
         // spécifie que le tableau doit avoir la même largeur quee le terminal et une hauteur de 15 lignes
         table.setPreferredSize(new TerminalSize(ViewManager.getTerminalColumns(), 15));
 
@@ -84,9 +83,10 @@ public class ViewAccountList extends BasicWindow {
 
         // à implementer use system date/time
         // on implémentera le use system quand on va créer le back to the future
-        return "Welcome to MyBank (" + Security.getLoggedUser().getEmail() + " - " + (Security.getLoggedUser().getType()) + " - " + DateInterface.getUsedDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))+ ")";
+        return "Welcome to MyBank (" + User.getById(Security.getLoggedUser().getId()) + " - " + (Security.getLoggedUser().getType()) + " - " + DateInterface.getUsedDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))+ ")";
     }
 
-
-
+    private void newTransfer(){
+        controller.newTransfer();
+    }
 }

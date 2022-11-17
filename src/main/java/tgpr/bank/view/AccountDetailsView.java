@@ -19,9 +19,9 @@ import java.time.format.DateTimeFormatter;
 
 
 public class AccountDetailsView extends DialogWindow {
-    private  ObjectTable <Account> table;
+    private ObjectTable<Account> table;
     private final AccountDetailsController controller;
-    private  ObjectTable<Category> categoryTable;
+    private ObjectTable<Category> categoryTable;
 
     private final Account account;
     private ObjectTable<Transfer> historyTable;
@@ -30,13 +30,12 @@ public class AccountDetailsView extends DialogWindow {
     private final Label lblTitle = new Label("");
     private final Label lblType = new Label("");
     private final Label lblSaldo = new Label("");
-    private ComboBox <String> cboFavorite;
+    private ComboBox<String> cboFavorite;
 
     private List<Account> favoritesList;
 
 
-    private  TextBox txtNewCategory;
-
+    private TextBox txtNewCategory;
 
 
     private final TextBox txtFilter = new TextBox();
@@ -60,10 +59,11 @@ public class AccountDetailsView extends DialogWindow {
         refresh();
 
     }
-    
 
-    private Panel accountDetailPanel(){
-        Panel panel = new Panel().setLayoutManager(new GridLayout(4).setTopMarginSize(0));;
+
+    private Panel accountDetailPanel() {
+        Panel panel = new Panel().setLayoutManager(new GridLayout(4).setTopMarginSize(0));
+        ;
         panel.addComponent(new Label("IBAN:"));
         lblIban.addTo(panel).addStyle(SGR.BOLD);
 
@@ -86,21 +86,24 @@ public class AccountDetailsView extends DialogWindow {
         Border border = panel.withBorder(Borders.singleLine("History"));
         var filterpanel = new Panel().setLayoutManager(new GridLayout(2).setHorizontalSpacing(1).setLeftMarginSize(0));
         new Label("Filter:").addTo(filterpanel);
-        txtFilter.addTo(filterpanel).takeFocus().setTextChangeListener((txt,client)->reloadFiltered());
-        txtFilter.setPreferredSize(new TerminalSize(20,1));
+        txtFilter.addTo(filterpanel).takeFocus().setTextChangeListener((txt, client) -> reloadFiltered());
+        txtFilter.setPreferredSize(new TerminalSize(20, 1));
         filterpanel.addTo(panel);
         new EmptySpace().addTo(panel);
+
         historyTable = new ObjectTable<>(
-                        new ColumnSpec<>("Effect_Date", m-> Tools.ifNull(m.getEffectiveAt(),m.getCreatedAtHistory())),
-                        new ColumnSpec<>("Description", Transfer::getDescription),
-                        new ColumnSpec<>("From/To", this::AccountToDisplay).setWidth(37).setOverflowHandling(ColumnSpec.OverflowHandling.Wrap),
-                        new ColumnSpec<>("Category", this::CategoryToDisplay).setWidth(16),
-                        new ColumnSpec<>("Amount", this::getAmount).setWidth(10),
-                        new ColumnSpec<>("Saldo", this::getSourceSaldo).setWidth(10),
-                        new ColumnSpec<>("State", Transfer::getState));
+//                        new ColumnSpec<>("Effect_Date", m-> Tools.ifNull(m.getEffectiveAtLDT().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")),m.getCreatedAtLDT().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))))
+                new ColumnSpec<>("Effect_Date", Transfer::getStringEffectiveAtLDT),
+                new ColumnSpec<>("Description", Transfer::getDescription),
+                new ColumnSpec<>("From/To", this::AccountToDisplay).setWidth(30).setOverflowHandling(ColumnSpec.OverflowHandling.Wrap),
+                new ColumnSpec<>("Category", this::CategoryToDisplay).setWidth(11),
+                new ColumnSpec<>("Amount", this::getAmount).setWidth(10),
+                new ColumnSpec<>("Saldo",  this::getSourceSaldo).setWidth(10),
+                new ColumnSpec<>("State", Transfer::getState));
         historyTable.setPreferredSize(new TerminalSize(115, 5));
         historyTable.addTo(panel);
         historyTable.setSelectAction(this::displayTransfer);
+
 
 
         reloadDataHistory();
@@ -108,9 +111,14 @@ public class AccountDetailsView extends DialogWindow {
         return border;
     }
 
-    private String CategoryToDisplay(Transfer m){
-        return m.getCategory(account.getId(),m.getId()) == null ? "" : m.getCategory(account.getId(),m.getId()).getName();
+    private String CategoryToDisplay(Transfer m) {
+        if (Transfer.getCategory(account.getId(), m.getId()) == null) {
+            return "";
+        } else {
+            return Transfer.getCategory(account.getId(), m.getId()).getName();
+        }
     }
+
     private String AccountToDisplay(Transfer m) {
         if (m.getSourceAccountID() == account.getId()) {
             return m.getTargetAccount().getIban() + " - " + m.getTargetAccount().getTitle();
@@ -120,11 +128,22 @@ public class AccountDetailsView extends DialogWindow {
     }
 
     private String getSourceSaldo(Transfer m) {
-        if (m.getSourceAccountID() == account.getId()) {
-            return m.getSourceSaldo() == 0 ? "" : account.transformInEuro(m.getSourceSaldo());
-        } else {
-            return m.getTargetSaldo() == 0 ? "" : account.transformInEuro(m.getTargetSaldo());
+        List<Transfer> transfers = Transfer.getTransfersForLabel(account);
+        double somme = 0;
+        for (Transfer transferr : transfers) {
+            if (!transferr.getState().equals("rejected")) {
+                if (transferr.getSourceAccountID() == account.getId()) {
+                    somme -= transferr.getAmount();
+                } else {
+                    somme += transferr.getAmount();
+                }
+            }
+            if ((m.getId() == (transferr.getId())) && (!transferr.getState().equals("future"))) {
+                return (String.valueOf(transferr.transformInEuro(somme)));
+            }
         }
+        return  "";
+
     }
 
     private String getAmount(Transfer m) {
@@ -135,67 +154,33 @@ public class AccountDetailsView extends DialogWindow {
         }
     }
 
-    public void     reloadDataHistory() {
+    public void reloadDataHistory() {
         historyTable.clear();
        var transfers = controller.getTransfers();
-       if(DateInterface.isHasChanged()){
-           var transferss = Transfer.updateEverything(transfers);
-           historyTable.add(transferss);
-           historyTable.invalidate();
+       historyTable.add(transfers);
+       historyTable.invalidate();
        }
-       else{
-           historyTable.add(transfers);
-           historyTable.invalidate();
-       }
-
-    }
 
 
     public void reloadFiltered(){
         historyTable.clear();
         var transfers = controller.getTransfers();
-        var datedTransfers = Transfer.updateEverything(transfers);
 
-        if(!DateInterface.isHasChanged()) {
             if (txtFilter.getText().isEmpty()) {
                 historyTable.add(transfers);
             } else {
                 for (Transfer transfer : transfers) {
-                    if (transfer.getTargetAccount().getIban().contains(txtFilter.getText().toUpperCase())
-                            || transfer.getSourceAccount().getIban().contains(txtFilter.getText().toUpperCase())
-                            || transfer.getSourceAccount().getTitle().contains(txtFilter.getText().toUpperCase())
-                            || transfer.getTargetAccount().getTitle().contains(txtFilter.getText().toUpperCase())
-                            || transfer.toString().toLowerCase().contains(txtFilter.getText().toLowerCase())) {
+                    Account account = transfer.getSourceAccountID() == this.account.getId() ? transfer.getTargetAccount() : transfer.getSourceAccount();
+                    if(account.getIban().contains(txtFilter.getText().toUpperCase())
+                            || account.getTitle().toUpperCase().contains(txtFilter.getText().toUpperCase())
+                            || transfer.toString().toUpperCase().contains(txtFilter.getText().toUpperCase())
+                            || (Transfer.getCategory(this.account.getId(),transfer.getId()) != null && Transfer.getCategory(this.account.getId(),transfer.getId()).getName().toUpperCase().contains(txtFilter.getText().toUpperCase()))
+                    ){
+
                         historyTable.add(transfer);
                     }
-                    if (transfer.getCategory(account.getId(), transfer.getId()) != null) {
-                        if (transfer.getCategory(account.getId(), transfer.getId()).getName().toLowerCase().contains(txtFilter.getText().toLowerCase())) {
-                            historyTable.add(transfer);
-                        }
-                    }
                 }
             }
-        }
-        else{
-            if(txtFilter.getText().isEmpty()){
-                historyTable.add(datedTransfers);
-            }else{
-                for (Transfer transfer : datedTransfers) {
-                    if(transfer.getTargetAccount().getIban().contains(txtFilter.getText().toUpperCase())
-                            || transfer.getSourceAccount().getIban().contains(txtFilter.getText().toUpperCase())
-                            || transfer.getSourceAccount().getTitle().contains(txtFilter.getText().toUpperCase())
-                            || transfer.getTargetAccount().getTitle().contains(txtFilter.getText().toUpperCase())
-                            || transfer.toString().toLowerCase().contains(txtFilter.getText().toLowerCase())){
-                        historyTable.add(datedTransfers);
-                    }
-                    if(transfer.getCategory(account.getId(),transfer.getId()) != null){
-                        if(transfer.getCategory(account.getId(),transfer.getId()).getName().toLowerCase().contains(txtFilter.getText().toLowerCase())){
-                            historyTable.add(datedTransfers);
-                        }
-                    }
-                }
-            }
-        }
     }
 
 
@@ -342,7 +327,7 @@ public class AccountDetailsView extends DialogWindow {
     private Panel buttonPanel() {
         Panel panel = new Panel().setLayoutManager(new LinearLayout(Direction.HORIZONTAL))
                 .setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
-        new Button("New Transfer").addTo(panel);
+        new Button("New Transfer",this::newTransfer).addTo(panel);
         new Button("Close",this::close).addTo(panel);
         return panel;
     }
@@ -356,10 +341,14 @@ public class AccountDetailsView extends DialogWindow {
 
     private void displayTransfer() {
         var transfer = historyTable.getSelected();
-        if (transfer == null) return;
-        if (controller.displayTransfer(transfer, account) == null)
-            refresh();
+        if (transfer != null){
+            controller.displayTransfer(transfer,account);
+        }
         reloadDataHistory();
         reloadData();
+    }
+
+    public void newTransfer(){
+        controller.newTransfer();
     }
 }

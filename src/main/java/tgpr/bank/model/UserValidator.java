@@ -31,7 +31,6 @@ public abstract class UserValidator {
             return new Error("invalid password", User.Fields.Password);
         return Error.NOERROR;
     }
-
     public static Error isValidDate(String date){
         if(Tools.isValidDateTime(date)){
             return Error.NOERROR;
@@ -39,5 +38,20 @@ public abstract class UserValidator {
         else{
             return new Error("invalid date");
         }
+    }
+    public static Error isValidAvailableEmail(String email) {
+        var error = isValidEmail(email);
+        if(error != Error.NOERROR)
+            return error;
+        if(User.getByEmail(email) != null)
+            return new Error("email already used", User.Fields.email);
+        return Error.NOERROR;
+    }
+
+    public static List<Error> validate(User client){
+        var errors = new ErrorList();
+        errors.add(isValidEmail(client.getEmail()));
+        errors.add(isValidPassword(client.getPassword()));
+        return errors;
     }
 }

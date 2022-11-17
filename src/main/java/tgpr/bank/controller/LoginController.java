@@ -9,12 +9,10 @@ import tgpr.framework.Controller;
 import tgpr.framework.Error;
 import tgpr.framework.ErrorList;
 import tgpr.framework.Model;
-
-import javax.tools.Tool;
-import javax.xml.crypto.dsig.TransformService;
 import java.util.List;
 
 public class LoginController extends Controller {
+
     public void exit() {
         System.exit(0);
     }
@@ -27,28 +25,29 @@ public class LoginController extends Controller {
         if (errors.isEmpty()) {
             var user = User.checkCredentials(email, password);
             if (user != null) {
-                if (checkbox.isChecked()){
+                if (checkbox.isChecked()) {
                     Security.login(user);
                     DateInterface.date(Date.changeFormatToEn(Date.getSysDateParsed(String.valueOf(Date.getSysDate()))));
-                    List<Account> list = Account.getAll();
-                    for (Account account: list) {
-                        List<Transfer> transfers = Transfer.getTransfers(account);
-                        Transfer.updateEverything(transfers);
-                    }
-                    navigateTo(new ControllerAccountList());
                 }
-                else {
+                else{
                     Security.login(user);
                     DateInterface.date(Date.changeFormatToEn(Date.getSysDateParsed(date)));
-                    DateInterface.hasChanged(true);
+                }
                     List<Account> list = Account.getAll();
+                    Transfer.deleteEverything();
                     for (Account account: list) {
                         List<Transfer> transfers = Transfer.getTransfers(account);
-                        Transfer.updateEverything(transfers);
+                        Transfer.updateEverything(transfers,account);
+                        for (Transfer trans:transfers
+                             ) {
+                            Transfer.updateDatabase(account,trans);
+                        }
                     }
+                if(Security.getLoggedUser().getType().equals("manager")){
+                    navigateTo(new ManagerController());
+                }else{
                     navigateTo(new ControllerAccountList());
                 }
-
             } else
                 showError(new Error("invalid credentials"));
         } else
