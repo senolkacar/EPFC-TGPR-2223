@@ -93,7 +93,7 @@ public class AccountDetailsView extends DialogWindow {
 
         historyTable = new ObjectTable<>(
 //                        new ColumnSpec<>("Effect_Date", m-> Tools.ifNull(m.getEffectiveAtLDT().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")),m.getCreatedAtLDT().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))))
-                new ColumnSpec<>("Effect_Date", m -> m.getStringEffectiveAtLDT()),
+                new ColumnSpec<>("Effect_Date", Transfer::getStringEffectiveAtLDT),
                 new ColumnSpec<>("Description", Transfer::getDescription),
                 new ColumnSpec<>("From/To", this::AccountToDisplay).setWidth(30).setOverflowHandling(ColumnSpec.OverflowHandling.Wrap),
                 new ColumnSpec<>("Category", this::CategoryToDisplay).setWidth(11),
@@ -112,7 +112,11 @@ public class AccountDetailsView extends DialogWindow {
     }
 
     private String CategoryToDisplay(Transfer m) {
-        return m.getCategory(account.getId(), m.getId()) == null ? "" : m.getCategory(account.getId(), m.getId()).getName();
+        if (Transfer.getCategory(account.getId(), m.getId()) == null) {
+            return "";
+        } else {
+            return Transfer.getCategory(account.getId(), m.getId()).getName();
+        }
     }
 
     private String AccountToDisplay(Transfer m) {
@@ -170,7 +174,7 @@ public class AccountDetailsView extends DialogWindow {
                     if(account.getIban().contains(txtFilter.getText().toUpperCase())
                             || account.getTitle().toUpperCase().contains(txtFilter.getText().toUpperCase())
                             || transfer.toString().toUpperCase().contains(txtFilter.getText().toUpperCase())
-                            || (transfer.getCategory(this.account.getId(),transfer.getId()) != null && transfer.getCategory(this.account.getId(),transfer.getId()).getName().toUpperCase().contains(txtFilter.getText().toUpperCase()))
+                            || (Transfer.getCategory(this.account.getId(),transfer.getId()) != null && Transfer.getCategory(this.account.getId(),transfer.getId()).getName().toUpperCase().contains(txtFilter.getText().toUpperCase()))
                     ){
 
                         historyTable.add(transfer);
@@ -323,7 +327,7 @@ public class AccountDetailsView extends DialogWindow {
     private Panel buttonPanel() {
         Panel panel = new Panel().setLayoutManager(new LinearLayout(Direction.HORIZONTAL))
                 .setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
-        new Button("New Transfer").addTo(panel);
+        new Button("New Transfer",this::newTransfer).addTo(panel);
         new Button("Close",this::close).addTo(panel);
         return panel;
     }
@@ -342,5 +346,16 @@ public class AccountDetailsView extends DialogWindow {
         }
         reloadDataHistory();
         reloadData();
+    }
+
+    public void newTransfer(){
+        controller.newTransfer();
+        reloadAlldata();
+    }
+
+    public void reloadAlldata(){
+        reloadDataFav();
+        reloadData();
+        reloadDataHistory();
     }
 }
