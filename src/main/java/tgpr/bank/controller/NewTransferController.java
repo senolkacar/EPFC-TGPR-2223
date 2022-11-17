@@ -31,7 +31,7 @@ public class NewTransferController extends Controller {
         var errors = new ErrorList();
         errors.add(TransferValidator.isValidTargetAccount(targetIban,sourceIban));
         errors.add(TransferValidator.isValidTitle(title));
-        errors.add(TransferValidator.isValidAmount(amount,sourceSaldo,sourceFloor));
+        errors.add(TransferValidator.isValidAmount(amount,sourceSaldo,sourceFloor,date));
         errors.add(TransferValidator.isValidDescription(description));
         errors.add(TransferValidator.isValidDateFormat(date));
         return errors;
@@ -79,7 +79,6 @@ public class NewTransferController extends Controller {
             }
             showMessage("Your transfer has been successfuly created", "Information", MessageDialogButton.valueOf("OK"));
             view.close();
-            navigateTo(previousController);
         }else {
             showErrors(errors);
         }

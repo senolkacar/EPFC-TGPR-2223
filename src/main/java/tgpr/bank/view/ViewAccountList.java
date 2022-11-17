@@ -1,11 +1,8 @@
 package tgpr.bank.view;
 
 import com.googlecode.lanterna.TerminalSize;
-import com.googlecode.lanterna.gui2.BasicWindow;
-import com.googlecode.lanterna.gui2.Button;
+import com.googlecode.lanterna.gui2.*;
 import tgpr.bank.controller.ControllerAccountList;
-import com.googlecode.lanterna.gui2.EmptySpace;
-import com.googlecode.lanterna.gui2.Panel;
 import tgpr.bank.model.*;
 import tgpr.framework.ColumnSpec;
 import tgpr.framework.ObjectTable;
@@ -42,8 +39,11 @@ public class ViewAccountList extends BasicWindow {
         MenuItem menuExit = new MenuItem("Exit", controller::exit);
         menuFile.add(menuExit);
 
+        new EmptySpace().addTo(root);
+        Label lblYourAccounts = new Label("<< YOUR ACCOUNTS >>").addTo(root);
         // ajoute une ligne vide
         new EmptySpace().addTo(root);
+
 
         // crée un tableau de données pour l'affichage des comptes
         table = new ObjectTable<>(
@@ -88,5 +88,6 @@ public class ViewAccountList extends BasicWindow {
 
     private void newTransfer(){
         controller.newTransfer();
+        reloadData();
     }
 }

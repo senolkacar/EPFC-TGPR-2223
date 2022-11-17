@@ -350,5 +350,12 @@ public class AccountDetailsView extends DialogWindow {
 
     public void newTransfer(){
         controller.newTransfer();
+        reloadAlldata();
+    }
+
+    public void reloadAlldata(){
+        reloadDataFav();
+        reloadData();
+        reloadDataHistory();
     }
 }

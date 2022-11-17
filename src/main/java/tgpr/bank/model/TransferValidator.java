@@ -26,7 +26,7 @@ public abstract class TransferValidator {
         return Error.NOERROR;
     }
 
-    public static Error isValidAmount(String amount,Double sourceSaldo,Double sourceFloor){
+    public static Error isValidAmount(String amount,Double sourceSaldo,Double sourceFloor,String date){
         if(sourceFloor<0){
             sourceFloor = Math.abs(sourceFloor);
         }
@@ -35,8 +35,10 @@ public abstract class TransferValidator {
             return new Error("amount required",Transfer.Fields.Amount);
         }
         try {
-            if (Double.parseDouble(amount) > amountmax || Double.parseDouble(amount) < 0) {
-                return new Error("amount must be <= " + amountmax + " €", Transfer.Fields.Amount);
+            if(date==null){
+                if (Double.parseDouble(amount) > amountmax || Double.parseDouble(amount) < 0) {
+                    return new Error("amount must be <= " + amountmax + " €", Transfer.Fields.Amount);
+                }
             }
         } catch (NumberFormatException n) {
             return new Error("invalid format", Transfer.Fields.Amount);
