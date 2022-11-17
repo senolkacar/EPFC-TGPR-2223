@@ -45,7 +45,6 @@ public class DisplayAccountAccessView extends DialogWindow {
         cboType = new ComboBox<String>("holder", "proxy").addTo(root).setPreferredSize(new TerminalSize(10, 1))
                 .addListener((newIndex, oldIndex, byUser) -> reloadData());
 
-
         createButtonsPanel().addTo(root);
         refresh();
 
@@ -69,41 +68,41 @@ public class DisplayAccountAccessView extends DialogWindow {
                 .setLayoutManager(new LinearLayout(Direction.HORIZONTAL))
                 .setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
 
-        //new Button("Update", this::update).addTo(root);
+        new Button("Update", this::update).addTo(root);
 
-       // new Button("Delete", this::delete).addTo(root);
+        new Button("Delete", this::delete).addTo(root);
         Button btnClose = new Button("Close", this::close).addTo(root);
         return root;
     }
 
 
 
-    // private void delete() {
-    //     askConfirmation("Do you want to remove this account from your Acces? " + account.getIban(), "Remove favourite");
-    //         controller.delete(account.getId(),cboType);
-    //      account.reload();
-    //}
+     private void delete() {
+        askConfirmation("Do you want to remove this account from your Acces? " + account.getIban(), "Remove favourite");
+         if(account.numberOfHolder(account.getId())==1 && cboType.getItem(0)=="holder"){
+             controller.showErrorDelete();
+         }else {
+             controller.delete(account.getId(),cboType.getSelectedItem());
+             account.reload();
+         }
+    }
 
 
-     // public void delete(){
-
-     //   askConfirmation("Do you want to remove this account from your Acces? " + account.getIban(), "Remove favourite");
-     //   controller.delete(account.getId());
-      // account.reload();
-      // controller.close();
-      // refresh();
 
 
-    // }
+    private void update() {
+        int cmp=account.numberOfHolder(account.getId());
 
-  // private void update() {
-    //    controller.update(account.getId(), cboType.getSelectedItem());
-      //  controller.close();
+        if(cmp==1 && cboType.getSelectedItem()=="holder"){
+            controller.showErrorUpdate();
+        }else{
+          controller.update(account.getId(), cboType.getSelectedItem());
+          controller.close();
 
 
-    //}
+    }
 
-}
+}}
 
 
 
