@@ -7,7 +7,7 @@ import tgpr.framework.Model;
 
 
 public class BankApp {
-    public final static String DATABASE_SCRIPT_FILE = "/database/tgpr-2223-a04sql";
+    public final static String DATABASE_SCRIPT_FILE = "/database/tgpr-2223-a04.sql";
 
     public static void main(String[] args) {
 
