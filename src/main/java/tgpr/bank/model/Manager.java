@@ -1,5 +1,4 @@
 package tgpr.bank.model;
-
 import tgpr.framework.Params;
 
 import java.util.List;

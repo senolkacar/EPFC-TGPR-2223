@@ -1,4 +1,4 @@
-﻿drop database if exists `tgpr-2223-a04`;
+drop database if exists `tgpr-2223-a04`;
 create database `tgpr-2223-a04`;
 use `tgpr-2223-a04`;
 
@@ -124,7 +124,7 @@ create table global
 
 
 
-
+SET FOREIGN_KEY_CHECKS=0;
 
 
 INSERT INTO `global` (system_date)
@@ -207,4 +207,3 @@ INSERT INTO `favourite` (`user`, `account`)
 VALUES (4, 5);
 
 SET FOREIGN_KEY_CHECKS=1;
-SET FOREIGN_KEY_CHECKS=0;

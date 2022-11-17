@@ -66,7 +66,7 @@ public class AccessAccountClientView extends DialogWindow {
         cboType = new ComboBox<String>("holder", "proxy").addTo(buttons).setPreferredSize(new TerminalSize(10, 1))
                 .addListener((newIndex, oldIndex, byUser) -> reloadData());
 //        Button add = new Button("Add", this::addFavourite).addTo(buttons);
-        //Button add = new Button("Add", this::addAccees).addTo(buttons);
+        Button add = new Button("Add", this::addAccees).addTo(buttons);
         Button btnReset = new Button("Reset", this::reset).addTo(buttons);
         Button btnClose = new Button("Close", this::close).addTo(buttons);
         accountTable.setSelectAction(() ->{
@@ -80,15 +80,15 @@ public class AccessAccountClientView extends DialogWindow {
 
     }
 
-   // private void addAccees() {
+    private void addAccees() {
 
-    //        if (cboAccess.getSelectedIndex()!=0) {
-     //           controller.addAccess(accountNoAccess.get(cboAccess.getSelectedIndex()-1  ).getId(),cboType.getSelectedItem());
-     //           reloadInfo();
-      //          reloadData();
-      //      }
+            if (cboAccess.getSelectedIndex()!=0) {
+                controller.addAccess(accountNoAccess.get(cboAccess.getSelectedIndex()-1  ).getId(),cboType.getSelectedItem());
+                reloadInfo();
+                reloadData();
+            }
 
-    //}
+    }
 
 
 

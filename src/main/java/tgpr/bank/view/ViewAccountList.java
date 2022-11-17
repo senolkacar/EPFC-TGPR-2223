@@ -6,8 +6,7 @@ import com.googlecode.lanterna.gui2.Button;
 import tgpr.bank.controller.ControllerAccountList;
 import com.googlecode.lanterna.gui2.EmptySpace;
 import com.googlecode.lanterna.gui2.Panel;
-import tgpr.bank.model.Account;
-import tgpr.bank.model.User;
+import tgpr.bank.model.*;
 import tgpr.framework.ColumnSpec;
 import tgpr.framework.ObjectTable;
 import tgpr.framework.Tools;
@@ -15,9 +14,9 @@ import tgpr.framework.ViewManager;
 import com.googlecode.lanterna.gui2.menu.Menu;
 import com.googlecode.lanterna.gui2.menu.MenuBar;
 import com.googlecode.lanterna.gui2.menu.MenuItem;
-import tgpr.bank.model.Security;
 
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class ViewAccountList extends BasicWindow {
@@ -50,16 +49,25 @@ public class ViewAccountList extends BasicWindow {
         table = new ObjectTable<>(
                 new ColumnSpec<>("IBAN", Account::getIban),
                 new ColumnSpec<>("Title", Account::getTitle),
-                new ColumnSpec<Account>("Floor", m -> Tools.ifNull(m.getFloor(), "")),
+                new ColumnSpec<Account>("Floor", m -> Tools.ifNull(Transfer.transformInEuro(m.getFloor()), "")),
                 new ColumnSpec<>("Type", Account::getType),
-                new ColumnSpec<Account>("Saldo", m -> Tools.ifNull(m.getSaldo(), ""))
+                new ColumnSpec<Account>("Saldo", m -> Tools.ifNull(Transfer.transformInEuro(m.getSaldo()), ""))
 
         );
         root.addComponent(table);
         new EmptySpace().addTo(root);
-        Button btnNewTransfer = new Button("New Transfer").addTo(root);
+        Button btnNewTransfer = new Button("New Transfer",this::newTransfer).addTo(root);
+        // spécifie que le tableau doit avoir la même largeur quee le terminal et une hauteur de 15 lignes
         table.setPreferredSize(new TerminalSize(ViewManager.getTerminalColumns(), 15));
+
+        table.setSelectAction(() ->{
+         var account = table.getSelected();
+         table.setSelected(account);
+         controller.showAccountDetails(account);
+        });
+        // charge les données dans la table
         reloadData();
+
     }
 
     public void reloadData() {
@@ -75,9 +83,10 @@ public class ViewAccountList extends BasicWindow {
 
         // à implementer use system date/time
         // on implémentera le use system quand on va créer le back to the future
-        return "Welcome to MyBank (" + Security.getLoggedUser().getEmail() + " - " + (Security.getLoggedUser().getType()) + ")";
+        return "Welcome to MyBank (" + User.getById(Security.getLoggedUser().getId()) + " - " + (Security.getLoggedUser().getType()) + " - " + DateInterface.getUsedDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))+ ")";
     }
 
-
-
+    private void newTransfer(){
+        controller.newTransfer();
+    }
 }
