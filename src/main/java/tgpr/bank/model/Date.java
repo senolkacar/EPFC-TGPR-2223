@@ -32,7 +32,14 @@ public class Date extends Model{
         DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss", Locale.ENGLISH).format(date);
         return date;
     }
-
+    public static String getStateOfBTTF(){
+        if(DateInterface.isHasChanged()){
+            return DateInterface.getUsedDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+        }
+        else {
+            return "use system/date time";
+        }
+    }
 
     public void reload(){
         String sql = "SELECT * FROM global where 1";
@@ -42,6 +49,12 @@ public class Date extends Model{
         String sql = "SELECT * FROM global where 1";
         return queryOne(Date.class, sql,new Params());
     }
+
+    public static Date changeDateOnDB(LocalDateTime customeDate){
+        String sql = "UPDATE global SET system_date=:customDate";
+        return queryOne(Date.class, sql,new Params("customDate",customeDate));
+    }
+
     protected void mapper(ResultSet rs) throws SQLException {
         this.systemDate = rs.getObject("system_date", LocalDateTime.class);
     }
@@ -50,7 +63,7 @@ public class Date extends Model{
     }
 
     public String toString() {
-        return Tools.toString(systemDate);
+        return Tools.toString(getSystemDate());
     }
 
 }

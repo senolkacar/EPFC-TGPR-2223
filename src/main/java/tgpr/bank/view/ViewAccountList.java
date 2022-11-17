@@ -83,7 +83,7 @@ public class ViewAccountList extends BasicWindow {
 
         // à implementer use system date/time
         // on implémentera le use system quand on va créer le back to the future
-        return "Welcome to MyBank (" + User.getById(Security.getLoggedUser().getId()) + " - " + (Security.getLoggedUser().getType()) + " - " + DateInterface.getUsedDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))+ ")";
+        return "Welcome to MyBank (" + User.getById(Security.getLoggedUser().getId()) + " - " + (Security.getLoggedUser().getType()) + " - " + Date.getStateOfBTTF()+ ")";
     }
 
     private void newTransfer(){
