@@ -46,10 +46,10 @@ public class LoginController extends Controller {
                     for (Account account: list) {
                         List<Transfer> transfers = Transfer.getAllTransfersForBTTF();
                         Transfer.updateEverything(transfers, account);
-                        for (Transfer trans : transfers
-                        ) {
-                            Transfer.updateDatabase(account, trans);
-                        }
+//                        for (Transfer trans : transfers
+//                        ) {
+//                            Transfer.updateDatabase(account, trans);
+//                        }
                     }
 
                 if (Security.getLoggedUser().getType().equals("manager")) {

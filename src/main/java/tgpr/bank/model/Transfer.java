@@ -305,7 +305,7 @@ public class Transfer extends Model {
         List<Transfer> listOfTransfersToBeDeleted = queryList(Transfer.class, sql,new Params()
                 .add("date", (DateInterface.getUsedDate())));
         for (Transfer transfer: listOfTransfersToBeDeleted
-             ) {
+        ) {
             execute("delete from transfer_category where transfer =( select id from transfer where created_at > :date and id=:id)", new Params()
                     .add("date", (DateInterface.getUsedDate()))
                     .add("id",transfer.getId()));
@@ -320,7 +320,7 @@ public class Transfer extends Model {
 
         for (Transfer transfer:transfers) {
 
-           LocalDateTime execDate;
+            LocalDateTime execDate;
             if (transfer.effectiveAtLDT!=null){
                 execDate=transfer.effectiveAtLDT;
             }
@@ -340,12 +340,18 @@ public class Transfer extends Model {
                         execute("UPDATE account SET saldo=:newAmount where id=:id", new Params()
                                 .add("newAmount", newAmountSource)
                                 .add("id",a.getId()));
+                        execute("UPDATE transfer SET source_saldo=:newAmount where id=:id", new Params()
+                                .add("id", transfer.getId())
+                                .add("newAmount", newAmountSource ));
 
                         if(!b.getType().equals("external")){
                             double newAmountTarget = b.getSaldo()+ transfer.amount;
                             execute("UPDATE account SET saldo=:newAmount where id=:id", new Params()
                                     .add("newAmount", newAmountTarget)
                                     .add("id",b.getId()));
+                            execute("UPDATE transfer SET target_saldo=:newAmount where id=:id", new Params()
+                                    .add("id", transfer.getId())
+                                    .add("newAmount", newAmountTarget ));
                         }
                     }
                     else {
@@ -358,6 +364,9 @@ public class Transfer extends Model {
                     execute("UPDATE account SET saldo=:newAmount where id=:id", new Params()
                             .add("newAmount", newAmountTarget)
                             .add("id",b.getId()));
+                    execute("UPDATE transfer SET target_saldo=:newAmount where id=:id", new Params()
+                            .add("id", transfer.getId())
+                            .add("newAmount", newAmountTarget ));
                 }
             }
             else if(transfer.createdAtLDT.compareTo(Date.changeFormatToEn(DateInterface.getUsedDate()))<=0) {
