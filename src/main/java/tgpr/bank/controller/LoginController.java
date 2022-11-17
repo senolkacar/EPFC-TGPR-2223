@@ -9,6 +9,9 @@ import tgpr.framework.Controller;
 import tgpr.framework.Error;
 import tgpr.framework.ErrorList;
 import tgpr.framework.Model;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class LoginController extends Controller {
@@ -25,27 +28,33 @@ public class LoginController extends Controller {
         if (errors.isEmpty()) {
             var user = User.checkCredentials(email, password);
             if (user != null) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+                LocalDateTime datee = LocalDateTime.parse(date,formatter);
                 if (checkbox.isChecked()) {
                     Security.login(user);
-                    DateInterface.date(Date.changeFormatToEn(Date.getSysDateParsed(String.valueOf(Date.getSysDate()))));
-                }
-                else{
+                    Date.changeDateOnDB(LocalDateTime.now());
+                    DateInterface.date(LocalDateTime.now());
+                    DateInterface.hasChanged(false);
+                } else {
                     Security.login(user);
-                    DateInterface.date(Date.changeFormatToEn(Date.getSysDateParsed(date)));
+                    DateInterface.date(datee);
+                    Date.changeDateOnDB(datee);
+                    DateInterface.hasChanged(true);
                 }
-                    List<Account> list = Account.getAll();
+                List<Account> list = Account.getAll();
                     Transfer.deleteEverything();
                     for (Account account: list) {
-                        List<Transfer> transfers = Transfer.getTransfers(account);
-                        Transfer.updateEverything(transfers,account);
-                        for (Transfer trans:transfers
-                             ) {
-                            Transfer.updateDatabase(account,trans);
+                        List<Transfer> transfers = Transfer.getAllTransfersForBTTF();
+                        Transfer.updateEverything(transfers, account);
+                        for (Transfer trans : transfers
+                        ) {
+                            Transfer.updateDatabase(account, trans);
                         }
                     }
-                if(Security.getLoggedUser().getType().equals("manager")){
+
+                if (Security.getLoggedUser().getType().equals("manager")) {
                     navigateTo(new ManagerController());
-                }else{
+                } else {
                     navigateTo(new ControllerAccountList());
                 }
             } else
@@ -55,6 +64,7 @@ public class LoginController extends Controller {
 
         return errors;
     }
+
 
     public void seedData() {
         Model.seedData(BankApp.DATABASE_SCRIPT_FILE);

@@ -22,6 +22,12 @@ public class Transfer extends Model {
     public String getDate() {
         return String.valueOf(date);
     }
+
+    public static List<Transfer> getAllTransfersForBTTF(){
+        String sql = "select * from transfer order by ifnull(effective_at, created_at)";
+        return queryList(Transfer.class, sql,new Params());
+    }
+
     private LocalDateTime createdAtLDT;
 
     public LocalDateTime getCreatedAtLDT() {
@@ -305,19 +311,22 @@ public class Transfer extends Model {
     }
     public static List<Transfer> updateEverything(List<Transfer> transfers, Account ab){
 
-        for (Transfer transfer: transfers) {
-
-            execute("delete from transfer_category where transfer=(select id from transfer where created_at > :date and id=:id)", new Params()
-                    .add("date", Date.changeFormatToEn(DateInterface.getUsedDate()))
-                    .add("id",transfer.id) );
+        String sql = "select * from transfer where created_at > :date";
+        List<Transfer> listOfTransfersToBeDeleted = queryList(Transfer.class, sql,new Params()
+                .add("date", (DateInterface.getUsedDate())));
+        for (Transfer transfer: listOfTransfersToBeDeleted
+             ) {
+            execute("delete from transfer_category where transfer =( select id from transfer where created_at > :date and id=:id)", new Params()
+                    .add("date", (DateInterface.getUsedDate()))
+                    .add("id",transfer.getId()));
             execute("delete from transfer where created_at > :date and id=:id", new Params()
-                    .add("date", Date.changeFormatToEn(DateInterface.getUsedDate()))
-                    .add("id",transfer.id) );
+                    .add("date", (DateInterface.getUsedDate()))
+                    .add("id",transfer.getId()));
         }
-//
-//        execute("update account set saldo = 0 where type != 'external'" , new Params());
-//
-//        execute("update transfer set source_saldo = NULL, target_saldo = NULL", new Params());
+
+        execute("update account set saldo = 0 where type != 'external'" , new Params());
+
+        execute("update transfer set source_saldo = NULL, target_saldo = NULL", new Params());
 
         for (Transfer transfer:transfers) {
 
@@ -328,7 +337,7 @@ public class Transfer extends Model {
             else {
                 execDate=transfer.createdAtLDT;
             }
-            if (execDate.compareTo(Date.changeFormatToEn(DateInterface.getUsedDate()))<=0){
+            if (execDate.compareTo((DateInterface.getUsedDate()))<=0){
                 execute("UPDATE transfer SET state='executed' WHERE id=:id", new Params()
                         .add("id",transfer.id));
 
@@ -341,17 +350,12 @@ public class Transfer extends Model {
                         execute("UPDATE account SET saldo=:newAmount where id=:id", new Params()
                                 .add("newAmount", newAmountSource)
                                 .add("id",a.getId()));
-//                        execute("UPDATE transfer SET source_saldo=:newAmount where id=:id", new Params()
-//                                .add("id",a.getId())
-//                                .add("newAmount", newAmountSource));
+
                         if(!b.getType().equals("external")){
                             double newAmountTarget = b.getSaldo()+ transfer.amount;
                             execute("UPDATE account SET saldo=:newAmount where id=:id", new Params()
                                     .add("newAmount", newAmountTarget)
                                     .add("id",b.getId()));
-//                            execute("UPDATE transfer SET target_saldo=:newAmount where id=:id", new Params()
-//                                    .add("id",b.getId())
-//                                    .add("newAmount", newAmountSource));
                         }
                     }
                     else {
@@ -375,26 +379,6 @@ public class Transfer extends Model {
                         .add("id",transfer.id));
 
             }
-//            double somme = 0;
-//            List<Transfer> transferSaldo = Transfer.getTransfersForLabel(ab);
-//            for (Transfer transferr : transferSaldo) {
-//                if (!transferr.getState().equals("rejected")) {
-//                    if (transferr.getSourceAccountID() == ab.getId()) {
-//                        somme -= transferr.getAmount();
-//                    } else {
-//                        somme += transferr.getAmount();
-//                    }
-//                }
-//                if ((transferr.getId() == (transfer.getId())) && (!transferr.getState().equals("future")) && (!transferr.getState().equals("rejected")) ) {
-//                    execute("UPDATE transfer SET source_saldo=:newAmount where id=:id", new Params()
-//                            .add("id",transferr.getId())
-//                            .add("newAmount", somme));
-//                    execute("UPDATE transfer SET target_saldo=:newAmount where id=:id", new Params()
-//                            .add("id",transferr.getId())
-//                            .add("newAmount", somme- transferr.getAmount()));
-//                }
-//            }
-
         }
         return transfers;
     }

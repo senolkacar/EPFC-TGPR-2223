@@ -10,6 +10,8 @@ import tgpr.framework.Layouts;
 import tgpr.framework.Panels;
 import tgpr.framework.Tools;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class LoginView extends BasicWindow {
@@ -50,6 +52,7 @@ public class LoginView extends BasicWindow {
         date.setText("17/01/2022 23:59:59");
 
         date.setTextChangeListener((txt, byUser) -> {
+
             if (!Tools.isValidDateTime(date.getText())) {
                 errDateTime.setText("invalid date");
             }
@@ -70,7 +73,6 @@ public class LoginView extends BasicWindow {
                 });
             }
             else {
-                date.setText("17/01/2022 23:59:59");
                 date.setReadOnly(true);
             }
         }).addTo(panel);
