@@ -35,7 +35,7 @@ public abstract class TransferValidator {
             return new Error("amount required",Transfer.Fields.Amount);
         }
         try {
-            if(date==null){
+            if(Objects.equals(date, "")){
                 if (Double.parseDouble(amount) > amountmax || Double.parseDouble(amount) < 0) {
                     return new Error("amount must be <= " + amountmax + " €", Transfer.Fields.Amount);
                 }
