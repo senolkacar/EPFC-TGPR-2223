@@ -98,7 +98,7 @@ public class AccountDetailsView extends DialogWindow {
                 new ColumnSpec<>("From/To", this::AccountToDisplay).setWidth(30).setOverflowHandling(ColumnSpec.OverflowHandling.Wrap),
                 new ColumnSpec<>("Category", this::CategoryToDisplay).setWidth(11),
                 new ColumnSpec<>("Amount", this::getAmount).setWidth(10),
-                new ColumnSpec<>("Saldo",  this::getSourceSaldo).setWidth(10),
+                new ColumnSpec<>("Saldo",  this::getSaldo).setWidth(10),
                 new ColumnSpec<>("State", Transfer::getState));
         historyTable.setPreferredSize(new TerminalSize(115, 5));
         historyTable.addTo(panel);
@@ -127,23 +127,15 @@ public class AccountDetailsView extends DialogWindow {
         }
     }
 
-    private String getSourceSaldo(Transfer m) {
-        List<Transfer> transfers = Transfer.getTransfersForLabel(account);
-        double somme = 0;
-        for (Transfer transferr : transfers) {
-            if (!transferr.getState().equals("rejected")) {
-                if (transferr.getSourceAccountID() == account.getId()) {
-                    somme -= transferr.getAmount();
-                } else {
-                    somme += transferr.getAmount();
-                }
-            }
-            if ((m.getId() == (transferr.getId())) && (!transferr.getState().equals("future"))) {
-                return (String.valueOf(transferr.transformInEuro(somme)));
-            }
+    private String getSaldo(Transfer m) {
+        if(m.getState().equals("future")||m.getState().equals("rejected")){
+            return "";
         }
-        return  "";
-
+        if (m.getSourceAccountID() == account.getId()) {
+            return Tools.ifNull(Transfer.transformInEuro(m.getSourceSaldo()), "");
+        } else {
+            return Tools.ifNull(Transfer.transformInEuro(m.getTargetSaldo()), "");
+        }
     }
 
     private String getAmount(Transfer m) {
@@ -357,5 +349,6 @@ public class AccountDetailsView extends DialogWindow {
         reloadDataFav();
         reloadData();
         reloadDataHistory();
+        refresh();
     }
 }
