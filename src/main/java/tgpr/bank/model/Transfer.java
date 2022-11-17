@@ -257,17 +257,7 @@ public class Transfer extends Model {
 
     @Override
     public String toString() {
-        return "id=" + id +
-                ", amount=" + amount +
-                ", description='" + description + '\'' +
-                ", sourceAccountID=" + sourceAccountID +
-                ", targetAccountID=" + targetAccountID +
-                ", sourceSaldo=" + sourceSaldo +
-                ", targetSaldo=" + targetSaldo +
-                ", createdAt='" + createdAt + '\'' +
-                ", createdBy=" + createdBy +
-                ", effectiveAt='" + effectiveAt + '\'' +
-                ", state='" + state + '\'';
+        return this.id+""+this.amount+""+this.description+""+this.sourceAccountID+""+this.targetAccountID+""+this.sourceSaldo+""+this.targetSaldo+""+this.createdAt+""+this.createdBy+""+this.effectiveAtLDT+this.state;
     }
     public void delete() {
 
