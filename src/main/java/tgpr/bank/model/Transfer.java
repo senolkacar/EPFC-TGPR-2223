@@ -230,7 +230,7 @@ public class Transfer extends Model {
     }
 
     public static List<Transfer> getTransfers(Account account) {
-        return queryList(Transfer.class, "select * from transfer where (source_account=:source_account or target_account=:target_account) ORDER by GREATEST( COALESCE(effective_at, 0), COALESCE(created_at, 0) )DESC", new Params()
+        return queryList(Transfer.class, "select * from transfer where (source_account=:source_account or target_account=:target_account) ORDER by GREATEST( COALESCE(effective_at, 0), COALESCE(created_at, 0) )DESC, transfer.id DESC", new Params()
                 .add("source_account",account.getId())
                 .add("target_account",account.getId()));
     }
