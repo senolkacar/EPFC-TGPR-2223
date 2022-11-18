@@ -166,6 +166,7 @@ public class AccountDetailsView extends DialogWindow {
                     Account account = transfer.getSourceAccountID() == this.account.getId() ? transfer.getTargetAccount() : transfer.getSourceAccount();
                     if(account.getIban().contains(txtFilter.getText().toUpperCase())
                             || account.getTitle().toUpperCase().contains(txtFilter.getText().toUpperCase())
+                            || getSaldo(transfer).contains(txtFilter.getText())
                             || transfer.toString().toUpperCase().contains(txtFilter.getText().toUpperCase())
                             || (Transfer.getCategory(this.account.getId(),transfer.getId()) != null && Transfer.getCategory(this.account.getId(),transfer.getId()).getName().toUpperCase().contains(txtFilter.getText().toUpperCase()))
                     ){
