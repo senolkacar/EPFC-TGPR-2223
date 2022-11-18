@@ -257,7 +257,7 @@ public class Transfer extends Model {
 
     @Override
     public String toString() {
-        return this.id+""+this.amount+""+this.description+""+this.sourceAccountID+""+this.targetAccountID+""+this.sourceSaldo+""+this.targetSaldo+""+this.createdAt+""+this.createdBy+""+this.effectiveAtLDT+this.state;
+        return this.amount+""+this.description+""+this.createdAt+""+this.createdBy+""+this.effectiveAt+this.state;
     }
     public void delete() {
 
