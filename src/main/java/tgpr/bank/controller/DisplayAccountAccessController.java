@@ -20,11 +20,13 @@ public class DisplayAccountAccessController extends Controller {
         this.user=user;
         view = new DisplayAccountAccessView(this,account);
     }
-    public void delete(int accountId){
-        account.deleteAccess(user.getId(),accountId);
-        view.close();
-        navigateTo(previousController);
-    }
+    public void delete(int accountId,String type){
+
+            account.deleteAccess(user.getId(), accountId,type);
+            view.close();
+            navigateTo(previousController);
+        }
+
 
    // public void  delete(int accountID,String type){
    //     Account.getById(accountID).addAccess(accountID,user.getEmail(),type);
@@ -32,16 +34,22 @@ public class DisplayAccountAccessController extends Controller {
     public Access isHolder(int userid,int accountid){
         return Account.isHolder(userid,accountid);
     }
-    public void  update(int account ,String type){
-        Account.getById(account).updateAccess(account,user.getId(),type);
+    public void  update(int accountId ,String type){
+        account.updateAccess(accountId,user.getId(),type);
         view.close();
         navigateTo(previousController);
 
     }
-    public void DeleteAccess(Account account,User user){
+    public void showErrorUpdate(){
+        showError("you can update holder access  with only one holder ");
+    }
+    public  void  showErrorDelete(){
+        showError("you can delete holder access  with only one holder");
+    }
+    public void DeleteAccess(Account account,User user,String type){
 
         askConfirmation("Do you want to remove this account from your Acces? " + account.getIban(), "Remove favourite");
-        account.deleteAccess(user.getId(),account.getId());
+        account.deleteAccess(user.getId(),account.getId(),type );
         account.reload();
 
 

@@ -30,15 +30,7 @@ public class AccessAccountClientController extends Controller {
     public List<Account> getAccountNoAccess(){
         return Account.getAccountNoAccess(user.getEmail());
     }
-    public void DeleteAccess(Account account){
 
-        askConfirmation("Do you want to remove this account from your Acces? " + account.getIban(), "Remove favourite");
-            account.deleteAccess(user.getId(),account.getId());
-            account.reload();
-            view.reloadData();
-            view.reloadInfo();
-
-    }
 
 
 

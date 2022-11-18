@@ -4,15 +4,19 @@ import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
+import tgpr.bank.controller.AccessAccountClientController;
 import tgpr.bank.controller.DisplayAccountAccessController;
+import tgpr.bank.model.Access;
 import tgpr.bank.model.Account;
 import tgpr.bank.model.User;
 import tgpr.framework.ColumnSpec;
 import tgpr.framework.ObjectTable;
+import tgpr.framework.Tools;
 
 import java.util.List;
 
 import static tgpr.framework.Controller.askConfirmation;
+import static tgpr.framework.Controller.navigateTo;
 
 public class DisplayAccountAccessView extends DialogWindow {
     private final DisplayAccountAccessController controller;
@@ -43,7 +47,8 @@ public class DisplayAccountAccessView extends DialogWindow {
 
         new EmptySpace().addTo(root);
         cboType = new ComboBox<String>("holder", "proxy").addTo(root).setPreferredSize(new TerminalSize(10, 1))
-                .addListener((newIndex, oldIndex, byUser) -> reloadData());
+                .addListener((newIndex, oldIndex, byUser) -> refresh());
+
 
 
         createButtonsPanel().addTo(root);
@@ -52,9 +57,7 @@ public class DisplayAccountAccessView extends DialogWindow {
     }
 
 
-    private void reloadData() {
 
-    }
 
     private void refresh() {
         if (account != null) {
@@ -69,39 +72,45 @@ public class DisplayAccountAccessView extends DialogWindow {
                 .setLayoutManager(new LinearLayout(Direction.HORIZONTAL))
                 .setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
 
-        //new Button("Update", this::update).addTo(root);
+        new Button("Update", this::update).addTo(root);
 
-       // new Button("Delete", this::delete).addTo(root);
+        new Button("Delete", this::delete).addTo(root);
         Button btnClose = new Button("Close", this::close).addTo(root);
         return root;
     }
 
 
 
-    // private void delete() {
-    //     askConfirmation("Do you want to remove this account from your Acces? " + account.getIban(), "Remove favourite");
-    //         controller.delete(account.getId(),cboType);
-    //      account.reload();
-    //}
+     private void delete() {
+        askConfirmation("Do you want to remove this account from your Acces? " + account.getIban(), "Remove favourite");
+        if(Account.isOnlyHolder(account.getId()) && cboType.getItem(0)=="holder" ){
+            controller.showErrorDelete();
+         }else if (!Account.isOnlyHolder(account.getId())  ){
+
+            controller.delete(account.getId(),cboType.getItem(0));
+            account.reload();
+         }
+        controller.close();
+    }
 
 
-     // public void delete(){
-
-     //   askConfirmation("Do you want to remove this account from your Acces? " + account.getIban(), "Remove favourite");
-     //   controller.delete(account.getId());
-      // account.reload();
-      // controller.close();
-      // refresh();
 
 
-    // }
 
-  // private void update() {
-    //    controller.update(account.getId(), cboType.getSelectedItem());
-      //  controller.close();
+    private void update() {
+
+        if(Account.isOnlyHolder(account.getId()) && cboType.getItem(0)=="holder" ){
+            controller.showErrorUpdate();
+        }
+        else if  (!Account.isOnlyHolder(account.getId())  ){
+
+            controller.update(account.getId(), cboType.getSelectedItem());
+            controller.close();
+        }
+        controller.close();
 
 
-    //}
+    }
 
 }
 

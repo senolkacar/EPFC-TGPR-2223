@@ -1,5 +1,6 @@
 package tgpr.bank.model;
 
+import tgpr.framework.Error;
 import tgpr.framework.Model;
 import tgpr.framework.Params;
 
@@ -12,7 +13,8 @@ import java.util.List;
 import java.sql.*;
 import java.util.Objects;
 
-public class Account extends Model{
+public class
+Account extends Model{
 
     private int id;
     private String iban;
@@ -108,6 +110,16 @@ public class Account extends Model{
         return queryOne(Access.class,sql,new Params("userid",userid).add("accountid",accountid));
     }
 
+    public static boolean isOnlyHolder(int accountid){
+        String sql="Select count(*) from access where type='holder' and account=:accountid";
+        int number= queryScalar(Integer.class,sql,new Params("accountid",accountid));
+        if(number==1){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
     public void addCategory(String name, int idAccount) {
         Category category = Category.getByAccount(Security.getLoggedUser().getId(), name);
         String vide = "";
@@ -168,25 +180,25 @@ public class Account extends Model{
         return c == 1;
     }
 
-    public void deleteAccess(int id ,int accountId) {
-        if(numberofhorder(accountId)==1) {
-            execute("delete from access where access.type=\"proxy\" and  account=:accountId and user=:userId", new Params("userId", id).add("accountId", accountId));
-        }
-        else{
-            execute("delete from access where account=:accountId and user=:userId", new Params("userId", id).add("accountId", accountId));
+   // public void deleteAccess(int id ,int accountId,String type) {
+    //    if(numberOfHolder(accountId)==1 && type== "holder") {
+    //        execute("delete from access where access.type='proxy' and  account=:accountId and user=:userId", new Params("userId", id).add("accountId", accountId));
+    //    }
+     //   else{
+     //       execute("delete from access where  access.type=:type and account=:accountId and user=:userId", new Params("userId", id).add("accountId", accountId));
 
-        }
-    }
-    public void update(int accountId, String type){
-        if(numberofhorder(accountId)>1){
-            execute("update access set type=:type where access.account=:accountId",new Params(":type",type).add("accountId",accountId) );
-        }
-    }
-    public Integer numberofhorder(int accountid){
-       return queryScalar(Integer.class,"select count (access.user),access.account from access where access.type ='holder' and access.account=:accountid " +
-               "group by access.account " +
-              "having count (access.user >1) ",new Params("accountid",accountid));
-    }
+     //   }
+    //}
+    //public void update(int accountId, String type){
+    //    if(numberofhorder(accountId)>1){
+     //       execute("update access set type=:type where access.account=:accountId",new Params(":type",type).add("accountId",accountId) );
+
+   // }}
+    //public Integer numberofhorder(int accountid){
+   //    return queryScalar(Integer.class,"select count (access.user),access.account from access where access.type ='holder' and access.account=:accountid " +
+   //           "group by access.account " +
+     //         "having count (access.user >1) ",new Params("accountid",accountid));
+   // }
     public static List<Account> getAllAccount(String email){
         return  queryList(Account.class,"SELECT * FROM account where account.id " +
                 "in ( select access.account from access where access.user=:iduser) "
@@ -198,33 +210,14 @@ public class Account extends Model{
                 ,new Params("iduser",User.getByEmail(email).getId()));
     }
 
-    public boolean save() {
-        int c;
-        Account a = getById(id);
-        String sql;
-        if (a == null)
-            sql = "insert into account ( iban, title, floor, type, saldo) " +
-                    "values (:iban,:title,:floor,:type,:saldo)";
-        else
-            sql = "update account set  iban=:iban, title=:title, floor=:floor ,type=:type ,saldo=:saldo " +
-                    " where id=:id";
-        c = execute(sql, new Params()
-                .add(  "iban", iban)
-                .add("title", title)
-                .add("floor", floor)
-                .add("type", type)
-                .add("saldo", saldo));
-        return c == 1;
-    }
-    public void deleteAccess(int accountId, String email){
-        if(numberofhorder(accountId)==1){
-            execute("delete from access where access.type=\"proxy\" and  account=:accountId and user=:userId", new Params("userId", id).add("accountId", accountId));
-        }
-        else{
-            execute("delete from access where account=:accountId and user=:userId", new Params("userId", User.getByEmail(email).getId()).add("accountId", accountId));
 
-        }
-        }
+
+    public void deleteAccess( int idUser,int accountId,String type){
+
+            execute("delete from access where account=:accountId and user=:userId", new Params("userId", idUser).add("accountId", accountId).add("type", type));
+
+
+}
 
     public void addAccess(int accountId, String email, String type){
         execute("insert into access (user,account,type) values(:iduser,:idaccount,:type)",new Params()
@@ -234,21 +227,21 @@ public class Account extends Model{
 
     }
     public void updateAccess(int accountId,int userId,String type){
-        if(numberOfHolder(accountId)>1){
-            update(accountId,userId,type);
-        }
+
+            update(accountId, userId, type);
+
 
     }
 
     public void update(int accountId,int userId,String type) {
-        String sql = "update access set type=:type where access.account=:accountId and userId:=userId";
+        String sql = "update access set type=:type where access.account=:accountId and access.user=:userId";
         execute(sql, new Params()
                 .add("accountId",accountId)
                 .add("userId", userId)
                 .add("type",type));
     }
 
-    public  Integer numberOfHolder(int accountId){
+    public  int numberOfHolder(int accountId){
        return queryScalar(Integer.class,"select count(*) from access where access.type='holder' and access.account=:accountId group by access.account",new Params("accountId",accountId));
 
     }
