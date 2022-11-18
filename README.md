@@ -10,11 +10,11 @@
   * bob@test.com, password "bob", client
   * caro@test.com, password "caro", client
   * louise@test.com, password "louise", client
-  * jules@test.com, password "jules", client
+  * jules@test.com, password "jules", clientw
 
 ### Liste des bugs connus
 
-  * Manager: Dans la page où on donne l'accès à un compte pour un client, on ne sait pas update son accès
+  * Manager: Problème dans  conditions dans la fonction delete et update dans UC_AccesClient.
   * Manager: Fonctionnalité delete un client dans le view EditClient ne fonctionne pas
   * TransferDetails: affichage de your account maglré que le compte n'est pas le compte utilisé
   * TransferDetails: affichage du saldo qui est toujours en positif
