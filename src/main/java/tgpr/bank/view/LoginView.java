@@ -5,6 +5,7 @@ import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
 import tgpr.bank.controller.LoginController;
+import tgpr.bank.model.Date;
 import tgpr.framework.Configuration;
 import tgpr.framework.Layouts;
 import tgpr.framework.Panels;
@@ -49,7 +50,7 @@ public class LoginView extends BasicWindow {
         panel.addComponent(new Label("Custom System Date/Time:"));
         date = new TextBox(new TerminalSize(20, 1)).addTo(panel);
         errDateTime.setForegroundColor(TextColor.ANSI.RED).addTo(panel);
-        date.setText("17/01/2022 23:59:59");
+        date.setText(String.valueOf(Date.getSysDate()));
 
         date.setTextChangeListener((txt, byUser) -> {
 
