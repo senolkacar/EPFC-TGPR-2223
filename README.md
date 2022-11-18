@@ -16,7 +16,6 @@
 
   * Manager: Dans la page où on donne l'accès à un compte pour un client, on ne sait pas update son accès
   * Manager: Fonctionnalité delete un client dans le view EditClient ne fonctionne pas
-  * History: filtrage de la date qui filtre mal et qui compare avec le format de la base de données
   * TransferDetails: affichage de your account maglré que le compte n'est pas le compte utilisé
   * TransferDetails: affichage du saldo qui est toujours en positif
   * NewTransfer: possibilité d'ajouter une date antérieure à la date à laquelle l'utilisateur est connecté
