@@ -227,8 +227,11 @@ public class AccountDetailsView extends DialogWindow {
         root.addTo(panel);
         reloadData();
 
+
         return  border;
     }
+
+
     public void resetCategory(){
         txtNewCategory.setText("");
     }
@@ -246,6 +249,8 @@ public class AccountDetailsView extends DialogWindow {
      categoryTable.clear();
      var Category  = controller.getCategory();
      categoryTable.add(Category);
+        reloadDataHistory();
+
     }
 
 

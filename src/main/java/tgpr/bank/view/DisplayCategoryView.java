@@ -83,6 +83,7 @@ public class DisplayCategoryView extends DialogWindow {
         category = controller.update(name,category);
         txtCategoryName.setText(name);
         controller.close();
+
     }
 
 

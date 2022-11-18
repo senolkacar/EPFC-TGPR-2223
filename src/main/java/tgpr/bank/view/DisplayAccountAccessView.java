@@ -4,15 +4,19 @@ import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
+import tgpr.bank.controller.AccessAccountClientController;
 import tgpr.bank.controller.DisplayAccountAccessController;
+import tgpr.bank.model.Access;
 import tgpr.bank.model.Account;
 import tgpr.bank.model.User;
 import tgpr.framework.ColumnSpec;
 import tgpr.framework.ObjectTable;
+import tgpr.framework.Tools;
 
 import java.util.List;
 
 import static tgpr.framework.Controller.askConfirmation;
+import static tgpr.framework.Controller.navigateTo;
 
 public class DisplayAccountAccessView extends DialogWindow {
     private final DisplayAccountAccessController controller;
@@ -43,7 +47,9 @@ public class DisplayAccountAccessView extends DialogWindow {
 
         new EmptySpace().addTo(root);
         cboType = new ComboBox<String>("holder", "proxy").addTo(root).setPreferredSize(new TerminalSize(10, 1))
-                .addListener((newIndex, oldIndex, byUser) -> reloadData());
+                .addListener((newIndex, oldIndex, byUser) -> refresh());
+
+
 
         createButtonsPanel().addTo(root);
         refresh();
@@ -51,9 +57,7 @@ public class DisplayAccountAccessView extends DialogWindow {
     }
 
 
-    private void reloadData() {
 
-    }
 
     private void refresh() {
         if (account != null) {
@@ -79,30 +83,36 @@ public class DisplayAccountAccessView extends DialogWindow {
 
      private void delete() {
         askConfirmation("Do you want to remove this account from your Acces? " + account.getIban(), "Remove favourite");
-         if(account.numberOfHolder(account.getId())==1 && cboType.getItem(0)=="holder"){
-             controller.showErrorDelete();
-         }else {
-             controller.delete(account.getId(),cboType.getSelectedItem());
-             account.reload();
+        if(Account.isOnlyHolder(account.getId()) && cboType.getItem(0)=="holder" ){
+            controller.showErrorDelete();
+         }else if (!Account.isOnlyHolder(account.getId())  ){
+
+            controller.delete(account.getId(),cboType.getItem(0));
+            account.reload();
          }
+        controller.close();
     }
+
 
 
 
 
     private void update() {
-        int cmp=account.numberOfHolder(account.getId());
 
-        if(cmp==1 && cboType.getSelectedItem()=="holder"){
+        if(Account.isOnlyHolder(account.getId()) && cboType.getItem(0)=="holder" ){
             controller.showErrorUpdate();
-        }else{
-          controller.update(account.getId(), cboType.getSelectedItem());
-          controller.close();
+        }
+        else if  (!Account.isOnlyHolder(account.getId())  ){
+
+            controller.update(account.getId(), cboType.getSelectedItem());
+            controller.close();
+        }
+        controller.close();
 
 
     }
 
-}}
+}
 
 
 
