@@ -19,7 +19,6 @@
   * History: filtrage de la date qui filtre mal et qui compare avec le format de la base de données
   * TransferDetails: affichage de your account maglré que le compte n'est pas le compte utilisé
   * TransferDetails: affichage du saldo qui est toujours en positif
-  * TransferDetails: affichage de effective at qui doit s'afficher sans l'heure
   * NewTransfer: possibilité d'ajouter une date antérieure à la date à laquelle l'utilisateur est connecté
 
 ### Liste des UC par membre du groupe:
