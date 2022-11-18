@@ -26,10 +26,10 @@ public class AccountDetailsView extends DialogWindow {
     private final Account account;
     private ObjectTable<Transfer> historyTable;
 
-    private final Label lblIban = new Label("");
-    private final Label lblTitle = new Label("");
-    private final Label lblType = new Label("");
-    private final Label lblSaldo = new Label("");
+    private Label lblIban = new Label("");
+    private Label lblTitle = new Label("");
+    private Label lblType = new Label("");
+    private Label lblSaldo = new Label("");
     private ComboBox<String> cboFavorite;
 
     private List<Account> favoritesList;
@@ -151,7 +151,8 @@ public class AccountDetailsView extends DialogWindow {
        var transfers = controller.getTransfers();
        historyTable.add(transfers);
        historyTable.invalidate();
-       }
+    }
+
 
 
     public void reloadFiltered(){
@@ -325,10 +326,11 @@ public class AccountDetailsView extends DialogWindow {
     }
 
     public void refresh(){
-        lblIban.setText(account.getIban());
-        lblTitle.setText(account.getTitle());
-        lblType.setText(account.getType());
-        lblSaldo.setText((account.transformInEuro(account.getSaldo())));
+        var acc = controller.getAccount();
+        lblIban.setText(acc.getIban());
+        lblTitle.setText(acc.getTitle());
+        lblType.setText(acc.getType());
+        lblSaldo.setText((Transfer.transformInEuro(acc.getSaldo())));
     }
 
     private void displayTransfer() {
@@ -338,6 +340,7 @@ public class AccountDetailsView extends DialogWindow {
         }
         reloadDataHistory();
         reloadData();
+        refresh();
     }
 
     public void newTransfer(){

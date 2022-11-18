@@ -60,11 +60,7 @@ public class ViewAccountList extends BasicWindow {
         // spécifie que le tableau doit avoir la même largeur quee le terminal et une hauteur de 15 lignes
         table.setPreferredSize(new TerminalSize(ViewManager.getTerminalColumns(), 15));
 
-        table.setSelectAction(() ->{
-         var account = table.getSelected();
-         table.setSelected(account);
-         controller.showAccountDetails(account);
-        });
+        table.setSelectAction(this::showAccountDetails);
         // charge les données dans la table
         reloadData();
 
@@ -88,6 +84,11 @@ public class ViewAccountList extends BasicWindow {
 
     private void newTransfer(){
         controller.newTransfer();
+        reloadData();
+    }
+
+    private void showAccountDetails(){
+        controller.showAccountDetails(table.getSelected());
         reloadData();
     }
 }

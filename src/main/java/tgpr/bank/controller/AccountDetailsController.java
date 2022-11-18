@@ -33,9 +33,9 @@ public class AccountDetailsController extends Controller {
         return view;
     }
 
-    public Account getAccount() {
+    /*public Account getAccount() {
         return account;
-    }
+    }*/
     public List<Category> getCategory() {
         return Category.getCategories(getAccount());
     }
@@ -108,6 +108,11 @@ public class AccountDetailsController extends Controller {
     public void newTransfer(){
         NewTransferController.previousController = this;
         navigateTo(new NewTransferController());
+        view.reloadAlldata();
+    }
+
+    public Account getAccount() {
+        return Account.getById(account.getId());
     }
 }
 
