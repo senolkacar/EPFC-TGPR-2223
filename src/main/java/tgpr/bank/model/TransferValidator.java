@@ -39,6 +39,10 @@ public abstract class TransferValidator {
                 if (Double.parseDouble(amount) > amountmax || Double.parseDouble(amount) < 0) {
                     return new Error("amount must be <= " + amountmax + " €", Transfer.Fields.Amount);
                 }
+            }else{
+                if(Double.parseDouble(amount) < 0){
+                    return new Error("amount can't be lower than 0",Transfer.Fields.Amount);
+                }
             }
         } catch (NumberFormatException n) {
             return new Error("invalid format", Transfer.Fields.Amount);
