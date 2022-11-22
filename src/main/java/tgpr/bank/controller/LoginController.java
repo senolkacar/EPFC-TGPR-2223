@@ -28,7 +28,7 @@ public class LoginController extends Controller {
         if (errors.isEmpty()) {
             var user = User.checkCredentials(email, password);
             if (user != null) {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy HH:mm:ss");
                 LocalDateTime datee = LocalDateTime.parse(date,formatter);
                 if (checkbox.isChecked()) {
                     Security.login(user);
