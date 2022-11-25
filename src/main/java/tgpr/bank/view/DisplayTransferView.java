@@ -104,7 +104,7 @@ public class DisplayTransferView extends DialogWindow {
             lblCreatedBy.setText((User.getById(transfer.getCreatedBy())));
             lblSourceAccount.setText(transfer.getAccountInfoForTransfer(transfer.getSourceAccountID(),transfer.getSourceAccountID()));
             lblTargetAccount.setText(transfer.getAccountInfoForTransfer(transfer.getTargetAccountID(),transfer.getTargetAccountID()));
-            lblAmount.setText(transfer.transformInEuro(transfer.getAmount()));
+            lblAmount.setText((getAmountForDisplay(transfer,account)));
 //            lblSaldoAfterTransfer.setText(String.valueOf(account.transformInEuro(account.getSaldo())));
             List<Transfer> transfers = Transfer.getTransfersForLabel(account);
             double somme=0;
@@ -179,6 +179,16 @@ public class DisplayTransferView extends DialogWindow {
         }
         controller.close();
     }
+
+    private static String getAmountForDisplay(Transfer m, Account account) {
+        if(m.getSourceAccountID() == account.getId()){
+            return "-"+account.transformInEuro(m.getAmount());
+        }else{
+            return account.transformInEuro(m.getAmount());
+        }
+    }
+
+
 
 //    public void reloadData() {
 //

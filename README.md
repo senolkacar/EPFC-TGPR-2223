@@ -17,7 +17,6 @@
   * Manager: Problème dans  conditions dans la fonction delete et update dans UC_AccesClient.
   * Manager: Fonctionnalité delete un client dans le view EditClient ne fonctionne pas
   * TransferDetails: affichage de your account maglré que le compte n'est pas le compte utilisé
-  * TransferDetails: affichage du saldo qui est toujours en positif
   * NewTransfer: possibilité d'ajouter une date antérieure à la date à laquelle l'utilisateur est connecté
 
 ### Liste des UC par membre du groupe:
