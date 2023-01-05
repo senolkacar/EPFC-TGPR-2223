@@ -1,5 +1,4 @@
-# Projet TGPR 2223 - Gestion d'une banque
-
+# Projet TGPR 2223 - Gestion d'une banque - JAVA LANTERNA Framework
 ## Notes de version
 
 ### Liste des utilisateurs et mots de passes
